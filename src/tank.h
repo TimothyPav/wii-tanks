@@ -16,6 +16,8 @@ class Tank
 private:
     sf::RectangleShape body;
     float speed;
+    float x;
+    float y;
 
     void setDefaults() {
         body.setSize(sf::Vector2f(50, 50));
@@ -24,11 +26,13 @@ private:
     }
 
 public:
-    Tank(sf::RectangleShape body);
+    Tank(const sf::RectangleShape& body, const float& speed);
 
-    sf::RectangleShape getBody() const;
+    sf::RectangleShape& getBody();
 
-    void setPosition(Direction dir);
+    float getX();
+    float getY();
+    void moveTank(Direction dir);
     
     void test() const;
 };

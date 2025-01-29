@@ -1,6 +1,8 @@
 #include <SFML/Graphics.hpp>
+#include <iostream>
 
 #include "tank.h"
+#include "utils.h"
 
 int main()
 {
@@ -13,7 +15,7 @@ int main()
     square.setFillColor(sf::Color::Blue);
     square.setPosition(sf::Vector2f(100, 100));
 
-    Tank t(square);
+    Tank t(square, 5);
     t.test();
 
     while (window.isOpen())
@@ -24,6 +26,22 @@ int main()
             {
                 window.close();
             }
+        }
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Up))
+        {
+            t.moveTank(Direction::Up);
+        }
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Down))
+        {
+            t.moveTank(Direction::Down);
+        }
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Left))
+        {
+            t.moveTank(Direction::Left);
+        }
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Right))
+        {
+            t.moveTank(Direction::Right);
         }
 
         window.clear();
