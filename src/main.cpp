@@ -4,10 +4,13 @@
 #include "tank.h"
 #include "utils.h"
 
+// TODO: Obstacles/walls object to put on the map!
+
 int main()
 {
-    auto window = sf::RenderWindow(sf::VideoMode({1920u, 1080u}), "wii tanks");
+    auto window = sf::RenderWindow(sf::VideoMode({1920, 1080}), "wii tanks");
     window.setFramerateLimit(144);
+
 
 
     sf::RectangleShape square;

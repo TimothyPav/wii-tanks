@@ -33,6 +33,7 @@ public:
     float getX();
     float getY();
     void moveTank(Direction dir);
+    bool checkBoundaries(Direction dir);
     
     void test() const;
 };
