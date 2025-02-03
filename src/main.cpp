@@ -3,20 +3,23 @@
 
 #include "tank.h"
 #include "utils.h"
+#include "wall.h"
 
 // TODO: Obstacles/walls object to put on the map!
+// All the blocks will be 24x24
 
 int main()
 {
     auto window = sf::RenderWindow(sf::VideoMode({1920, 1080}), "wii tanks");
     window.setFramerateLimit(144);
 
-
-
     sf::RectangleShape square;
     square.setSize(sf::Vector2f(50, 50));
     square.setFillColor(sf::Color::Blue);
     square.setPosition(sf::Vector2f(100, 100));
+
+    sf::Color color = sf::Color::Green;
+    Wall<0, 0> w{ color }; 
 
     Tank t(square, 5);
     t.test();
@@ -50,6 +53,7 @@ int main()
         window.clear();
         // do things in here?
 
+        window.draw(w.getWall());
         window.draw(t.getBody());
 
         window.display();
