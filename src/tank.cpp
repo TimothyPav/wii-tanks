@@ -1,11 +1,14 @@
 #include <iostream>
 #include <SFML/Graphics.hpp>
 
+#include "utils.h"
+#include "wall.h"
 #include "tank.h"
 
-Tank::Tank(const sf::RectangleShape& body, const float& speed)
+Tank::Tank(const sf::RectangleShape& body, const float& speed, const std::vector<Wall>& level)
     : body(body),
-      speed(speed)
+      speed(speed),
+      level(level)
 {
     setDefaults();
 }
@@ -57,10 +60,18 @@ bool Tank::checkBoundaries(Direction dir) {
     // offsets of 60 are there because they work i don't understand how it's magic. i can't figure out the math on this!
     sf::Vector2f tankBottomRightCoord = sf::Vector2f(tankTopLeftCoord.x+body.getSize().x+60, tankTopLeftCoord.y+body.getSize().y+60);
     sf::FloatRect windowBounds(sf::Vector2f(0.f, 0.f), sf::Vector2f(1920.0f, 1080.0f));
-    if (windowBounds.contains(tankTopLeftCoord) && windowBounds.contains(tankBottomRightCoord)) {
-        return true;
+    if (!(windowBounds.contains(tankTopLeftCoord) && windowBounds.contains(tankBottomRightCoord))) {
+        return false;
     }
-    return false;
+
+    for (int i{0}; i < level.size(); ++i) {
+        sf::RectangleShape wallObject = level[i].getWall();
+        if (doOverlap(body, wallObject)){
+            std::cout << "DO OVERLAP RETURNED TRUE\n";
+        }
+    }
+
+    return true;
 }
 
 void Tank::test() const {

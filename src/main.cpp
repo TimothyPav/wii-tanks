@@ -8,6 +8,8 @@
 // TODO: Obstacles/walls object to put on the map!
 // All the blocks will be 24x24
 
+std::vector<Wall> level_1();
+
 int main()
 {
     auto window = sf::RenderWindow(sf::VideoMode({1920, 1080}), "wii tanks");
@@ -19,10 +21,10 @@ int main()
     square.setPosition(sf::Vector2f(100, 100));
 
     sf::Color color = sf::Color::Green;
-    Wall<0, 0> w{ color }; 
 
-    Tank t(square, 5);
-    t.test();
+    // Tank t(square, 5);
+    std::vector<Wall> currentLevel = level_1();
+    Tank t (square, 5, currentLevel);
 
     while (window.isOpen())
     {
@@ -53,7 +55,8 @@ int main()
         window.clear();
         // do things in here?
 
-        window.draw(w.getWall());
+        for (int i{0}; i < currentLevel.size(); ++i)
+            window.draw(currentLevel[i].getWall());
         window.draw(t.getBody());
 
         window.display();

@@ -4,6 +4,7 @@
 #include <SFML/Graphics.hpp>
 
 #include "utils.h"
+#include "wall.h"
 /*
  * position
  * shoot function
@@ -18,6 +19,7 @@ private:
     float speed;
     float x;
     float y;
+    std::vector<Wall> level;
 
     void setDefaults() {
         body.setSize(sf::Vector2f(50, 50));
@@ -26,7 +28,7 @@ private:
     }
 
 public:
-    Tank(const sf::RectangleShape& body, const float& speed);
+    Tank(const sf::RectangleShape& body, const float& speed, const std::vector<Wall>& level);
 
     sf::RectangleShape& getBody();
 

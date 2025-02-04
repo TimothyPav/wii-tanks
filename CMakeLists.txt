@@ -14,7 +14,7 @@ FetchContent_Declare(SFML
     SYSTEM)
 FetchContent_MakeAvailable(SFML)
 
-add_executable(tanks src/main.cpp src/tank.cpp)
+add_executable(tanks src/main.cpp src/tank.cpp src/levels.cpp src/utils.cpp)
 target_compile_features(tanks PRIVATE cxx_std_17)
 target_link_libraries(tanks PRIVATE SFML::Graphics)
 

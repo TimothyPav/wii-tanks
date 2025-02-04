@@ -4,9 +4,10 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 
+
 using pixels = int;
 
-template <pixels X, pixels Y> // 0<=X<=31 AND 0<=y<=17
+// 0<=X<=31 AND 0<=y<=17
 class Wall 
 {
 private:
@@ -14,7 +15,9 @@ private:
     constexpr static pixels width = 60;
     constexpr static pixels height = 60;
     const sf::Color color;
-    constexpr static sf::Vector2f trueCoords = sf::Vector2f(X*width, Y*width);
+    const int X;
+    const int Y;
+    sf::Vector2f trueCoords = sf::Vector2f(X*width, Y*width);
 
     void setDefaults() {
         wall.setSize(sf::Vector2f(width, height));
@@ -23,7 +26,7 @@ private:
     }
 
 public:
-    Wall(sf::Color color) : color(color) {
+    Wall(int X, int Y, sf::Color color) : X(X), Y(Y), color(color) {
         setDefaults();
     };     
 
