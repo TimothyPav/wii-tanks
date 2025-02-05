@@ -13,8 +13,8 @@ Tank::Tank(const sf::RectangleShape& body, const float& speed, const std::vector
     setDefaults();
 }
 
-sf::RectangleShape& Tank::getBody() {
-    return body;
+std::vector<sf::RectangleShape>& Tank::getBody() {
+    return tankShapes;
 }
 
 float Tank::getX() {
@@ -28,6 +28,7 @@ float Tank::getY() {
 void Tank::moveTank(Direction dir) {
     if (dir == Direction::Up && checkBoundaries(dir)) {
         body.move({0.0f, -speed});
+        turret.move({0.0f, -speed});
     }
     if (dir == Direction::Down && checkBoundaries(dir)) { // change magic numbers
         body.move({0.0f, speed});
@@ -58,16 +59,17 @@ bool Tank::checkBoundaries(Direction dir) {
     }
 
     // offsets of 60 are there because they work i don't understand how it's magic. i can't figure out the math on this!
-    sf::Vector2f tankBottomRightCoord = sf::Vector2f(tankTopLeftCoord.x+body.getSize().x+60, tankTopLeftCoord.y+body.getSize().y+60);
-    sf::FloatRect windowBounds(sf::Vector2f(0.f, 0.f), sf::Vector2f(1920.0f, 1080.0f));
+    sf::Vector2f tankBottomRightCoord = sf::Vector2f(tankTopLeftCoord.x+body.getSize().x, tankTopLeftCoord.y+body.getSize().y);
+    sf::FloatRect windowBounds(sf::Vector2f(0.f, 0.f), sf::Vector2f(1920.0f-body.getSize().x-(speed*2), 1080.0f-body.getSize().y-(speed*2)));
     if (!(windowBounds.contains(tankTopLeftCoord) && windowBounds.contains(tankBottomRightCoord))) {
         return false;
     }
 
+
     for (int i{0}; i < level.size(); ++i) {
         sf::RectangleShape wallObject = level[i].getWall();
-        if (doOverlap(body, wallObject)){
-            std::cout << "DO OVERLAP RETURNED TRUE\n";
+        if (doOverlap(tankTopLeftCoord, tankBottomRightCoord, wallObject, speed)){
+            return false;
         }
     }
 

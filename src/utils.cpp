@@ -2,31 +2,24 @@
 
 #include "utils.h"
 
-bool doOverlap(sf::RectangleShape s1, sf::RectangleShape s2)
+bool doOverlap(sf::Vector2f tankTopLeft, sf::Vector2f tankBottomRight, sf::RectangleShape s2, int speed)
 {
-    // l1 is top left
-    // l2 is bottom right
-    sf::Vector2f l1 = s1.getPoint(0);
-    sf::Vector2f l2 = s1.getPoint(3);
+    sf::Vector2f pos2 = s2.getPosition();
+    
+    // Get size of each rectangle 
+    sf::Vector2f size2 = (s2.getSize());
+    
+    // Calculate bottom-right corners
+    sf::Vector2f bottomRight2(pos2.x + size2.x, pos2.y + size2.y);
 
-    sf::Vector2f r1 = s2.getPoint(0);
-    sf::Vector2f r2 = s2.getPoint(3);
-
-    std::cout << s1.getOrigin().x << '\n';
-
-    // std::cout << l1.x << ", " << l1.y << '\n';
-    // std::cout << l2.x << ", " << l2.y << '\n';
-//
-    // std::cout << r1.x << ", " << r1.y << '\n';
-    // std::cout << r2.x << ", " << r2.y << '\n';
+    // std::cout << "Tank: " << tankTopLeft.x << "," << tankTopLeft.y << " to " << tankBottomRight.x << "," << tankBottomRight.y << "\n";
+    // std::cout << "Rectangle 2: " << pos2.x << "," << pos2.y << " to " << bottomRight2.x << "," << bottomRight2.y << "\n";
     // std::cout << '\n';
+    // 
 
-    if (l1.x > r2.x || l2.x > r1.x)
-         return false;
-
-    // If one rectangle is above the other
-    if (r1.y > l2.y || r2.y > l1.y)
+    if (tankTopLeft.x > bottomRight2.x-speed || pos2.x+speed > tankBottomRight.x)
         return false;
-
+    if (tankTopLeft.y > bottomRight2.y-speed || pos2.y+speed > tankBottomRight.y)
+        return false;
     return true;
 }

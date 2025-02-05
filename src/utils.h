@@ -5,6 +5,6 @@
 
 enum class Direction { Up, Down, Left, Right };
 
-bool doOverlap(sf::RectangleShape s1, sf::RectangleShape s2);
+bool doOverlap(sf::Vector2f tankTopLeft, sf::Vector2f tankBottomRight, sf::RectangleShape s2, int speed);
 
 #endif

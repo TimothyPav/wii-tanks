@@ -57,7 +57,9 @@ int main()
 
         for (int i{0}; i < currentLevel.size(); ++i)
             window.draw(currentLevel[i].getWall());
-        window.draw(t.getBody());
+        
+        for (int i{0}; i < t.getBody().size(); ++i)
+            window.draw(t.getBody()[i]);
 
         window.display();
     }
