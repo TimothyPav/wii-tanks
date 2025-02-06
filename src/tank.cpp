@@ -1,5 +1,6 @@
 #include <iostream>
 #include <SFML/Graphics.hpp>
+#include <cmath>
 
 #include "utils.h"
 #include "wall.h"
@@ -13,8 +14,16 @@ Tank::Tank(const sf::RectangleShape& body, const float& speed, const std::vector
     setDefaults();
 }
 
-std::vector<sf::RectangleShape>& Tank::getBody() {
+std::vector<sf::RectangleShape> Tank::getBody() {
     return tankShapes;
+}
+
+sf::RectangleShape Tank::getTankBody() {
+    return body;
+}
+
+sf::RectangleShape Tank::getTurretBody() {
+    return turret;
 }
 
 float Tank::getX() {
@@ -26,18 +35,22 @@ float Tank::getY() {
 }
 
 void Tank::moveTank(Direction dir) {
+    // getTankCoords(); // debug print function
     if (dir == Direction::Up && checkBoundaries(dir)) {
         body.move({0.0f, -speed});
         turret.move({0.0f, -speed});
     }
     if (dir == Direction::Down && checkBoundaries(dir)) { // change magic numbers
         body.move({0.0f, speed});
+        turret.move({0.0f, speed});
     }
     if (dir == Direction::Left && checkBoundaries(dir)) {
         body.move({-speed, 0.0});
+        turret.move({-speed, 0.0});
     }
     if (dir == Direction::Right && checkBoundaries(dir)) {
         body.move({speed, 0.0});
+        turret.move({speed, 0.0});
     }
 }
 
@@ -74,6 +87,24 @@ bool Tank::checkBoundaries(Direction dir) {
     }
 
     return true;
+}
+
+void Tank::rotateTurretBasedOnMouse(sf::Vector2i mousePos) {
+    sf::Vector2f objectCenter = turret.getPosition();
+    // std::cout << "Turrent center: " << objectCenter.x << ", " << objectCenter.y << '\n';
+    // std::cout << "Mouse center: " << mousePos.x << ", " << mousePos.y << '\n';
+
+    double angle = std::atan2(mousePos.y - objectCenter.y, mousePos.x - objectCenter.x); 
+
+    double calculatedAngle = angle * 180.0 / M_PI;
+    std::cout << sf::degrees(calculatedAngle).asDegrees() << '\n';
+
+    turret.setRotation(sf::degrees(calculatedAngle)); // Convert to degrees
+}
+
+
+void Tank::getTankCoords() const {
+    std::cout << "Tank body coords: (" << body.getPosition().x << ", " << body.getPosition().y << '\n';
 }
 
 void Tank::test() const {

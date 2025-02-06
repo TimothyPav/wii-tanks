@@ -28,7 +28,7 @@ private:
         body.setFillColor(sf::Color::Red);
         body.setPosition(sf::Vector2f(100, 100));
 
-        turret.setSize(sf::Vector2f(50, 5));
+        turret.setSize(sf::Vector2f(50, 10));
         turret.setFillColor(sf::Color::Cyan);
         turret.setPosition(sf::Vector2f(100, 100));
         
@@ -39,13 +39,17 @@ private:
 public:
     Tank(const sf::RectangleShape& body, const float& speed, const std::vector<Wall>& level);
 
-    std::vector<sf::RectangleShape>& getBody();
+    std::vector<sf::RectangleShape> getBody();
+    sf::RectangleShape getTankBody();
+    sf::RectangleShape getTurretBody();
 
     float getX();
     float getY();
     void moveTank(Direction dir);
     bool checkBoundaries(Direction dir);
+    void rotateTurretBasedOnMouse(sf::Vector2i mousePosition);
     
+    void getTankCoords() const;
     void test() const;
 };
 

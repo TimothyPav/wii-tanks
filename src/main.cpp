@@ -1,9 +1,11 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
+#include <SFML/Window/Mouse.hpp>
 
 #include "tank.h"
 #include "utils.h"
 #include "wall.h"
+
 
 // TODO: Obstacles/walls object to put on the map!
 // All the blocks will be 24x24
@@ -58,8 +60,9 @@ int main()
         for (int i{0}; i < currentLevel.size(); ++i)
             window.draw(currentLevel[i].getWall());
         
-        for (int i{0}; i < t.getBody().size(); ++i)
-            window.draw(t.getBody()[i]);
+        t.rotateTurretBasedOnMouse(sf::Mouse::getPosition());
+        window.draw(t.getTankBody());
+        window.draw(t.getTurretBody());
 
         window.display();
     }
