@@ -60,8 +60,9 @@ int main()
         for (int i{0}; i < currentLevel.size(); ++i)
             window.draw(currentLevel[i].getWall());
         
-        t.rotateTurretBasedOnMouse(sf::Mouse::getPosition());
+        t.rotateTurretBasedOnMouse(sf::Mouse::getPosition(window));
         window.draw(t.getTankBody());
+        window.draw(t.getHeadBody());
         window.draw(t.getTurretBody());
 
         window.display();

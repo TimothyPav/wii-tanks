@@ -26,6 +26,10 @@ sf::RectangleShape Tank::getTurretBody() {
     return turret;
 }
 
+sf::RectangleShape Tank::getHeadBody() {
+    return head;
+}
+
 float Tank::getX() {
     return body.getPosition().x;
 }
@@ -39,18 +43,22 @@ void Tank::moveTank(Direction dir) {
     if (dir == Direction::Up && checkBoundaries(dir)) {
         body.move({0.0f, -speed});
         turret.move({0.0f, -speed});
+        head.move({0.0f, -speed});
     }
     if (dir == Direction::Down && checkBoundaries(dir)) { // change magic numbers
         body.move({0.0f, speed});
         turret.move({0.0f, speed});
+        head.move({0.0f, speed});
     }
     if (dir == Direction::Left && checkBoundaries(dir)) {
         body.move({-speed, 0.0});
         turret.move({-speed, 0.0});
+        head.move({-speed, 0.0});
     }
     if (dir == Direction::Right && checkBoundaries(dir)) {
         body.move({speed, 0.0});
         turret.move({speed, 0.0});
+        head.move({speed, 0.0});
     }
 }
 
@@ -91,15 +99,17 @@ bool Tank::checkBoundaries(Direction dir) {
 
 void Tank::rotateTurretBasedOnMouse(sf::Vector2i mousePos) {
     sf::Vector2f objectCenter = turret.getPosition();
+    sf::Vector2f size = turret.getSize();
+    turret.setOrigin(sf::Vector2f({size.x, size.y / 2.0f}));
     // std::cout << "Turrent center: " << objectCenter.x << ", " << objectCenter.y << '\n';
-    // std::cout << "Mouse center: " << mousePos.x << ", " << mousePos.y << '\n';
+    std::cout << "Mouse center: " << mousePos.x << ", " << mousePos.y << "  ORIGIN OF SHAPE: " << objectCenter.x << ", " << objectCenter.y << '\n';
 
-    double angle = std::atan2(mousePos.y - objectCenter.y, mousePos.x - objectCenter.x); 
+    float dx = mousePos.x - objectCenter.x;
+    float dy = mousePos.y - objectCenter.y;
 
-    double calculatedAngle = angle * 180.0 / M_PI;
-    std::cout << sf::degrees(calculatedAngle).asDegrees() << '\n';
+    float angle = std::atan2(dy, dx) * 180.0f / M_PI; 
 
-    turret.setRotation(sf::degrees(calculatedAngle)); // Convert to degrees
+    turret.setRotation(sf::degrees(angle + 180)); // Convert to degrees
 }
 
 
