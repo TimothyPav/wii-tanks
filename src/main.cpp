@@ -37,19 +37,37 @@ int main()
                 window.close();
             }
         }
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Up))
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Up) && sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Left))
         {
+            // std::cout << "Both UP and LEFT are pressed";
+            t.moveTank(Direction::Up, Direction::Left);
+        }
+        else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Up) && sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Right))
+        {
+            t.moveTank(Direction::Up, Direction::Right);
+        }
+        else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Down) && sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Right))
+        {
+            t.moveTank(Direction::Down, Direction::Right);
+        }
+        else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Down) && sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Left))
+        {
+            t.moveTank(Direction::Down, Direction::Left);
+        }
+        else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Up))
+        {
+            // std::cout << "Only UP is pressed";
             t.moveTank(Direction::Up);
         }
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Down))
+        else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Down))
         {
             t.moveTank(Direction::Down);
         }
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Left))
+        else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Left))
         {
             t.moveTank(Direction::Left);
         }
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Right))
+        else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Right))
         {
             t.moveTank(Direction::Right);
         }

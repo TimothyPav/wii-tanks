@@ -25,10 +25,10 @@ private:
     std::vector<Wall> level;
 
     void setDefaults() {
+        body.setOrigin(sf::Vector2f(25, 25));
         body.setSize(sf::Vector2f(50, 50));
         body.setFillColor(sf::Color::Red);
         body.setPosition(sf::Vector2f(100, 100));
-        body.setOrigin(sf::Vector2f(25, 25));
 
         head.setSize(sf::Vector2f(30, 30));
         head.setPosition(sf::Vector2f(body.getPosition().x + 25, body.getPosition().y + 25)); // magic number 25 just works for centering the head
@@ -54,9 +54,9 @@ public:
 
     float getX();
     float getY();
-    void moveTank(Direction dir);
-    bool checkBoundaries(Direction dir);
-    bool checkRotation(Direction dir);
+    void moveTank(Direction dir, Direction dir2 = Direction::NODIRECTION);
+    bool checkBoundaries(Direction dir, Direction dir2 = Direction::NODIRECTION);
+    bool checkRotation(Direction dir, Direction dir2 = Direction::NODIRECTION); 
     void rotateTurretBasedOnMouse(sf::Vector2i mousePosition);
     
     void getTankCoords() const;

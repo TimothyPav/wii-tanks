@@ -38,25 +38,31 @@ float Tank::getY() {
     return body.getPosition().y;
 }
 
-void Tank::moveTank(Direction dir) {
-    checkRotation(dir);
+void Tank::moveTank(Direction dir, Direction dir2) {
     // getTankCoords(); // debug print function
-    if (dir == Direction::Up && checkBoundaries(dir)) {
+    std::cout << "Directions from moveTank: " << static_cast<int>(dir) << ", " << static_cast<int>(dir2) << '\n';
+        
+    if (dir == Direction::Up && dir2 == Direction::Left && checkBoundaries(dir, dir2) && checkRotation(dir, dir2)) {
+        body.move({-speed, -speed});
+        turret.move({-speed, -speed});
+        head.move({-speed, -speed});
+    }
+    else if (dir == Direction::Up && checkBoundaries(dir) && checkRotation(dir)) {
         body.move({0.0f, -speed});
         turret.move({0.0f, -speed});
         head.move({0.0f, -speed});
     }
-    if (dir == Direction::Down && checkBoundaries(dir)) { // change magic numbers
+    else if (dir == Direction::Down && checkBoundaries(dir) && checkRotation(dir)) { 
         body.move({0.0f, speed});
         turret.move({0.0f, speed});
         head.move({0.0f, speed});
     }
-    if (dir == Direction::Left && checkBoundaries(dir)) {
+    else if (dir == Direction::Left && checkBoundaries(dir) && checkRotation(dir)) {
         body.move({-speed, 0.0});
         turret.move({-speed, 0.0});
         head.move({-speed, 0.0});
     }
-    if (dir == Direction::Right && checkBoundaries(dir)) {
+    else if (dir == Direction::Right && checkBoundaries(dir) && checkRotation(dir)) {
         body.move({speed, 0.0});
         turret.move({speed, 0.0});
         head.move({speed, 0.0});
@@ -64,19 +70,19 @@ void Tank::moveTank(Direction dir) {
 }
 
 // return true is tank is allowed to move there
-bool Tank::checkBoundaries(Direction dir) {
+bool Tank::checkBoundaries(Direction dir, Direction dir2) {
     // tankTopLeftCoord is calculated as the POTENTIAL coordinate to check for bounds
-    sf::Vector2f tankTopLeftCoord = sf::Vector2f(getX(), getY());
-    if (dir == Direction::Up){
+    sf::Vector2f tankTopLeftCoord = sf::Vector2f(getX()-25, getY()-25);
+    if (dir == Direction::Up || dir2 == Direction::Up){
         tankTopLeftCoord.y -= speed;
     }
-    else if (dir == Direction::Down){
+    if (dir == Direction::Down || dir2 == Direction::Down){
         tankTopLeftCoord.y += speed;
     }
-    else if (dir == Direction::Left){
+    if (dir == Direction::Left || dir2 == Direction::Left){
         tankTopLeftCoord.x -= speed;
     }
-    else if (dir == Direction::Right){
+    if (dir == Direction::Right || dir2 == Direction::Right){
         tankTopLeftCoord.x += speed;
     }
 
@@ -98,12 +104,23 @@ bool Tank::checkBoundaries(Direction dir) {
     return true;
 }
 
-bool Tank::checkRotation(Direction dir) {
-    if (dir == Direction::Right && (body.getRotation() == sf::degrees(0.0f) || body.getRotation() == sf::degrees(180.0f))) {
-    } else {
-        body.rotate(body.getRotation() + sf::degrees(0.0001)); // fix this :(
-        std::cout << "Body angle: " << body.getRotation().asDegrees() << '\n';
+bool Tank::checkRotation(Direction dir, Direction dir2) {
+    const int angle = 1;
+    // angle %= 360;
+    const int currentRotation = std::floor(body.getRotation().asDegrees());
+    // std::cout << "Current angle: " << currentRotation << "  Directions: " << static_cast<int>(dir) << ", " << static_cast<int>(dir2) << '\n';
+    if (dir == Direction::Up && dir2 == Direction::Left && currentRotation == 135) {
+        std::cout << "Diretion UP and LEFT was true with angle 135\n";
+        return true;
     }
+    else if (((dir == Direction::Left || dir == Direction::Right) && dir2 == Direction::NODIRECTION) && (currentRotation == 0 || currentRotation == 180)) {
+        return true;
+    } 
+    else if (((dir == Direction::Up || dir == Direction::Down) && dir2 == Direction::NODIRECTION) && (currentRotation == 90 || currentRotation == 270)) {
+        return true;
+    }
+
+    body.rotate(sf::degrees(angle));
     return false;
 }
 
