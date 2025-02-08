@@ -28,16 +28,17 @@ private:
         body.setSize(sf::Vector2f(50, 50));
         body.setFillColor(sf::Color::Red);
         body.setPosition(sf::Vector2f(100, 100));
+        body.setOrigin(sf::Vector2f(25, 25));
 
         head.setSize(sf::Vector2f(30, 30));
+        head.setPosition(sf::Vector2f(body.getPosition().x + 25, body.getPosition().y + 25)); // magic number 25 just works for centering the head
         head.setFillColor(sf::Color::Cyan);
-        sf::Vector2f headSize = body.getSize();
-        head.setPosition(sf::Vector2f(100 + headSize.x / 2.0f, 100 + headSize.y / 2.0f));
 
         turret.setSize(sf::Vector2f(50, 10));
         turret.setPosition(sf::Vector2f({body.getPosition().x+body.getSize().x/2.0f, body.getPosition().y+body.getSize().y/2.0f}));
-        sf::Vector2f size = turret.getSize();
         turret.setFillColor(sf::Color::Cyan);
+
+        body.move(sf::Vector2f(25, 25));
 
         tankShapes.push_back(body);
         tankShapes.push_back(turret);
@@ -55,6 +56,7 @@ public:
     float getY();
     void moveTank(Direction dir);
     bool checkBoundaries(Direction dir);
+    bool checkRotation(Direction dir);
     void rotateTurretBasedOnMouse(sf::Vector2i mousePosition);
     
     void getTankCoords() const;

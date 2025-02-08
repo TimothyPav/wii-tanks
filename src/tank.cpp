@@ -39,6 +39,7 @@ float Tank::getY() {
 }
 
 void Tank::moveTank(Direction dir) {
+    checkRotation(dir);
     // getTankCoords(); // debug print function
     if (dir == Direction::Up && checkBoundaries(dir)) {
         body.move({0.0f, -speed});
@@ -97,19 +98,39 @@ bool Tank::checkBoundaries(Direction dir) {
     return true;
 }
 
+bool Tank::checkRotation(Direction dir) {
+    if (dir == Direction::Right && (body.getRotation() == sf::degrees(0.0f) || body.getRotation() == sf::degrees(180.0f))) {
+    } else {
+        body.rotate(body.getRotation() + sf::degrees(0.0001)); // fix this :(
+        std::cout << "Body angle: " << body.getRotation().asDegrees() << '\n';
+    }
+    return false;
+}
+
 void Tank::rotateTurretBasedOnMouse(sf::Vector2i mousePos) {
     sf::Vector2f objectCenter = turret.getPosition();
     sf::Vector2f size = turret.getSize();
     turret.setOrigin(sf::Vector2f({size.x, size.y / 2.0f}));
+
+    sf::Vector2f headObjectCenter = head.getPosition();
+    sf::Vector2f headSize = head.getSize();
+
+    // sf::Vector2f sizeOfHead = head.getSize();
+    head.setOrigin(sf::Vector2f({head.getSize().x / 2.0f, head.getSize().y / 2.0f}));
     // std::cout << "Turrent center: " << objectCenter.x << ", " << objectCenter.y << '\n';
-    std::cout << "Mouse center: " << mousePos.x << ", " << mousePos.y << "  ORIGIN OF SHAPE: " << objectCenter.x << ", " << objectCenter.y << '\n';
+    // std::cout << "Mouse center: " << mousePos.x << ", " << mousePos.y << "  ORIGIN OF SHAPE: " << turret.getOrigin().x << ", " << turret.getOrigin().y << '\n';
 
     float dx = mousePos.x - objectCenter.x;
     float dy = mousePos.y - objectCenter.y;
 
     float angle = std::atan2(dy, dx) * 180.0f / M_PI; 
-
     turret.setRotation(sf::degrees(angle + 180)); // Convert to degrees
+
+    // dx = mousePos.x - head.getPosition().x;
+    // dy = mousePos.y - head.getPosition().y;
+//
+    // angle = std::atan2(dy, dx) * 180.0f / M_PI; 
+    head.setRotation(sf::degrees(angle + 180));
 }
 
 
