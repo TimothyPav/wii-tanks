@@ -1,6 +1,7 @@
 #include <iostream>
 #include <SFML/Graphics.hpp>
 #include <cmath>
+#include <unordered_set>
 
 #include "utils.h"
 #include "wall.h"
@@ -38,34 +39,44 @@ float Tank::getY() {
     return body.getPosition().y;
 }
 
+void Tank::updateMoveValues(float xSpeed, float ySpeed) {
+    body.move({xSpeed, ySpeed});
+    turret.move({xSpeed, ySpeed});
+    head.move({xSpeed, ySpeed});
+}
+
 void Tank::moveTank(Direction dir, Direction dir2) {
     // getTankCoords(); // debug print function
-    std::cout << "Directions from moveTank: " << static_cast<int>(dir) << ", " << static_cast<int>(dir2) << '\n';
+    // std::cout << "Directions from moveTank: " << static_cast<int>(dir) << ", " << static_cast<int>(dir2) << '\n';
         
-    if (dir == Direction::Up && dir2 == Direction::Left && checkBoundaries(dir, dir2) && checkRotation(dir, dir2)) {
-        body.move({-speed, -speed});
-        turret.move({-speed, -speed});
-        head.move({-speed, -speed});
+    // std::cout << std::boolalpha << "checkBoundaries: " << checkBoundaries(dir, dir2) << '\n';
+
+    if (!checkBoundaries(dir, dir2)) return;
+    if (!checkRotation(dir, dir2)) return; // function does something outside its return value
+
+    if (dir == Direction::Up && dir2 == Direction::Left) {
+        updateMoveValues(-speed, -speed);
     }
-    else if (dir == Direction::Up && checkBoundaries(dir) && checkRotation(dir)) {
-        body.move({0.0f, -speed});
-        turret.move({0.0f, -speed});
-        head.move({0.0f, -speed});
+    else if (dir == Direction::Up && dir2 == Direction::Right) {
+        updateMoveValues(-speed, speed);
     }
-    else if (dir == Direction::Down && checkBoundaries(dir) && checkRotation(dir)) { 
-        body.move({0.0f, speed});
-        turret.move({0.0f, speed});
-        head.move({0.0f, speed});
+    else if (dir == Direction::Down && dir2 == Direction::Right) {
+        updateMoveValues(speed, speed);
     }
-    else if (dir == Direction::Left && checkBoundaries(dir) && checkRotation(dir)) {
-        body.move({-speed, 0.0});
-        turret.move({-speed, 0.0});
-        head.move({-speed, 0.0});
+    else if (dir == Direction::Down && dir2 == Direction::Left) {
+        updateMoveValues(speed, -speed);
     }
-    else if (dir == Direction::Right && checkBoundaries(dir) && checkRotation(dir)) {
-        body.move({speed, 0.0});
-        turret.move({speed, 0.0});
-        head.move({speed, 0.0});
+    else if (dir == Direction::Up) {
+        updateMoveValues(0.0, -speed);
+    }
+    else if (dir == Direction::Down) {
+        updateMoveValues(0.0, speed);
+    }
+    else if (dir == Direction::Left) {
+        updateMoveValues(-speed, 0.0);
+    }
+    else if (dir == Direction::Right) {
+        updateMoveValues(speed, 0.0);
     }
 }
 
@@ -105,12 +116,20 @@ bool Tank::checkBoundaries(Direction dir, Direction dir2) {
 }
 
 bool Tank::checkRotation(Direction dir, Direction dir2) {
-    const int angle = 1;
+    constexpr int angle = 1;
     // angle %= 360;
     const int currentRotation = std::floor(body.getRotation().asDegrees());
-    // std::cout << "Current angle: " << currentRotation << "  Directions: " << static_cast<int>(dir) << ", " << static_cast<int>(dir2) << '\n';
-    if (dir == Direction::Up && dir2 == Direction::Left && currentRotation == 135) {
-        std::cout << "Diretion UP and LEFT was true with angle 135\n";
+
+    if ((dir == Direction::Up && dir2 == Direction::Left) || (dir == Direction::Down && dir2 == Direction::Right))
+    {
+        std::cout << "IF statement passed through!\n";
+        const std::unordered_set<int> mySet{134, 136, 314, 316};
+        if (mySet.count(currentRotation) == 1) body.setRotation(sf::degrees(135));
+    }
+
+
+    std::cout << "Current angle: " << currentRotation << "  Directions: " << static_cast<int>(dir) << ", " << static_cast<int>(dir2) << '\n';
+    if ((dir == Direction::Up && dir2 == Direction::Left || dir == Direction::Down && dir2 == Direction::Right) && (currentRotation == 135 || currentRotation == 315)) {
         return true;
     }
     else if (((dir == Direction::Left || dir == Direction::Right) && dir2 == Direction::NODIRECTION) && (currentRotation == 0 || currentRotation == 180)) {
@@ -122,6 +141,18 @@ bool Tank::checkRotation(Direction dir, Direction dir2) {
 
     body.rotate(sf::degrees(angle));
     return false;
+}
+
+int getOptimalRotationHelper(int desiredRotation, int currentRotation) {
+    if (currentRotation - desiredRotation < 0) return 1;
+    else return -1;
+}
+
+int getOptimalRotation(Direction dir, Direction dir2, int currentRotation) {
+    if (dir == Direction::Up || dir == Direction::Down) {
+        // condition ? expression1 : expression2
+        return (abs(currentRotation - 135) <= abs(currentRotation - 315)) ? getOptimalRotationHelper(135, currentRotation) : getOptimalRotationHelper(315, currentRotation);
+    }
 }
 
 void Tank::rotateTurretBasedOnMouse(sf::Vector2i mousePos) {

@@ -54,6 +54,7 @@ public:
 
     float getX();
     float getY();
+    void updateMoveValues(float xSpeed, float ySpeed);
     void moveTank(Direction dir, Direction dir2 = Direction::NODIRECTION);
     bool checkBoundaries(Direction dir, Direction dir2 = Direction::NODIRECTION);
     bool checkRotation(Direction dir, Direction dir2 = Direction::NODIRECTION); 
