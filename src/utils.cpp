@@ -23,3 +23,7 @@ bool doOverlap(sf::Vector2f tankTopLeft, sf::Vector2f tankBottomRight, sf::Recta
         return false;
     return true;
 }
+
+bool doOverlap(sf::RectangleShape s1, sf::RectangleShape s2) {
+    return false;
+}

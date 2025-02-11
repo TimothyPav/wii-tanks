@@ -5,6 +5,7 @@
 
 #include "utils.h"
 #include "wall.h"
+
 /*
  * position
  * shoot function
@@ -59,6 +60,7 @@ public:
     bool checkBoundaries(Direction dir, Direction dir2 = Direction::NODIRECTION);
     bool checkRotation(Direction dir, Direction dir2 = Direction::NODIRECTION); 
     void rotateTurretBasedOnMouse(sf::Vector2i mousePosition);
+    void shoot();
     
     void getTankCoords() const;
     void test() const;

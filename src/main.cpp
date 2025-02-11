@@ -27,6 +27,7 @@ int main()
     // Tank t(square, 5);
     std::vector<Wall> currentLevel = level_1();
     Tank t (square, 5, currentLevel);
+    bool isMousePressed { false };
 
     while (window.isOpen())
     {
@@ -35,6 +36,10 @@ int main()
             if (event->is<sf::Event::Closed>())
             {
                 window.close();
+            }
+            if (event->is<sf::Event::MouseButtonReleased>())
+            {
+                isMousePressed = false;
             }
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Up) && sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Left))
@@ -70,6 +75,14 @@ int main()
         else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Right))
         {
             t.moveTank(Direction::Right);
+        }
+
+        // MOUSE CLICK DETECTED HERE
+        if(sf::Mouse::isButtonPressed(sf::Mouse::Button::Left) && !isMousePressed)
+        {
+            std::cout << "Left click is pressed\n";
+            isMousePressed = true;
+            t.shoot();
         }
 
         window.clear();

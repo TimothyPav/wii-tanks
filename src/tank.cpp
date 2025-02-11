@@ -6,6 +6,7 @@
 #include "utils.h"
 #include "wall.h"
 #include "tank.h"
+#include "bullet.h"
 
 Tank::Tank(const sf::RectangleShape& body, const float& speed, const std::vector<Wall>& level)
     : body(body),
@@ -58,13 +59,13 @@ void Tank::moveTank(Direction dir, Direction dir2) {
         updateMoveValues(-speed, -speed);
     }
     else if (dir == Direction::Up && dir2 == Direction::Right) {
-        updateMoveValues(-speed, speed);
+        updateMoveValues(speed, -speed);
     }
     else if (dir == Direction::Down && dir2 == Direction::Right) {
         updateMoveValues(speed, speed);
     }
     else if (dir == Direction::Down && dir2 == Direction::Left) {
-        updateMoveValues(speed, -speed);
+        updateMoveValues(-speed, speed);
     }
     else if (dir == Direction::Up) {
         updateMoveValues(0.0, -speed);
@@ -115,21 +116,38 @@ bool Tank::checkBoundaries(Direction dir, Direction dir2) {
     return true;
 }
 
+int getOptimalRotationHelper(int desiredRotation, int currentRotation) {
+    if (currentRotation - desiredRotation < 0) return 1;
+    else return -1;
+}
+
+int getOptimalRotation(Direction dir, Direction dir2, int currentRotation) {
+    if ((dir == Direction::Up && dir2 == Direction::Left) || (dir == Direction::Down && dir2 == Direction::Right)) {
+        // condition ? expression1 : expression2
+        return (abs(currentRotation - 135) <= abs(currentRotation - 315)) ? getOptimalRotationHelper(135, currentRotation) : getOptimalRotationHelper(315, currentRotation);
+    }
+    else if ((dir == Direction::Up && dir2 == Direction::Right) || (dir == Direction::Down && dir2 == Direction::Left)) {
+        // condition ? expression1 : expression2
+        return (abs(currentRotation - 45) <= abs(currentRotation - 225)) ? getOptimalRotationHelper(45, currentRotation) : getOptimalRotationHelper(225, currentRotation);
+    }
+    else if (dir2 == Direction::NODIRECTION && (dir == Direction::Left || dir == Direction::Right)) {
+        return (abs(currentRotation - 0) <= abs(currentRotation - 180)) ? getOptimalRotationHelper(0, currentRotation) : getOptimalRotationHelper(180, currentRotation);
+    }
+    else if (dir2 == Direction::NODIRECTION && (dir == Direction::Up || dir == Direction::Down)) {
+        return (abs(currentRotation - 90) <= abs(currentRotation - 270)) ? getOptimalRotationHelper(90, currentRotation) : getOptimalRotationHelper(270, currentRotation);
+    }
+    return 1;
+}
+
 bool Tank::checkRotation(Direction dir, Direction dir2) {
-    constexpr int angle = 1;
     // angle %= 360;
     const int currentRotation = std::floor(body.getRotation().asDegrees());
 
-    if ((dir == Direction::Up && dir2 == Direction::Left) || (dir == Direction::Down && dir2 == Direction::Right))
-    {
-        std::cout << "IF statement passed through!\n";
-        const std::unordered_set<int> mySet{134, 136, 314, 316};
-        if (mySet.count(currentRotation) == 1) body.setRotation(sf::degrees(135));
-    }
-
-
-    std::cout << "Current angle: " << currentRotation << "  Directions: " << static_cast<int>(dir) << ", " << static_cast<int>(dir2) << '\n';
+    // std::cout << "Current angle: " << currentRotation << "  Directions: " << static_cast<int>(dir) << ", " << static_cast<int>(dir2) << '\n';
     if ((dir == Direction::Up && dir2 == Direction::Left || dir == Direction::Down && dir2 == Direction::Right) && (currentRotation == 135 || currentRotation == 315)) {
+        return true;
+    }
+    else if((dir == Direction::Up && dir2 == Direction::Right || dir == Direction::Down && dir2 == Direction::Left) && (currentRotation == 45 || currentRotation == 225)) {
         return true;
     }
     else if (((dir == Direction::Left || dir == Direction::Right) && dir2 == Direction::NODIRECTION) && (currentRotation == 0 || currentRotation == 180)) {
@@ -139,21 +157,11 @@ bool Tank::checkRotation(Direction dir, Direction dir2) {
         return true;
     }
 
-    body.rotate(sf::degrees(angle));
+    int optimalDirection { getOptimalRotation(dir, dir2, currentRotation) };
+    body.rotate(sf::degrees(optimalDirection));
     return false;
 }
 
-int getOptimalRotationHelper(int desiredRotation, int currentRotation) {
-    if (currentRotation - desiredRotation < 0) return 1;
-    else return -1;
-}
-
-int getOptimalRotation(Direction dir, Direction dir2, int currentRotation) {
-    if (dir == Direction::Up || dir == Direction::Down) {
-        // condition ? expression1 : expression2
-        return (abs(currentRotation - 135) <= abs(currentRotation - 315)) ? getOptimalRotationHelper(135, currentRotation) : getOptimalRotationHelper(315, currentRotation);
-    }
-}
 
 void Tank::rotateTurretBasedOnMouse(sf::Vector2i mousePos) {
     sf::Vector2f objectCenter = turret.getPosition();
@@ -181,6 +189,11 @@ void Tank::rotateTurretBasedOnMouse(sf::Vector2i mousePos) {
     head.setRotation(sf::degrees(angle + 180));
 }
 
+void Tank::shoot() {
+    int angle = turret.getRotation().asDegrees();
+    Bullet bullet(turret.getPosition().x, turret.getPosition().y, 3, angle);
+    bullet.move();
+}
 
 void Tank::getTankCoords() const {
     std::cout << "Tank body coords: (" << body.getPosition().x << ", " << body.getPosition().y << '\n';
