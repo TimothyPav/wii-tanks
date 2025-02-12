@@ -11,8 +11,13 @@ Bullet::Bullet(float x, float y, int speed, int angle) : speed(speed), angle(ang
     body.setRotation(sf::degrees(angle));
 }
 
+
+sf::RectangleShape Bullet::getBody() {
+    return body;
+}
+
 void Bullet::move() {
-    int modAngle = angle % 90;
+    const int modAngle = angle % 90;
 
     float xSideLength = std::sin(modAngle) * speed;
     float ySideLength = std::cos(modAngle) * speed;
@@ -22,7 +27,7 @@ void Bullet::move() {
     else if (angle > 90 && angle <= 180) body.move({-xSideLength, ySideLength});
     else if (angle > 180 && angle <= 270) body.move({-xSideLength, -ySideLength});
     else body.move({xSideLength, -ySideLength});
-     
-    std::cout << "x side length: " << xSideLength << '\n';
-    std::cout << "y side length: " << ySideLength << '\n';
+
+    // std::cout << "X side length: " << xSideLength << '\n';
+    // std::cout << "Y side length: " << ySideLength << '\n';
 }

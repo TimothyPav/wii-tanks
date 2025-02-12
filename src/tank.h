@@ -2,9 +2,13 @@
 #define TANK_H
 
 #include <SFML/Graphics.hpp>
+#include <set>
+#include <unordered_set>
 
 #include "utils.h"
 #include "wall.h"
+#include "bullet.h"
+
 
 /*
  * position
@@ -24,6 +28,7 @@ private:
     float x;
     float y;
     std::vector<Wall> level;
+    std::vector<Bullet> bullets{};
 
     void setDefaults() {
         body.setOrigin(sf::Vector2f(25, 25));
@@ -52,6 +57,7 @@ public:
     sf::RectangleShape getTankBody();
     sf::RectangleShape getTurretBody();
     sf::RectangleShape getHeadBody();
+    std::vector<Bullet>& getBulletSet();
 
     float getX();
     float getY();

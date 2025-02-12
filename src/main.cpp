@@ -80,7 +80,7 @@ int main()
         // MOUSE CLICK DETECTED HERE
         if(sf::Mouse::isButtonPressed(sf::Mouse::Button::Left) && !isMousePressed)
         {
-            std::cout << "Left click is pressed\n";
+            // std::cout << "Bullets in set: " << t.getBulletSet().size() << '\n';
             isMousePressed = true;
             t.shoot();
         }
@@ -95,6 +95,12 @@ int main()
         window.draw(t.getTankBody());
         window.draw(t.getHeadBody());
         window.draw(t.getTurretBody());
+
+        // draw bullets
+        for (Bullet& bullet : t.getBulletSet()) {
+            bullet.move();
+            window.draw(bullet.getBody());
+        }
 
         window.display();
     }

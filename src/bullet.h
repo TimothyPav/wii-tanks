@@ -4,7 +4,6 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 
-#include "tank.h"
 
 class Bullet
 {
@@ -17,6 +16,8 @@ private:
 public:
     Bullet(float x, float y, int speed, int angle);
     
+    sf::RectangleShape getBody();
+
     void move(); 
 };
 
