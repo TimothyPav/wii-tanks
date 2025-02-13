@@ -192,10 +192,9 @@ void Tank::rotateTurretBasedOnMouse(sf::Vector2i mousePos) {
 }
 
 void Tank::shoot() {
-    const int angle { (static_cast<int>((turret.getRotation().asDegrees()))) }; // need to rotate this by 180 degrees
-    sf::Angle newAngle{turret.getRotation()};
-    std::cout << "angle of turret: " << angle << '\n';
-    Bullet bullet(turret.getPosition().x, turret.getPosition().y, 3, angle);
+    // const int angle { static_cast<int>(std::floor(shape.getRotation().asDegrees())) }; // need to rotate this by 180 degrees
+    // std::cout << "angle of turret: " << turret.getRotation().asDegrees() << '\n';
+    Bullet bullet(turret.getPosition().x, turret.getPosition().y, 3, turret.getRotation());
     bullets.push_back(bullet);
 }
 

@@ -10,11 +10,11 @@ class Bullet
 private:
     sf::RectangleShape body;
     int speed;
-    int angle;
+    sf::Angle angle;
 
 
 public:
-    Bullet(float x, float y, int speed, int angle);
+    Bullet(float x, float y, int speed, sf::Angle angle);
     
     sf::RectangleShape getBody();
 
