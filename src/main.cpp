@@ -98,7 +98,7 @@ int main()
 
         // draw bullets
         for (Bullet& bullet : t.getBulletSet()) {
-            bullet.move();
+            bullet.move(window, currentLevel);
             window.draw(bullet.getBody());
         }
 

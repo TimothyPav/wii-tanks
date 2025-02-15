@@ -3,6 +3,8 @@
 #include <cmath>
 
 #include "bullet.h"
+#include "wall.h"
+#include "utils.h"
 
 Bullet::Bullet(float x, float y, int speed, sf::Angle angle) : speed(speed), angle(angle) {
     body.setOrigin({5, 5});
@@ -55,7 +57,14 @@ sf::RectangleShape Bullet::getBody() {
     return body;
 }
 
-void Bullet::move() {
+bool Bullet::collision(sf::RenderWindow& window, std::vector<Wall>& level) const {
+    for (auto& wall : level) {
+        if (doOverlap(wall.getWall(), body)) return true;
+    }
+    return false;
+}
+
+void Bullet::move(sf::RenderWindow& window, std::vector<Wall>& level) {
     
     const float convertedAngle = angle.asDegrees();
     const float angleRadians = angle.asRadians();
@@ -69,6 +78,8 @@ void Bullet::move() {
     else if (convertedAngle > 90 && convertedAngle <= 180) body.move({xSideLength, ySideLength});
     else if (convertedAngle > 180 && convertedAngle <= 270) body.move({xSideLength, ySideLength});
     else body.move({xSideLength, ySideLength});
+
+    if (collision(window, level)) std::cout << "collision detected\n";
 
     // std::cout << "X side length: " << xSideLength << '\n';
     // std::cout << "Y side length: " << ySideLength << '\n';

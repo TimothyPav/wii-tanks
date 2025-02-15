@@ -4,6 +4,8 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 
+#include "wall.h"
+
 
 class Bullet
 {
@@ -17,8 +19,9 @@ public:
     Bullet(float x, float y, int speed, sf::Angle angle);
     
     sf::RectangleShape getBody();
+    bool collision(sf::RenderWindow& window, std::vector<Wall>& level) const;
 
-    void move(); 
+    void move(sf::RenderWindow& window, std::vector<Wall>& level); 
 };
 
 #endif
