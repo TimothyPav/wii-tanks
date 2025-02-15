@@ -6,6 +6,14 @@
 
 #include "wall.h"
 
+enum class WallSide
+{
+    NODIRECTION,
+    left,
+    right,
+    top,
+    bottom,
+};
 
 class Bullet
 {
@@ -19,7 +27,8 @@ public:
     Bullet(float x, float y, int speed, sf::Angle angle);
     
     sf::RectangleShape getBody();
-    bool collision(sf::RenderWindow& window, std::vector<Wall>& level) const;
+    bool collision(sf::RenderWindow& window, std::vector<Wall>& level);
+    WallSide whichSide(Wall& wall);
 
     void move(sf::RenderWindow& window, std::vector<Wall>& level); 
 };

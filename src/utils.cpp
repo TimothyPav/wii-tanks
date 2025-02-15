@@ -37,3 +37,12 @@ bool doOverlap(const sf::RectangleShape& s1, const sf::RectangleShape& s2) {
         return false;
     return true;
 }
+
+bool contains(const sf::Vector2f point, const sf::RectangleShape rectangle) {
+    sf::Vector2f topLeft({rectangle.getPosition().x, rectangle.getPosition().y});
+    sf::Vector2f bottomRight({topLeft.x + rectangle.getSize().x, topLeft.y + rectangle.getSize().y});
+
+    if (point.x > topLeft.x && point.x < bottomRight.x && point.y > topLeft.y && point.y < bottomRight.y)
+        return true;
+    return false;
+}
