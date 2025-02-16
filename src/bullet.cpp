@@ -1,6 +1,7 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include <cmath>
+#include <limits>
 
 #include "bullet.h"
 #include "wall.h"
@@ -43,34 +44,65 @@ sf::RectangleShape Bullet::getBody() {
 }
 
 WallSide Bullet::whichSide(Wall& wall) {
-    // 4 vectors left, right, top, bottom of body
-    sf::Vector2f bodyLeft({body.getPosition().x, body.getPosition().y + (body.getSize().y/2)});
-    sf::Vector2f bodyRight({body.getPosition().x + body.getSize().x, body.getPosition().y + (body.getSize().y/2)});
-    sf::Vector2f bodyTop({body.getPosition().x + (body.getSize().x/2), body.getPosition().y});
-    sf::Vector2f bodyBottom({body.getPosition().x + (body.getSize().x/2), body.getPosition().y + body.getSize().y});
-
+    // top-left, top-right, bottom-left, bottom-right
+    std::array<sf::Vector2f, 4> bodies {};
     
-    sf::RectangleShape wallBody = wall.getWall();
-    sf::Vector2f wallLeft({wallBody.getPosition().x, wallBody.getPosition().y + (wallBody.getSize().y/2)});
-    sf::Vector2f wallRight({wallBody.getPosition().x + wallBody.getSize().x, wallBody.getPosition().y + (wallBody.getSize().y/2)});
-    sf::Vector2f wallTop({wallBody.getPosition().x + (wallBody.getSize().x/2), wallBody.getPosition().y});
-    sf::Vector2f wallBottom({wallBody.getPosition().x + (wallBody.getSize().x/2), wallBody.getPosition().y + wallBody.getSize().y});
+    bodies[0] = sf::Vector2f ({body.getPosition().x, body.getPosition().y});
+    bodies[1] = sf::Vector2f ({body.getPosition().x+body.getSize().x, body.getPosition().y});
+    bodies[2] = sf::Vector2f ({body.getPosition().x, body.getPosition().y+body.getSize().y});
+    bodies[3] = sf::Vector2f ({body.getPosition().x+body.getSize().x, body.getPosition().y+body.getSize().y});
 
+    std::array<float, 4> wallCoords {};
 
-    if (contains(bodyLeft, wallBody)) {
-        return WallSide::right;
-    }
-    else if (contains(bodyRight, wallBody)) {
-        return WallSide::left;
-    }
-    else if (contains(bodyTop, wallBody)) {
-        return WallSide::bottom;
-    }
-    else if (contains(bodyBottom, wallBody)) {
-        return WallSide::top;
-    }
-    return WallSide::NODIRECTION;
+    sf::RectangleShape recWall = wall.getWall();
+    wallCoords[0] = float { recWall.getPosition().x };
+    wallCoords[1] = float { recWall.getPosition().x+recWall.getSize().x };
+    wallCoords[2] = float { recWall.getPosition().y };
+    wallCoords[3] = float { recWall.getPosition().y+recWall.getSize().y };
 
+    double positiveInfinity = std::numeric_limits<double>::infinity();
+    double min{ positiveInfinity };
+    double calc { 0 };
+    WallSide dir { WallSide::NODIRECTION };
+
+    for (int i{0}; i < bodies.size(); ++i) {
+        for (int j{0}; j < wallCoords.size(); ++j) {
+            sf::Vector2f bodiesI { bodies[i] };
+            float wallCoord { wallCoords[j] };
+
+            std::cout << "i, j: " << i << ", " << j << '\n';
+            if (j < 2) {
+                std::cout << bodiesI.x - wallCoord << '\n';
+                calc = static_cast<double>(bodiesI.x - wallCoord);
+            } else {
+                std::cout << bodiesI.y - wallCoord << '\n';
+                calc = static_cast<double>(bodiesI.y - wallCoord);
+            }
+            if (calc < min) {
+                min = calc;
+                dir = static_cast<WallSide>(j+1);
+            }
+            // std::cout << bodiesI.y - wallCoord << '\n';
+        }
+    }
+    switch (dir) {
+    case WallSide::right:
+        std::cout << "Right Side\n";
+        break;
+    case WallSide::left:
+        std::cout << "Left Side\n";
+        break;
+    case WallSide::bottom:
+        std::cout << "Bottom Side\n";
+        break;
+    case WallSide::top:
+        std::cout << "Top Side\n";
+        break;
+    default: break;
+    }
+    std::cout << '\n';
+
+    return dir;
 }
 
 bool Bullet::collision(sf::RenderWindow& window, std::vector<Wall>& level) {
@@ -81,14 +113,12 @@ bool Bullet::collision(sf::RenderWindow& window, std::vector<Wall>& level) {
             switch (side) {
             case WallSide::right:
                 angle = sf::degrees(180) - angle;
-                std::cout << "WallSide::right\n";
                 break;
             case WallSide::left:
                 angle = sf::degrees(180) - angle;
-                std::cout << "WallSide::left\n";
                 break;
             case WallSide::bottom:
-                angle = sf::degrees(180) - angle;
+                angle = -angle;
                 break;
             case WallSide::top:
                 angle = -angle;
