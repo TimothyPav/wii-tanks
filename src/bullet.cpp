@@ -6,6 +6,7 @@
 #include "bullet.h"
 #include "wall.h"
 #include "utils.h"
+#include <unistd.h>
 
 
 Bullet::Bullet(float x, float y, int speed, sf::Angle angle) : speed(speed), angle(angle) {
@@ -70,14 +71,18 @@ WallSide Bullet::whichSide(Wall& wall) {
             sf::Vector2f bodiesI { bodies[i] };
             float wallCoord { wallCoords[j] };
 
-            std::cout << "i, j: " << i << ", " << j << '\n';
             if (j < 2) {
-                std::cout << bodiesI.x - wallCoord << '\n';
+                // if (j == 0) std::cout << "Left wall X: ";
+                // if (j == 1) std::cout << "Right wall X: ";
+                // std::cout << bodiesI.x - wallCoord << '\n';
                 calc = static_cast<double>(bodiesI.x - wallCoord);
             } else {
-                std::cout << bodiesI.y - wallCoord << '\n';
+                // if (j == 2) std::cout << "Top wall Y: ";
+                // if (j == 3) std::cout << "Bottom wall Y: ";
+                // std::cout << bodiesI.y - wallCoord << '\n';
                 calc = static_cast<double>(bodiesI.y - wallCoord);
             }
+            calc = std::abs(calc);
             if (calc < min) {
                 min = calc;
                 dir = static_cast<WallSide>(j+1);
@@ -128,11 +133,14 @@ bool Bullet::collision(sf::RenderWindow& window, std::vector<Wall>& level) {
             return true;
         }
     }
+    if (body.getPosition().x <= 5 || body.getPosition().x >= 1850) angle = sf::degrees(180) - angle;
+    if (body.getPosition().y <= 5 || body.getPosition().y >= 1010) angle = -angle;
     return false;
 }
 
 void Bullet::move(sf::RenderWindow& window, std::vector<Wall>& level) {
     
+    collision(window, level);
     const float convertedAngle = angle.asDegrees();
     const float angleRadians = angle.asRadians();
     const float speedF = static_cast<float>(speed);
@@ -146,7 +154,6 @@ void Bullet::move(sf::RenderWindow& window, std::vector<Wall>& level) {
     else if (convertedAngle > 180 && convertedAngle <= 270) body.move({xSideLength, ySideLength});
     else body.move({xSideLength, ySideLength});
 
-    collision(window, level);
 
     // std::cout << "X side length: " << xSideLength << '\n';
     // std::cout << "Y side length: " << ySideLength << '\n';

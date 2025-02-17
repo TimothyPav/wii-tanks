@@ -25,17 +25,10 @@ bool doOverlap(sf::Vector2f tankTopLeft, sf::Vector2f tankBottomRight, sf::Recta
 }
 
 bool doOverlap(const sf::RectangleShape& s1, const sf::RectangleShape& s2) {
-    sf::Vector2f s1_size = s1.getSize();
-    sf::Vector2f s1_posBottomRight =  s1.getPosition() + s1_size;
-
-    sf::Vector2f s2_size = s2.getSize();
-    sf::Vector2f s2_posBottomRight =  s2.getPosition() + s2_size;
-
-    if (s1.getPosition().x > s2_posBottomRight.x || s1_posBottomRight.x < s2_posBottomRight.x)
-        return false;
-    if (s1.getPosition().y > s2_posBottomRight.y || s1_posBottomRight.y < s2_posBottomRight.y)
-        return false;
-    return true;
+    sf::FloatRect rect1 = s1.getGlobalBounds();
+    sf::FloatRect rect2 = s2.getGlobalBounds();
+    
+    return rect1.findIntersection(rect2) != std::nullopt;
 }
 
 bool contains(const sf::Vector2f point, const sf::RectangleShape rectangle) {
