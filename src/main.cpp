@@ -1,4 +1,5 @@
 #include <SFML/Graphics.hpp>
+#include <SFML/Window/Keyboard.hpp>
 #include <iostream>
 #include <SFML/Window/Mouse.hpp>
 
@@ -26,8 +27,10 @@ int main()
 
     // Tank t(square, 5);
     std::vector<Wall> currentLevel = level_1();
+    std::vector<std::unique_ptr<Bomb>> bombs{};
     Tank t (square, 5, currentLevel);
     bool isMousePressed { false };
+    bool isSpacePressed { false };
 
     while (window.isOpen())
     {
@@ -40,6 +43,10 @@ int main()
             if (event->is<sf::Event::MouseButtonReleased>())
             {
                 isMousePressed = false;
+            }
+            if (event->is<sf::Event::KeyReleased>())
+            {
+                isSpacePressed = false;
             }
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Up) && sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Left))
@@ -82,7 +89,15 @@ int main()
         {
             // std::cout << "Bullets in set: " << t.getBulletSet().size() << '\n';
             isMousePressed = true;
-            t.shoot();
+            if (t.getMaxBullets() > t.getBulletSet().size()) {
+                t.shoot();
+            }
+        }
+        if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space) && !isSpacePressed)
+        {
+            isSpacePressed = true;
+            t.plantBomb();
+            
         }
 
         window.clear();
@@ -90,16 +105,25 @@ int main()
 
         for (int i{0}; i < currentLevel.size(); ++i)
             window.draw(currentLevel[i].getWall());
+
+        if (t.getBomb() != nullptr) {
+            window.draw(t.getBomb()->placeBomb());
+        }
         
         t.rotateTurretBasedOnMouse(sf::Mouse::getPosition(window));
         window.draw(t.getTankBody());
         window.draw(t.getHeadBody());
         window.draw(t.getTurretBody());
 
-        // draw bullets
-        for (Bullet& bullet : t.getBulletSet()) {
-            bullet.move(window, currentLevel);
-            window.draw(bullet.getBody());
+        // clean up bullets vector
+        for (auto bullet = t.getBulletSet().begin(); bullet != t.getBulletSet().end(); ) {
+            if (bullet->getBounces() <= 0) {
+                bullet = t.getBulletSet().erase(bullet);
+            } else {
+                bullet->move(window, currentLevel, bombs);
+                window.draw(bullet->getBody());
+                ++bullet;
+            }
         }
 
         window.display();

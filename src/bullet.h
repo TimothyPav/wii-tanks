@@ -3,8 +3,10 @@
 
 #include <SFML/Graphics.hpp>
 #include <iostream>
+#include <memory>
 
 #include "wall.h"
+#include "bomb.h"
 
 enum class WallSide
 {
@@ -21,16 +23,19 @@ private:
     sf::RectangleShape body;
     int speed;
     sf::Angle angle;
+    int bounces = 3;
 
 
 public:
     Bullet(float x, float y, int speed, sf::Angle angle);
     
     sf::RectangleShape getBody();
-    bool collision(sf::RenderWindow& window, std::vector<Wall>& level);
+    bool collision(sf::RenderWindow& window, std::vector<Wall>& level, std::vector<std::unique_ptr<Bomb>> bombs);
     WallSide whichSide(Wall& wall);
 
-    void move(sf::RenderWindow& window, std::vector<Wall>& level); 
+    int getBounces() { return bounces; }
+
+    void move(sf::RenderWindow& window, std::vector<Wall>& level, std::vector<std::unique_ptr<Bomb>> bombs);
 };
 
 #endif

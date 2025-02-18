@@ -2,13 +2,12 @@
 #define TANK_H
 
 #include <SFML/Graphics.hpp>
-#include <set>
-#include <unordered_set>
+#include <memory>
 
 #include "utils.h"
 #include "wall.h"
 #include "bullet.h"
-
+#include "bomb.h"
 
 /*
  * position
@@ -29,6 +28,10 @@ private:
     float y;
     std::vector<Wall> level;
     std::vector<Bullet> bullets{};
+    const int maxBullets{ 5 };
+
+    std::unique_ptr<Bomb> m_bomb{ nullptr };
+    bool isBombPlaced{ false };
 
     void setDefaults() {
         body.setOrigin(sf::Vector2f(25, 25));
@@ -59,6 +62,9 @@ public:
     sf::RectangleShape getHeadBody();
     std::vector<Bullet>& getBulletSet();
 
+    int getMaxBullets() { return maxBullets; }
+    Bomb* getBomb() const { return m_bomb.get(); }
+
     float getX();
     float getY();
     void updateMoveValues(float xSpeed, float ySpeed);
@@ -67,6 +73,7 @@ public:
     bool checkRotation(Direction dir, Direction dir2 = Direction::NODIRECTION); 
     void rotateTurretBasedOnMouse(sf::Vector2i mousePosition);
     void shoot();
+    void plantBomb(); 
     
     void getTankCoords() const;
     void test() const;

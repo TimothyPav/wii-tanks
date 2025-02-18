@@ -202,6 +202,13 @@ void Tank::shoot() {
     bullets.push_back(bullet);
 }
 
+void Tank::plantBomb() {
+    if (!isBombPlaced) {
+        m_bomb = std::make_unique<Bomb>(body.getPosition().x, body.getPosition().y);
+        isBombPlaced = true;
+    }
+}
+
 void Tank::getTankCoords() const {
     std::cout << "Tank body coords: (" << body.getPosition().x << ", " << body.getPosition().y << '\n';
 }

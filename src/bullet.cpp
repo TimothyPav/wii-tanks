@@ -110,7 +110,7 @@ WallSide Bullet::whichSide(Wall& wall) {
     return dir;
 }
 
-bool Bullet::collision(sf::RenderWindow& window, std::vector<Wall>& level) {
+bool Bullet::collision(sf::RenderWindow& window, std::vector<Wall>& level, std::vector<std::unique_ptr<Bomb>> bombs) {
     for (auto& wall : level) {
         if (doOverlap(wall.getWall(), body)) {
             // sf::Angle rotate = sf::degrees(180);
@@ -133,14 +133,26 @@ bool Bullet::collision(sf::RenderWindow& window, std::vector<Wall>& level) {
             return true;
         }
     }
-    if (body.getPosition().x <= 5 || body.getPosition().x >= 1850) angle = sf::degrees(180) - angle;
-    if (body.getPosition().y <= 5 || body.getPosition().y >= 1010) angle = -angle;
+    if (body.getPosition().x <= 5 || body.getPosition().x >= 1850) {
+        angle = sf::degrees(180) - angle;
+        return true;
+    }
+    if (body.getPosition().y <= 5 || body.getPosition().y >= 1010) {
+        angle = -angle;
+        return true;
+    }
+
+    for (std::unique_ptr<Bomb> bomb : bombs) { // figure this out
+        
+    }
+
     return false;
 }
 
-void Bullet::move(sf::RenderWindow& window, std::vector<Wall>& level) {
+void Bullet::move(sf::RenderWindow& window, std::vector<Wall>& level, std::vector<std::unique_ptr<Bomb>> bombs) {
     
-    collision(window, level);
+    if (bounces <= 0) return;
+    if (collision(window, level, bombs)) --bounces;
     const float convertedAngle = angle.asDegrees();
     const float angleRadians = angle.asRadians();
     const float speedF = static_cast<float>(speed);
