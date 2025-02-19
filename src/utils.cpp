@@ -31,6 +31,14 @@ bool doOverlap(const sf::RectangleShape& s1, const sf::RectangleShape& s2) {
     return rect1.findIntersection(rect2) != std::nullopt;
 }
 
+
+bool doOverlap(const sf::CircleShape& s1, const sf::RectangleShape& s2) {
+    sf::FloatRect circle = s1.getGlobalBounds();
+    sf::FloatRect rect = s2.getGlobalBounds();
+    
+    return circle.findIntersection(rect) != std::nullopt;
+}
+
 bool contains(const sf::Vector2f point, const sf::RectangleShape rectangle) {
     sf::Vector2f topLeft({rectangle.getPosition().x, rectangle.getPosition().y});
     sf::Vector2f bottomRight({topLeft.x + rectangle.getSize().x, topLeft.y + rectangle.getSize().y});

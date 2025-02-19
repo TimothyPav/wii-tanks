@@ -27,8 +27,10 @@ int main()
 
     // Tank t(square, 5);
     std::vector<Wall> currentLevel = level_1();
-    std::vector<std::unique_ptr<Bomb>> bombs{};
+    std::vector<std::shared_ptr<Bomb>> bombs{};
+    std::vector<Tank> tanks{};
     Tank t (square, 5, currentLevel);
+    tanks.push_back(t);
     bool isMousePressed { false };
     bool isSpacePressed { false };
 
@@ -97,7 +99,7 @@ int main()
         {
             isSpacePressed = true;
             t.plantBomb();
-            
+            bombs.push_back(t.getBomb());
         }
 
         window.clear();
@@ -120,7 +122,7 @@ int main()
             if (bullet->getBounces() <= 0) {
                 bullet = t.getBulletSet().erase(bullet);
             } else {
-                bullet->move(window, currentLevel, bombs);
+                bullet->move(window, currentLevel, bombs, tanks);
                 window.draw(bullet->getBody());
                 ++bullet;
             }

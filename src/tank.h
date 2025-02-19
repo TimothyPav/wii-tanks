@@ -30,7 +30,7 @@ private:
     std::vector<Bullet> bullets{};
     const int maxBullets{ 5 };
 
-    std::unique_ptr<Bomb> m_bomb{ nullptr };
+    std::shared_ptr<Bomb> m_bomb{ nullptr };
     bool isBombPlaced{ false };
 
     void setDefaults() {
@@ -63,7 +63,7 @@ public:
     std::vector<Bullet>& getBulletSet();
 
     int getMaxBullets() { return maxBullets; }
-    Bomb* getBomb() const { return m_bomb.get(); }
+    std::shared_ptr<Bomb> getBomb() { return m_bomb; }
 
     float getX();
     float getY();

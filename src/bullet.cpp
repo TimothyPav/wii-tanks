@@ -6,6 +6,7 @@
 #include "bullet.h"
 #include "wall.h"
 #include "utils.h"
+#include "tank.h"
 #include <unistd.h>
 
 
@@ -110,7 +111,7 @@ WallSide Bullet::whichSide(Wall& wall) {
     return dir;
 }
 
-bool Bullet::collision(sf::RenderWindow& window, std::vector<Wall>& level, std::vector<std::unique_ptr<Bomb>> bombs) {
+bool Bullet::collision(sf::RenderWindow& window, std::vector<Wall>& level, std::vector<std::shared_ptr<Bomb>>& bombs, std::vector<Tank>& tanks) {
     for (auto& wall : level) {
         if (doOverlap(wall.getWall(), body)) {
             // sf::Angle rotate = sf::degrees(180);
@@ -142,17 +143,19 @@ bool Bullet::collision(sf::RenderWindow& window, std::vector<Wall>& level, std::
         return true;
     }
 
-    for (std::unique_ptr<Bomb> bomb : bombs) { // figure this out
-        
+    for (const auto& bomb : bombs) {
+       if (doOverlap((*bomb).getBombBody(), body)) {
+           bomb->explode(tanks);
+       } 
     }
 
     return false;
 }
 
-void Bullet::move(sf::RenderWindow& window, std::vector<Wall>& level, std::vector<std::unique_ptr<Bomb>> bombs) {
+void Bullet::move(sf::RenderWindow& window, std::vector<Wall>& level, std::vector<std::shared_ptr<Bomb>>& bombs, std::vector<Tank>& tanks) {
     
     if (bounces <= 0) return;
-    if (collision(window, level, bombs)) --bounces;
+    if (collision(window, level, bombs, tanks)) --bounces;
     const float convertedAngle = angle.asDegrees();
     const float angleRadians = angle.asRadians();
     const float speedF = static_cast<float>(speed);

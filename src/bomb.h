@@ -4,6 +4,8 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 
+
+
 class Tank;
 class Bomb
 {
@@ -16,15 +18,17 @@ public:
        m_body.setFillColor(sf::Color::Yellow);
     }
 
-    bool explode(std::vector<Tank> tanks);
+    bool explode(std::vector<Tank>& tanks);
     sf::CircleShape& placeBomb() { return m_body; }
+    const sf::CircleShape& getBombBody() const { return m_body; }
+    void test() const { std::cout << "hello from test in Bomb\n"; }
 
 
 private:
     int m_seconds{};
-    const float m_radius{ 10 };
+    const float m_radius{ 10.0 };
     sf::CircleShape m_body{};
-    const float m_explosionRadius{ 30 };
+    const float m_explosionRadius{ 45.0 };
 
 };
 

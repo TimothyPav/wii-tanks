@@ -30,12 +30,12 @@ public:
     Bullet(float x, float y, int speed, sf::Angle angle);
     
     sf::RectangleShape getBody();
-    bool collision(sf::RenderWindow& window, std::vector<Wall>& level, std::vector<std::unique_ptr<Bomb>> bombs);
+    bool collision(sf::RenderWindow& window, std::vector<Wall>& level, std::vector<std::shared_ptr<Bomb>>& bombs, std::vector<Tank>& tanks);
     WallSide whichSide(Wall& wall);
 
     int getBounces() { return bounces; }
 
-    void move(sf::RenderWindow& window, std::vector<Wall>& level, std::vector<std::unique_ptr<Bomb>> bombs);
+    void move(sf::RenderWindow& window, std::vector<Wall>& level, std::vector<std::shared_ptr<Bomb>>& bombs, std::vector<Tank>& tanks);
 };
 
 #endif
