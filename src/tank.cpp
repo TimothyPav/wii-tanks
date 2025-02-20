@@ -204,7 +204,8 @@ void Tank::shoot() {
 
 void Tank::plantBomb() {
     if (!isBombPlaced) {
-        m_bomb = std::make_unique<Bomb>(body.getPosition().x, body.getPosition().y);
+        std::cout << "Plant bomb is called meaning that you can plant another bomb\n";
+        m_bomb = std::make_shared<Bomb>(body.getPosition().x, body.getPosition().y);
         isBombPlaced = true;
     }
 }

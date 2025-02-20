@@ -111,7 +111,7 @@ WallSide Bullet::whichSide(Wall& wall) {
     return dir;
 }
 
-bool Bullet::collision(sf::RenderWindow& window, std::vector<Wall>& level, std::vector<std::shared_ptr<Bomb>>& bombs, std::vector<Tank>& tanks) {
+bool Bullet::collision(sf::RenderWindow& window, std::vector<Wall>& level, std::vector<std::shared_ptr<Bomb>>& bombs, std::vector<Tank*>& tanks) {
     for (auto& wall : level) {
         if (doOverlap(wall.getWall(), body)) {
             // sf::Angle rotate = sf::degrees(180);
@@ -152,7 +152,7 @@ bool Bullet::collision(sf::RenderWindow& window, std::vector<Wall>& level, std::
     return false;
 }
 
-void Bullet::move(sf::RenderWindow& window, std::vector<Wall>& level, std::vector<std::shared_ptr<Bomb>>& bombs, std::vector<Tank>& tanks) {
+void Bullet::move(sf::RenderWindow& window, std::vector<Wall>& level, std::vector<std::shared_ptr<Bomb>>& bombs, std::vector<Tank*>& tanks) {
     
     if (bounces <= 0) return;
     if (collision(window, level, bombs, tanks)) --bounces;

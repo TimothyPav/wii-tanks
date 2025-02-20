@@ -33,6 +33,8 @@ private:
     std::shared_ptr<Bomb> m_bomb{ nullptr };
     bool isBombPlaced{ false };
 
+    bool isAlive{ true };
+
     void setDefaults() {
         body.setOrigin(sf::Vector2f(25, 25));
         body.setSize(sf::Vector2f(50, 50));
@@ -74,7 +76,11 @@ public:
     void rotateTurretBasedOnMouse(sf::Vector2i mousePosition);
     void shoot();
     void plantBomb(); 
+    void resetBomb() { isBombPlaced = false; }
     
+    void kill() { isAlive = false; }
+    bool getIsAlive() { return isAlive; }
+
     void getTankCoords() const;
     void test() const;
 };

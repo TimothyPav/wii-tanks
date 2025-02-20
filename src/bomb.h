@@ -18,9 +18,9 @@ public:
        m_body.setFillColor(sf::Color::Yellow);
     }
 
-    bool explode(std::vector<Tank>& tanks);
+    bool explode(std::vector<Tank*>& tanks);
     sf::CircleShape& placeBomb() { return m_body; }
-    const sf::CircleShape& getBombBody() const { return m_body; }
+    sf::CircleShape& getBombBody() { return m_body; }
     void test() const { std::cout << "hello from test in Bomb\n"; }
 
 

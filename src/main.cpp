@@ -28,9 +28,9 @@ int main()
     // Tank t(square, 5);
     std::vector<Wall> currentLevel = level_1();
     std::vector<std::shared_ptr<Bomb>> bombs{};
-    std::vector<Tank> tanks{};
+    std::vector<Tank*> tanks{};
     Tank t (square, 5, currentLevel);
-    tanks.push_back(t);
+    tanks.push_back(&t);
     bool isMousePressed { false };
     bool isSpacePressed { false };
 
@@ -91,8 +91,10 @@ int main()
         {
             // std::cout << "Bullets in set: " << t.getBulletSet().size() << '\n';
             isMousePressed = true;
-            if (t.getMaxBullets() > t.getBulletSet().size()) {
-                t.shoot();
+            if (t.getIsAlive()) {
+                if (t.getMaxBullets() > t.getBulletSet().size()) {
+                    t.shoot();
+                }
             }
         }
         if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space) && !isSpacePressed)
@@ -113,9 +115,15 @@ int main()
         }
         
         t.rotateTurretBasedOnMouse(sf::Mouse::getPosition(window));
-        window.draw(t.getTankBody());
-        window.draw(t.getHeadBody());
-        window.draw(t.getTurretBody());
+
+        for (std::size_t i{0}; i < tanks.size(); ++i)
+        {
+            Tank currentTank{ *tanks[i] };
+            if (!currentTank.getIsAlive()) continue; // skip drawing tank that is dead
+            window.draw(currentTank.getTankBody());
+            window.draw(currentTank.getHeadBody());
+            window.draw(currentTank.getTurretBody());
+        }
 
         // clean up bullets vector
         for (auto bullet = t.getBulletSet().begin(); bullet != t.getBulletSet().end(); ) {
@@ -127,6 +135,18 @@ int main()
                 ++bullet;
             }
         }
+
+        //clean up tanks vector
+        for (auto tank = tanks.begin(); tank != tanks.end(); ) {
+            if (!(*tank)->getIsAlive())
+            {
+                delete *tank;
+                tanks.erase(tank);
+            } else {
+                ++tank;
+            }
+        }
+        std::cout << "size of tanks* vector: " << tanks.size() << '\n';
 
         window.display();
     }
