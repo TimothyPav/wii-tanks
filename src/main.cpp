@@ -28,9 +28,13 @@ int main()
     // Tank t(square, 5);
     std::vector<Wall> currentLevel = level_1();
     std::vector<std::shared_ptr<Bomb>> bombs{};
-    std::vector<Tank*> tanks{};
-    Tank t (square, 5, currentLevel);
-    tanks.push_back(&t);
+    std::vector<std::unique_ptr<Tank>> tanks{};
+    // Tank t (square, 5, currentLevel);
+    // tanks.push_back(std::make_unique<Tank>(t));
+    auto t_ptr = std::make_unique<Tank>(square, 5, currentLevel);
+    Tank& t = *t_ptr;  // Store reference
+    tanks.push_back(std::move(t_ptr));  // Move ownership
+
     bool isMousePressed { false };
     bool isSpacePressed { false };
 
@@ -51,6 +55,16 @@ int main()
                 isSpacePressed = false;
             }
         }
+
+        if (!t.getIsAlive())
+        {
+            // LOSE SCREEN
+            //
+            window.clear();
+            window.display();
+            continue;
+        }
+
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Up) && sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Left))
         {
             // std::cout << "Both UP and LEFT are pressed";
@@ -99,6 +113,7 @@ int main()
         }
         if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space) && !isSpacePressed)
         {
+            if (!t.getIsAlive()) continue;
             isSpacePressed = true;
             t.plantBomb();
             bombs.push_back(t.getBomb());
@@ -116,13 +131,12 @@ int main()
         
         t.rotateTurretBasedOnMouse(sf::Mouse::getPosition(window));
 
-        for (std::size_t i{0}; i < tanks.size(); ++i)
+        for (auto& currentTank : tanks) 
         {
-            Tank currentTank{ *tanks[i] };
-            if (!currentTank.getIsAlive()) continue; // skip drawing tank that is dead
-            window.draw(currentTank.getTankBody());
-            window.draw(currentTank.getHeadBody());
-            window.draw(currentTank.getTurretBody());
+            if (!currentTank->getIsAlive()) continue; // skip drawing tank that is dead
+            window.draw(currentTank->getTankBody());
+            window.draw(currentTank->getHeadBody());
+            window.draw(currentTank->getTurretBody());
         }
 
         // clean up bullets vector
@@ -137,16 +151,6 @@ int main()
         }
 
         //clean up tanks vector
-        for (auto tank = tanks.begin(); tank != tanks.end(); ) {
-            if (!(*tank)->getIsAlive())
-            {
-                delete *tank;
-                tanks.erase(tank);
-            } else {
-                ++tank;
-            }
-        }
-        std::cout << "size of tanks* vector: " << tanks.size() << '\n';
 
         window.display();
     }
