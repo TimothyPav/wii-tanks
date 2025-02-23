@@ -14,6 +14,33 @@ Tank::Tank(const sf::RectangleShape& body, const float& speed, const std::vector
     setDefaults();
 }
 
+Tank::Tank(const std::vector<Wall>& level, const float speed, const sf::Vector2f& position)
+    : level(level)
+    , speed(speed)
+{
+    body.setOrigin(sf::Vector2f(25, 25));
+    body.setSize(sf::Vector2f(50, 50));
+    body.setFillColor(sf::Color::Green);
+    body.setPosition(position);
+
+    head.setSize(sf::Vector2f(30, 30));
+    head.setPosition(sf::Vector2f(body.getPosition().x + 25, body.getPosition().y + 25)); // magic number 25 just works for centering the head
+    head.setFillColor(sf::Color::White);
+    sf::Vector2f headSize = head.getSize();
+    head.setOrigin(sf::Vector2f({headSize.x / 2.0f, headSize.y / 2.0f}));
+
+    turret.setSize(sf::Vector2f(50, 10));
+    turret.setPosition(sf::Vector2f({body.getPosition().x+body.getSize().x/2.0f, body.getPosition().y+body.getSize().y/2.0f}));
+    turret.setFillColor(sf::Color::White);
+    sf::Vector2f size = turret.getSize();
+    turret.setOrigin(sf::Vector2f({size.x, size.y / 2.0f}));
+
+    body.move(sf::Vector2f(25, 25));
+    std::cout << "constructor called for enemy tank\n";
+    tankShapes.push_back(body);
+    tankShapes.push_back(turret);
+}
+
 std::vector<sf::RectangleShape> Tank::getBody() {
     return tankShapes;
 }
@@ -115,6 +142,21 @@ bool Tank::checkBoundaries(Direction dir, Direction dir2) {
         }
     }
 
+    tankTopLeftCoord.x += 25;
+    tankTopLeftCoord.y += 25;
+
+    tankBottomRightCoord.x += 25;
+    tankBottomRightCoord.y += 25;
+    // make this work better
+
+    for (const auto& currentTank : tanks)
+    {
+        if (this != currentTank.get() && doOverlap(tankTopLeftCoord, tankBottomRightCoord, currentTank->body, speed))
+        {
+            return false;
+        }
+    }
+
     return true;
 }
 
@@ -208,6 +250,17 @@ void Tank::plantBomb() {
         m_bomb = std::make_shared<Bomb>(body.getPosition().x, body.getPosition().y);
         isBombPlaced = true;
     }
+}
+
+void Tank::rotateTurretAtPlayer(const Tank& player) {
+    // turret.rotate(9
+    float dx{ player.body.getPosition().x - body.getPosition().x };
+    float dy{ player.body.getPosition().y - body.getPosition().y };
+
+    float angle = std::atan2(dy, dx) * 180.0f / M_PI; 
+
+    turret.setRotation(sf::degrees(angle + 180)); // Convert to degrees
+    head.setRotation(sf::degrees(angle + 180));
 }
 
 void Tank::getTankCoords() const {

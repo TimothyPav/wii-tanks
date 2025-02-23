@@ -13,6 +13,8 @@
 
 std::vector<Wall> level_1();
 
+std::vector<std::unique_ptr<Tank>> tanks{};
+
 int main()
 {
     auto window = sf::RenderWindow(sf::VideoMode({1920, 1080}), "wii tanks");
@@ -28,15 +30,20 @@ int main()
     // Tank t(square, 5);
     std::vector<Wall> currentLevel = level_1();
     std::vector<std::shared_ptr<Bomb>> bombs{};
-    std::vector<std::unique_ptr<Tank>> tanks{};
     // Tank t (square, 5, currentLevel);
     // tanks.push_back(std::make_unique<Tank>(t));
     auto t_ptr = std::make_unique<Tank>(square, 5, currentLevel);
     Tank& t = *t_ptr;  // Store reference
     tanks.push_back(std::move(t_ptr));  // Move ownership
+                                        //
+    sf::RectangleShape enemySquare;
+    auto enemy_ptr = std::make_unique<Tank>(currentLevel, 0, sf::Vector2f{1200, 500});
+    Tank& enemy = *enemy_ptr;
+    tanks.push_back(std::move(enemy_ptr));
 
     bool isMousePressed { false };
     bool isSpacePressed { false };
+    std::cout << "size of tanks vector: " << tanks.size() << '\n';
 
     while (window.isOpen())
     {
@@ -133,10 +140,15 @@ int main()
 
         for (auto& currentTank : tanks) 
         {
-            if (!currentTank->getIsAlive()) continue; // skip drawing tank that is dead
+            // if (!currentTank->getIsAlive()) continue; // skip drawing tank that is dead
             window.draw(currentTank->getTankBody());
             window.draw(currentTank->getHeadBody());
             window.draw(currentTank->getTurretBody());
+
+            if (currentTank.get() != &t)
+            {
+                currentTank->rotateTurretAtPlayer(t);
+            }
         }
 
         // clean up bullets vector

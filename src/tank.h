@@ -16,6 +16,8 @@
  * body/square for now
  */
 
+extern std::vector<std::unique_ptr<Tank>> tanks;
+
 class Tank
 {
 private:
@@ -57,6 +59,7 @@ private:
 
 public:
     Tank(const sf::RectangleShape& body, const float& speed, const std::vector<Wall>& level);
+    Tank(const std::vector<Wall>& level, const float speed, const sf::Vector2f& position);
 
     std::vector<sf::RectangleShape> getBody();
     sf::RectangleShape getTankBody();
@@ -80,6 +83,10 @@ public:
     
     void kill() { isAlive = false; }
     bool getIsAlive() { return isAlive; }
+
+    // ai tank motions/member functions
+    void rotateTurretAtPlayer(const Tank& player);
+
 
     void getTankCoords() const;
     void test() const;

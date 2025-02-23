@@ -23,18 +23,6 @@ Bullet::Bullet(float x, float y, int speed, sf::Angle angle) : speed(speed), ang
     // (adjacent side): x = c * cos(θ)
     // (opposite side): y = c * sin(θ)
 
-    // quadrant 1
-    if (convertedAngle > 90 && convertedAngle <= 180) {
-    }
-    // quadrant 2
-    if (convertedAngle >= 0 && convertedAngle <= 90) {
-    } 
-    // quadrant 3
-    if (convertedAngle > 270) {
-    }
-    if (convertedAngle > 180 && convertedAngle <= 270) {
-    }
-
     // std::cout << "Angle inside bullet constructor: " << convertedAngle << "  modAngle: " << modAngle << '\n';
     // std::cout << "X side length: " << xSideLength << '\n';
     // std::cout << "Y side length: " << ySideLength << '\n';
@@ -147,6 +135,12 @@ bool Bullet::collision(sf::RenderWindow& window, std::vector<Wall>& level, std::
        if (doOverlap((*bomb).getBombBody(), body)) {
            bomb->explode(tanks);
        } 
+    }
+
+    for (const auto& tank : tanks) {
+        if (doOverlap(tank->getTankBody(), body)) {
+            tank->kill();
+        }
     }
 
     return false;
