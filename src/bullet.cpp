@@ -140,6 +140,7 @@ bool Bullet::collision(sf::RenderWindow& window, std::vector<Wall>& level, std::
     for (const auto& tank : tanks) {
         if (doOverlap(tank->getTankBody(), body)) {
             tank->kill();
+            bounces = 0;
         }
     }
 

@@ -5,6 +5,7 @@
 #include "utils.h"
 #include "wall.h"
 #include "tank.h"
+#include "Random.h"
 
 Tank::Tank(const sf::RectangleShape& body, const float& speed, const std::vector<Wall>& level)
     : body(body),
@@ -236,11 +237,13 @@ void Tank::rotateTurretBasedOnMouse(sf::Vector2i mousePos) {
 void Tank::shoot() {
     // const int angle { static_cast<int>(std::floor(shape.getRotation().asDegrees())) }; // need to rotate this by 180 degrees
     // std::cout << "angle of turret: " << turret.getRotation().asDegrees() << '\n';
+    if (bullets.size() >= maxBullets) return;
+    std::cout << "shoot called\n";
     const float angleRadians = turret.getRotation().asRadians();
     float xSideLength = -std::cos(angleRadians) * 50;
     float ySideLength = -std::sin(angleRadians) * 50;
 
-    Bullet bullet(turret.getPosition().x+xSideLength, turret.getPosition().y+ySideLength, 3, turret.getRotation());
+    Bullet bullet(turret.getPosition().x+xSideLength, turret.getPosition().y+ySideLength, 4, turret.getRotation());
     bullets.push_back(bullet);
 }
 
@@ -259,8 +262,11 @@ void Tank::rotateTurretAtPlayer(const Tank& player) {
 
     float angle = std::atan2(dy, dx) * 180.0f / M_PI; 
 
-    turret.setRotation(sf::degrees(angle + 180)); // Convert to degrees
     head.setRotation(sf::degrees(angle + 180));
+    turret.setRotation(sf::degrees(angle + 180));
+
+
+    if (Random::get(1, 500) == 1) shoot();
 }
 
 void Tank::getTankCoords() const {

@@ -32,14 +32,17 @@ int main()
     std::vector<std::shared_ptr<Bomb>> bombs{};
     // Tank t (square, 5, currentLevel);
     // tanks.push_back(std::make_unique<Tank>(t));
-    auto t_ptr = std::make_unique<Tank>(square, 5, currentLevel);
+    auto t_ptr = std::make_unique<Tank>(square, 3, currentLevel);
     Tank& t = *t_ptr;  // Store reference
     tanks.push_back(std::move(t_ptr));  // Move ownership
                                         //
     sf::RectangleShape enemySquare;
-    auto enemy_ptr = std::make_unique<Tank>(currentLevel, 0, sf::Vector2f{1200, 500});
+    auto enemy_ptr = std::make_unique<Tank>(currentLevel, 0, sf::Vector2f{1200, 300});
     Tank& enemy = *enemy_ptr;
     tanks.push_back(std::move(enemy_ptr));
+
+    auto enemy_ptr2 = std::make_unique<Tank>(currentLevel, 0, sf::Vector2f{1200, 600});
+    tanks.push_back(std::move(enemy_ptr2));
 
     bool isMousePressed { false };
     bool isSpacePressed { false };
@@ -140,7 +143,7 @@ int main()
 
         for (auto& currentTank : tanks) 
         {
-            // if (!currentTank->getIsAlive()) continue; // skip drawing tank that is dead
+            if (!currentTank->getIsAlive()) continue; // skip drawing tank that is dead
             window.draw(currentTank->getTankBody());
             window.draw(currentTank->getHeadBody());
             window.draw(currentTank->getTurretBody());
@@ -149,18 +152,19 @@ int main()
             {
                 currentTank->rotateTurretAtPlayer(t);
             }
-        }
 
-        // clean up bullets vector
-        for (auto bullet = t.getBulletSet().begin(); bullet != t.getBulletSet().end(); ) {
-            if (bullet->getBounces() <= 0) {
-                bullet = t.getBulletSet().erase(bullet);
-            } else {
-                bullet->move(window, currentLevel, bombs, tanks);
-                window.draw(bullet->getBody());
-                ++bullet;
+            // clean up bullets vector
+            for (auto bullet = currentTank->getBulletSet().begin(); bullet != currentTank->getBulletSet().end(); ) {
+                if (bullet->getBounces() <= 0) {
+                    bullet = currentTank->getBulletSet().erase(bullet);
+                } else {
+                    bullet->move(window, currentLevel, bombs, tanks);
+                    window.draw(bullet->getBody());
+                    ++bullet;
+                }
             }
         }
+
 
         //clean up tanks vector
 
