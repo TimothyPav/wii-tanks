@@ -9,5 +9,6 @@ bool doOverlap(sf::Vector2f tankTopLeft, sf::Vector2f tankBottomRight, sf::Recta
 bool doOverlap(const sf::RectangleShape& s1, const sf::RectangleShape& s2); 
 bool doOverlap(const sf::CircleShape& s1, const sf::RectangleShape& s2); 
 bool contains(const sf::Vector2f point, const sf::RectangleShape rectangle); 
+std::pair<Direction, Direction> getDirection(int choice);
 
 #endif

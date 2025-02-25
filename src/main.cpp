@@ -2,6 +2,7 @@
 #include <SFML/Window/Keyboard.hpp>
 #include <iostream>
 #include <SFML/Window/Mouse.hpp>
+#include <ctime>
 
 #include "tank.h"
 #include "utils.h"
@@ -44,12 +45,20 @@ int main()
     auto enemy_ptr2 = std::make_unique<Tank>(currentLevel, 0, sf::Vector2f{1200, 600});
     tanks.push_back(std::move(enemy_ptr2));
 
+    auto enemy_ptr3 = std::make_unique<Tank>(currentLevel, 2, sf::Vector2f{600, 600});
+    enemy_ptr3->setLevelTwoTank();
+    tanks.push_back(std::move(enemy_ptr3));
+
     bool isMousePressed { false };
     bool isSpacePressed { false };
     std::cout << "size of tanks vector: " << tanks.size() << '\n';
+    double elapsed_seconds{};
+    auto start_time = std::chrono::high_resolution_clock::now();
 
     while (window.isOpen())
     {
+        auto current_time = std::chrono::high_resolution_clock::now();
+        long seconds { std::chrono::duration_cast<std::chrono::seconds>(current_time - start_time).count() };
         while (const std::optional event = window.pollEvent())
         {
             if (event->is<sf::Event::Closed>())
@@ -65,6 +74,7 @@ int main()
                 isSpacePressed = false;
             }
         }
+
 
         if (!t.getIsAlive())
         {
@@ -153,6 +163,12 @@ int main()
                 currentTank->rotateTurretAtPlayer(t);
             }
 
+            if (currentTank->getIsLevelTwoTank())
+            {
+                // move this tank somehow
+                currentTank->moveTank(currentTank->getDir().first, currentTank->getDir().second);
+            }
+
             // clean up bullets vector
             for (auto bullet = currentTank->getBulletSet().begin(); bullet != currentTank->getBulletSet().end(); ) {
                 if (bullet->getBounces() <= 0) {
@@ -164,9 +180,6 @@ int main()
                 }
             }
         }
-
-
-        //clean up tanks vector
 
         window.display();
     }

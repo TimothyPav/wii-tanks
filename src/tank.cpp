@@ -266,7 +266,7 @@ void Tank::rotateTurretAtPlayer(const Tank& player) {
     turret.setRotation(sf::degrees(angle + 180));
 
 
-    if (Random::get(1, 500) == 1) shoot();
+    // if (Random::get(1, 500) == 1) shoot();
 }
 
 void Tank::getTankCoords() const {

@@ -8,6 +8,7 @@
 #include "wall.h"
 #include "bullet.h"
 #include "bomb.h"
+#include "Random.h"
 
 /*
  * position
@@ -31,6 +32,9 @@ private:
     std::vector<Wall> level;
     std::vector<Bullet> bullets{};
     const int maxBullets{ 5 };
+
+    bool isLevelTwoTank{ false };
+    std::pair<Direction, Direction> dir{ getDirection(Random::get(0,7)) };
 
     std::shared_ptr<Bomb> m_bomb{ nullptr };
     bool isBombPlaced{ false };
@@ -83,6 +87,10 @@ public:
     
     void kill() { isAlive = false; }
     bool getIsAlive() { return isAlive; }
+
+    void setLevelTwoTank(){ isLevelTwoTank = true; }
+    bool getIsLevelTwoTank(){ return isLevelTwoTank; }
+    std::pair<Direction, Direction> getDir(){ return dir; }
 
     // ai tank motions/member functions
     void rotateTurretAtPlayer(const Tank& player);

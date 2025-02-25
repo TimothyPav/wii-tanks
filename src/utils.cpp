@@ -1,4 +1,5 @@
 #include <iostream>
+#include <utility>
 
 #include "utils.h"
 
@@ -46,4 +47,21 @@ bool contains(const sf::Vector2f point, const sf::RectangleShape rectangle) {
     if (point.x > topLeft.x && point.x < bottomRight.x && point.y > topLeft.y && point.y < bottomRight.y)
         return true;
     return false;
+}
+
+std::pair<Direction, Direction> getDirection(int choice)
+{
+    switch(choice)
+    {
+    // Uses Class Template Argument Deduction
+    case 0: return std::pair { Direction::Up, Direction::Left };
+    case 1: return std::pair { Direction::Up, Direction::Right };
+    case 2: return std::pair { Direction::Down, Direction::Right };
+    case 3: return std::pair { Direction::Down, Direction::Left };
+    case 4: return std::pair { Direction::Up, Direction::NODIRECTION };
+    case 5: return std::pair { Direction::Down, Direction::NODIRECTION };
+    case 6: return std::pair { Direction::Left, Direction::NODIRECTION };
+    case 7: return std::pair { Direction::Right, Direction::NODIRECTION };
+    default: return std::pair { Direction::Up, Direction::Left };
+    }
 }
