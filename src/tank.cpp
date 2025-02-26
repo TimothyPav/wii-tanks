@@ -234,6 +234,7 @@ void Tank::rotateTurretBasedOnMouse(sf::Vector2i mousePos) {
     head.setRotation(sf::degrees(angle + 180));
 }
 
+
 void Tank::shoot() {
     // const int angle { static_cast<int>(std::floor(shape.getRotation().asDegrees())) }; // need to rotate this by 180 degrees
     // std::cout << "angle of turret: " << turret.getRotation().asDegrees() << '\n';
@@ -243,7 +244,7 @@ void Tank::shoot() {
     float xSideLength = -std::cos(angleRadians) * 50;
     float ySideLength = -std::sin(angleRadians) * 50;
 
-    Bullet bullet(turret.getPosition().x+xSideLength, turret.getPosition().y+ySideLength, 4, turret.getRotation());
+    Bullet bullet(turret.getPosition().x+xSideLength, turret.getPosition().y+ySideLength, 3, turret.getRotation());
     bullets.push_back(bullet);
 }
 
@@ -256,7 +257,6 @@ void Tank::plantBomb() {
 }
 
 void Tank::rotateTurretAtPlayer(const Tank& player) {
-    // turret.rotate(9
     float dx{ player.body.getPosition().x - body.getPosition().x };
     float dy{ player.body.getPosition().y - body.getPosition().y };
 
@@ -267,6 +267,26 @@ void Tank::rotateTurretAtPlayer(const Tank& player) {
 
 
     // if (Random::get(1, 500) == 1) shoot();
+}
+
+void Tank::moveTowardsPlayer(const Tank& player) {
+    float dx{ player.body.getPosition().x - body.getPosition().x };
+    float dy{ player.body.getPosition().y - body.getPosition().y };
+
+    float angle = static_cast<int>(std::atan2(dy, dx) * 180.0f / M_PI); 
+    std::cout << "angle: " << angle << '\n';
+    
+    // fix bug where he starts tweakin
+
+    if (angle > -22.5 && angle < 22.5) this->moveTank(Direction::Right);
+    if (angle >= 22.5 && angle < 67.5) this->moveTank(Direction::Down, Direction::Right);
+    if (angle >= 67.5 && angle < 112.5) this->moveTank(Direction::Down);
+    if (angle >= 112.5 && angle < 157.5) this->moveTank(Direction::Down, Direction::Left);
+    if (angle >= 157.5 || angle < -157.5) this->moveTank(Direction::Left);
+    if (angle >= -157.5 && angle < -112.5) this->moveTank(Direction::Up, Direction::Left);
+    if (angle >= -112.5 && angle < -67.5) this->moveTank(Direction::Up);
+    if (angle >= -67.5 && angle <= -22.5) this->moveTank(Direction::Up, Direction::Right);
+
 }
 
 void Tank::getTankCoords() const {

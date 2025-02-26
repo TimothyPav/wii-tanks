@@ -33,7 +33,7 @@ int main()
     std::vector<std::shared_ptr<Bomb>> bombs{};
     // Tank t (square, 5, currentLevel);
     // tanks.push_back(std::make_unique<Tank>(t));
-    auto t_ptr = std::make_unique<Tank>(square, 3, currentLevel);
+    auto t_ptr = std::make_unique<Tank>(square, 2, currentLevel);
     Tank& t = *t_ptr;  // Store reference
     tanks.push_back(std::move(t_ptr));  // Move ownership
                                         //
@@ -45,9 +45,13 @@ int main()
     auto enemy_ptr2 = std::make_unique<Tank>(currentLevel, 0, sf::Vector2f{1200, 600});
     tanks.push_back(std::move(enemy_ptr2));
 
-    auto enemy_ptr3 = std::make_unique<Tank>(currentLevel, 2, sf::Vector2f{600, 600});
+    auto enemy_ptr3 = std::make_unique<Tank>(currentLevel, 1, sf::Vector2f{600, 600});
     enemy_ptr3->setLevelTwoTank();
     tanks.push_back(std::move(enemy_ptr3));
+
+    auto enemy_ptr4 = std::make_unique<Tank>(currentLevel, 1, sf::Vector2f{700, 400});
+    enemy_ptr4->setLevelThreeTank();
+    tanks.push_back(std::move(enemy_ptr4));
 
     bool isMousePressed { false };
     bool isSpacePressed { false };
@@ -55,6 +59,7 @@ int main()
     double elapsed_seconds{};
     auto start_time = std::chrono::high_resolution_clock::now();
 
+    long tempSeconds{0};
     while (window.isOpen())
     {
         auto current_time = std::chrono::high_resolution_clock::now();
@@ -167,6 +172,21 @@ int main()
             {
                 // move this tank somehow
                 currentTank->moveTank(currentTank->getDir().first, currentTank->getDir().second);
+                if (seconds % 2 == 0 && !currentTank->state1)
+                {
+                    currentTank->changeDir();
+                    currentTank->state1 = true;
+                }
+                if (currentTank->everySecond != seconds)
+                {
+                    currentTank->state1 = false;
+                    currentTank->everySecond = seconds;
+                }
+            }
+            
+            if (currentTank->getIsLevelThreeTank())
+            {
+                currentTank->moveTowardsPlayer(t);
             }
 
             // clean up bullets vector

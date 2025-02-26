@@ -36,6 +36,8 @@ private:
     bool isLevelTwoTank{ false };
     std::pair<Direction, Direction> dir{ getDirection(Random::get(0,7)) };
 
+    bool isLevelThreeTank{ false };
+
     std::shared_ptr<Bomb> m_bomb{ nullptr };
     bool isBombPlaced{ false };
 
@@ -91,13 +93,22 @@ public:
     void setLevelTwoTank(){ isLevelTwoTank = true; }
     bool getIsLevelTwoTank(){ return isLevelTwoTank; }
     std::pair<Direction, Direction> getDir(){ return dir; }
+    void changeDir(){ dir = getDirection(Random::get(0,7)); }
 
+    void setLevelThreeTank(){ isLevelThreeTank = true; }
+    bool getIsLevelThreeTank(){ return isLevelThreeTank; }
     // ai tank motions/member functions
     void rotateTurretAtPlayer(const Tank& player);
+
+    void moveTowardsPlayer(const Tank& player);
 
 
     void getTankCoords() const;
     void test() const;
+
+    // afterthought variables
+    bool state1{ false };
+    int everySecond{};
 };
 
 #endif
