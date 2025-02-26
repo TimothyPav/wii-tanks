@@ -15,6 +15,7 @@
 std::vector<Wall> level_1();
 
 std::vector<std::unique_ptr<Tank>> tanks{};
+std::vector<Bullet> bullets{};
 
 int main()
 {
@@ -186,18 +187,51 @@ int main()
             
             if (currentTank->getIsLevelThreeTank())
             {
-                currentTank->moveTowardsPlayer(t);
+                currentTank->moveTank(currentTank->getDir().first, currentTank->getDir().second);
+                if (seconds % 2 == 0 && !currentTank->state1)
+                {
+                    currentTank->moveTowardsPlayer(t);
+                    currentTank->state1 = true;
+                }
+                if (currentTank->everySecond != seconds)
+                {
+                    currentTank->state1 = false;
+                    currentTank->everySecond = seconds;
+                }
             }
 
             // clean up bullets vector
-            for (auto bullet = currentTank->getBulletSet().begin(); bullet != currentTank->getBulletSet().end(); ) {
-                if (bullet->getBounces() <= 0) {
-                    bullet = currentTank->getBulletSet().erase(bullet);
-                } else {
-                    bullet->move(window, currentLevel, bombs, tanks);
-                    window.draw(bullet->getBody());
-                    ++bullet;
+            // for (auto bullet = currentTank->getBulletSet().begin(); bullet != currentTank->getBulletSet().end(); ) {
+                // if (bullet->getBounces() <= 0) {
+                    // bullet = currentTank->getBulletSet().erase(bullet);
+                // } else {
+                    // bullet->move(window, currentLevel, bombs, tanks);
+                    // window.draw(bullet->getBody());
+                    // ++bullet;
+                // }
+            // }
+
+            if (currentTank->getIsBombPlaced() && currentTank->getBomb()->getTime() > 5)
+            {
+                currentTank->getBomb()->explode(tanks);
+            }
+        }
+        // clean up bullets vector
+        for (auto bullet = bullets.begin(); bullet != bullets.end(); ) {
+            for (auto bulletj = bullets.begin(); bulletj != bullets.end(); ) {
+                if (bullet != bulletj && doOverlap(bullet->getBody(), bulletj->getBody()))
+                {
+                    bullet->setZeroBounces();
+                    bulletj->setZeroBounces();
                 }
+                ++bulletj;
+            }
+            if (bullet->getBounces() <= 0) {
+                bullet = bullets.erase(bullet);
+            } else {
+                bullet->move(window, currentLevel, bombs, tanks);
+                window.draw(bullet->getBody());
+                ++bullet;
             }
         }
 

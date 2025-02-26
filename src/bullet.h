@@ -34,6 +34,7 @@ public:
     WallSide whichSide(Wall& wall);
 
     int getBounces() { return bounces; }
+    void setZeroBounces() { bounces = 0; }
 
     void move(sf::RenderWindow& window, std::vector<Wall>& level, std::vector<std::shared_ptr<Bomb>>& bombs, std::vector<std::unique_ptr<Tank>>& tanks);
 };

@@ -5,9 +5,12 @@
 #include "utils.h"
 
 // m_body will belong to one of the Tank class objects from std::vector<Tank*>&
-bool Bomb::explode(std::vector<std::unique_ptr<Tank>>& tanks) {
+void Bomb::explode(const std::vector<std::unique_ptr<Tank>>& tanks) {
+    if (!isActive) return;
     m_body.setOrigin({m_explosionRadius/1.3f, m_explosionRadius/1.3f});
     m_body.setRadius(m_explosionRadius);
+
+    std::cout << "Time elapsed in BOMB EXPLOSION: " << time.elapsed() << '\n';
 
     for (auto& currentTank : tanks) {
         if (currentTank == nullptr) continue;
@@ -23,7 +26,6 @@ bool Bomb::explode(std::vector<std::unique_ptr<Tank>>& tanks) {
             currentTank->resetBomb();
         }
     }
-
-    return false;
+    isActive = false;
 }
 

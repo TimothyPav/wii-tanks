@@ -18,6 +18,7 @@
  */
 
 extern std::vector<std::unique_ptr<Tank>> tanks;
+extern std::vector<Bullet> bullets;
 
 class Tank
 {
@@ -30,7 +31,6 @@ private:
     float x;
     float y;
     std::vector<Wall> level;
-    std::vector<Bullet> bullets{};
     const int maxBullets{ 5 };
 
     bool isLevelTwoTank{ false };
@@ -85,7 +85,12 @@ public:
     void rotateTurretBasedOnMouse(sf::Vector2i mousePosition);
     void shoot();
     void plantBomb(); 
-    void resetBomb() { isBombPlaced = false; }
+    void resetBomb() { 
+        isBombPlaced = false;
+        m_bomb = nullptr;
+    }
+
+    bool getIsBombPlaced() const { return isBombPlaced; }
     
     void kill() { isAlive = false; }
     bool getIsAlive() { return isAlive; }

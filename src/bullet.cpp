@@ -2,13 +2,14 @@
 #include <iostream>
 #include <cmath>
 #include <limits>
+#include <unistd.h>
 
 #include "bullet.h"
 #include "wall.h"
 #include "utils.h"
 #include "tank.h"
-#include <unistd.h>
 
+extern std::vector<Bullet> bullets;
 
 Bullet::Bullet(float x, float y, int speed, sf::Angle angle) : speed(speed), angle(angle) {
     body.setOrigin({5, 5});
@@ -132,13 +133,14 @@ bool Bullet::collision(sf::RenderWindow& window, std::vector<Wall>& level, std::
     }
 
     for (const auto& bomb : bombs) {
-       if (doOverlap((*bomb).getBombBody(), body)) {
+       if (bomb->getIsActive() && doOverlap((*bomb).getBombBody(), body)) {
            bomb->explode(tanks);
+           bounces = 0;
        } 
     }
 
     for (const auto& tank : tanks) {
-        if (doOverlap(tank->getTankBody(), body)) {
+        if (tank->getIsAlive() && doOverlap(tank->getTankBody(), body)) {
             tank->kill();
             bounces = 0;
         }

@@ -266,26 +266,26 @@ void Tank::rotateTurretAtPlayer(const Tank& player) {
     turret.setRotation(sf::degrees(angle + 180));
 
 
-    // if (Random::get(1, 500) == 1) shoot();
+    if (Random::get(1, 300) == 1) shoot();
 }
 
 void Tank::moveTowardsPlayer(const Tank& player) {
     float dx{ player.body.getPosition().x - body.getPosition().x };
     float dy{ player.body.getPosition().y - body.getPosition().y };
 
-    float angle = static_cast<int>(std::atan2(dy, dx) * 180.0f / M_PI); 
+    float angle = std::atan2(dy, dx) * 180.0f / M_PI; 
     std::cout << "angle: " << angle << '\n';
     
     // fix bug where he starts tweakin
 
-    if (angle > -22.5 && angle < 22.5) this->moveTank(Direction::Right);
-    if (angle >= 22.5 && angle < 67.5) this->moveTank(Direction::Down, Direction::Right);
-    if (angle >= 67.5 && angle < 112.5) this->moveTank(Direction::Down);
-    if (angle >= 112.5 && angle < 157.5) this->moveTank(Direction::Down, Direction::Left);
-    if (angle >= 157.5 || angle < -157.5) this->moveTank(Direction::Left);
-    if (angle >= -157.5 && angle < -112.5) this->moveTank(Direction::Up, Direction::Left);
-    if (angle >= -112.5 && angle < -67.5) this->moveTank(Direction::Up);
-    if (angle >= -67.5 && angle <= -22.5) this->moveTank(Direction::Up, Direction::Right);
+    if (angle > -22.5 && angle < 22.5) dir = std::pair (Direction::Right, Direction::NODIRECTION); // CTAD
+    else if (angle >= 22.5 && angle < 67.5) dir = std::pair (Direction::Down, Direction::Right);
+    else if (angle >= 67.5 && angle < 112.5) dir = std::pair (Direction::Down, Direction::NODIRECTION);
+    else if (angle >= 112.5 && angle < 157.5) dir = std::pair (Direction::Down, Direction::Left);
+    else if (angle >= 157.5 || angle < -157.5) dir = std::pair (Direction::Left, Direction::NODIRECTION);
+    else if (angle >= -157.5 && angle < -112.5) dir = std::pair (Direction::Up, Direction::Left);
+    else if (angle >= -112.5 && angle < -67.5) dir = std::pair (Direction::Up, Direction::NODIRECTION);
+    else if (angle >= -67.5 && angle <= -22.5) dir = std::pair (Direction::Up, Direction::Right);
 
 }
 
