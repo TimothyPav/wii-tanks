@@ -25,6 +25,20 @@ void Bomb::explode(const std::vector<std::unique_ptr<Tank>>& tanks) {
             std::cout << "bomb should reset right now!\n";
             currentTank->resetBomb();
         }
+        if (currentTank->getIsLevelFourTank() && currentTank->m_bombVector.size() > 0)
+        {
+            std::cout << "inside level four tank is being called\n";
+            for (auto bomb = currentTank->m_bombVector.begin(); bomb != currentTank->m_bombVector.end(); )
+            {
+                if (bomb->get() == this) {
+                    bomb = currentTank->m_bombVector.erase(bomb);
+                    break;
+                }
+                else {
+                    ++bomb;
+                }
+            }
+        }
     }
     isActive = false;
 }

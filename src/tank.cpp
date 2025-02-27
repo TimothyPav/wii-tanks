@@ -222,7 +222,7 @@ void Tank::rotateTurretBasedOnMouse(sf::Vector2i mousePos) {
     // std::cout << "Mouse center: " << mousePos.x << ", " << mousePos.y << "  ORIGIN OF SHAPE: " << turret.getOrigin().x << ", " << turret.getOrigin().y << '\n';
 
     float dx = mousePos.x - objectCenter.x;
-    float dy = mousePos.y - objectCenter.y;
+    float dy= mousePos.y - objectCenter.y;
 
     float angle = std::atan2(dy, dx) * 180.0f / M_PI; 
     turret.setRotation(sf::degrees(angle + 180)); // Convert to degrees
@@ -256,6 +256,14 @@ void Tank::plantBomb() {
     }
 }
 
+void Tank::plantBombLevelFour() {
+    if (m_bombVector.size() <= 3)
+    {
+        std::cout << "plantBombLevelFour is being called!\n";
+        m_bombVector.push_back(std::make_shared<Bomb>(body.getPosition().x, body.getPosition().y));
+    }
+}
+
 void Tank::rotateTurretAtPlayer(const Tank& player) {
     float dx{ player.body.getPosition().x - body.getPosition().x };
     float dy{ player.body.getPosition().y - body.getPosition().y };
@@ -266,7 +274,7 @@ void Tank::rotateTurretAtPlayer(const Tank& player) {
     turret.setRotation(sf::degrees(angle + 180));
 
 
-    if (Random::get(1, 300) == 1) shoot();
+    // if (Random::get(1, 300) == 1) shoot();
 }
 
 void Tank::moveTowardsPlayer(const Tank& player) {

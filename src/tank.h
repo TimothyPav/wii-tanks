@@ -3,6 +3,8 @@
 
 #include <SFML/Graphics.hpp>
 #include <memory>
+#include <array>
+#include <vector>
 
 #include "utils.h"
 #include "wall.h"
@@ -31,12 +33,14 @@ private:
     float x;
     float y;
     std::vector<Wall> level;
-    const int maxBullets{ 5 };
+    int maxBullets{ 5 };
 
-    bool isLevelTwoTank{ false };
+    bool isLevelTwoTank{ false }; // moves randomly every 1 second
+    bool isLevelThreeTank{ false }; // moves towards player 1 direction per second
+    bool isLevelFourTank{ false }; // 1 bullet and can place 3 bombs moves randomly and has speed 2
+
+
     std::pair<Direction, Direction> dir{ getDirection(Random::get(0,7)) };
-
-    bool isLevelThreeTank{ false };
 
     std::shared_ptr<Bomb> m_bomb{ nullptr };
     bool isBombPlaced{ false };
@@ -95,18 +99,28 @@ public:
     void kill() { isAlive = false; }
     bool getIsAlive() { return isAlive; }
 
-    void setLevelTwoTank(){ isLevelTwoTank = true; }
-    bool getIsLevelTwoTank(){ return isLevelTwoTank; }
     std::pair<Direction, Direction> getDir(){ return dir; }
     void changeDir(){ dir = getDirection(Random::get(0,7)); }
 
+    void setLevelTwoTank(){ isLevelTwoTank = true; }
+    bool getIsLevelTwoTank(){ return isLevelTwoTank; }
+
     void setLevelThreeTank(){ isLevelThreeTank = true; }
     bool getIsLevelThreeTank(){ return isLevelThreeTank; }
+
+    void setLevelFourTank() {
+        isLevelFourTank = true;
+        maxBullets = 1;
+    }
+    bool getIsLevelFourTank(){ return isLevelFourTank; }
+    std::vector<std::shared_ptr<Bomb>> m_bombVector{};
+
     // ai tank motions/member functions
     void rotateTurretAtPlayer(const Tank& player);
 
     void moveTowardsPlayer(const Tank& player);
 
+    void plantBombLevelFour(); 
 
     void getTankCoords() const;
     void test() const;

@@ -38,21 +38,23 @@ int main()
     Tank& t = *t_ptr;  // Store reference
     tanks.push_back(std::move(t_ptr));  // Move ownership
                                         //
-    sf::RectangleShape enemySquare;
-    auto enemy_ptr = std::make_unique<Tank>(currentLevel, 0, sf::Vector2f{1200, 300});
-    Tank& enemy = *enemy_ptr;
-    tanks.push_back(std::move(enemy_ptr));
+    // auto enemy_ptr = std::make_unique<Tank>(currentLevel, 0, sf::Vector2f{1200, 300});
+    // tanks.push_back(std::move(enemy_ptr));
 
-    auto enemy_ptr2 = std::make_unique<Tank>(currentLevel, 0, sf::Vector2f{1200, 600});
-    tanks.push_back(std::move(enemy_ptr2));
+    // auto enemy_ptr2 = std::make_unique<Tank>(currentLevel, 0, sf::Vector2f{1200, 600});
+    // tanks.push_back(std::move(enemy_ptr2));
 
     auto enemy_ptr3 = std::make_unique<Tank>(currentLevel, 1, sf::Vector2f{600, 600});
     enemy_ptr3->setLevelTwoTank();
     tanks.push_back(std::move(enemy_ptr3));
 
-    auto enemy_ptr4 = std::make_unique<Tank>(currentLevel, 1, sf::Vector2f{700, 400});
-    enemy_ptr4->setLevelThreeTank();
-    tanks.push_back(std::move(enemy_ptr4));
+    // auto enemy_ptr4 = std::make_unique<Tank>(currentLevel, 1, sf::Vector2f{700, 400});
+    // enemy_ptr4->setLevelThreeTank();
+    // tanks.push_back(std::move(enemy_ptr4));
+
+    auto enmey_ptr5 = std::make_unique<Tank>(currentLevel, 2, sf::Vector2f{300, 800});
+    enmey_ptr5->setLevelFourTank();
+    tanks.push_back(std::move(enmey_ptr5));
 
     bool isMousePressed { false };
     bool isSpacePressed { false };
@@ -169,7 +171,7 @@ int main()
                 currentTank->rotateTurretAtPlayer(t);
             }
 
-            if (currentTank->getIsLevelTwoTank())
+            if (currentTank->getIsLevelTwoTank()) // move randomly tank
             {
                 // move this tank somehow
                 currentTank->moveTank(currentTank->getDir().first, currentTank->getDir().second);
@@ -185,7 +187,7 @@ int main()
                 }
             }
             
-            if (currentTank->getIsLevelThreeTank())
+            if (currentTank->getIsLevelThreeTank()) // follow player tank
             {
                 currentTank->moveTank(currentTank->getDir().first, currentTank->getDir().second);
                 if (seconds % 2 == 0 && !currentTank->state1)
@@ -200,16 +202,28 @@ int main()
                 }
             }
 
-            // clean up bullets vector
-            // for (auto bullet = currentTank->getBulletSet().begin(); bullet != currentTank->getBulletSet().end(); ) {
-                // if (bullet->getBounces() <= 0) {
-                    // bullet = currentTank->getBulletSet().erase(bullet);
-                // } else {
-                    // bullet->move(window, currentLevel, bombs, tanks);
-                    // window.draw(bullet->getBody());
-                    // ++bullet;
-                // }
-            // }
+            if(currentTank->getIsLevelFourTank()) // plant bombs tank
+            {
+                currentTank->moveTank(currentTank->getDir().first, currentTank->getDir().second);
+                currentTank->plantBombLevelFour();
+                if (seconds % 2 == 0 && !currentTank->state1)
+                {
+                    currentTank->moveTowardsPlayer(t);
+                    currentTank->state1 = true;
+                }
+                if (currentTank->everySecond != seconds)
+                {
+                    currentTank->state1 = false;
+                    currentTank->everySecond = seconds;
+                }
+
+                for (auto bomb = currentTank->m_bombVector.begin(); bomb != currentTank->m_bombVector.end(); )
+                {
+                    window.draw(bomb->get()->placeBomb());
+                    ++bomb;
+                }
+
+            }
 
             if (currentTank->getIsBombPlaced() && currentTank->getBomb()->getTime() > 5)
             {
