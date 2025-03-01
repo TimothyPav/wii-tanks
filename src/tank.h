@@ -75,7 +75,6 @@ public:
     sf::RectangleShape getTankBody();
     sf::RectangleShape getTurretBody();
     sf::RectangleShape getHeadBody();
-    std::vector<Bullet>& getBulletSet();
 
     int getMaxBullets() { return maxBullets; }
     std::shared_ptr<Bomb> getBomb() { return m_bomb; }
@@ -94,6 +93,8 @@ public:
         m_bomb = nullptr;
     }
 
+    int currentBullets{ 0 };
+
     bool getIsBombPlaced() const { return isBombPlaced; }
     
     void kill() { isAlive = false; }
@@ -110,7 +111,7 @@ public:
 
     void setLevelFourTank() {
         isLevelFourTank = true;
-        maxBullets = 1;
+        maxBullets = 0;
     }
     bool getIsLevelFourTank(){ return isLevelFourTank; }
     std::vector<std::shared_ptr<Bomb>> m_bombVector{};

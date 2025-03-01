@@ -66,10 +66,6 @@ float Tank::getY() {
     return body.getPosition().y;
 }
 
-std::vector<Bullet>& Tank::getBulletSet() {
-    return bullets;
-}
-
 void Tank::updateMoveValues(float xSpeed, float ySpeed) {
     body.move({xSpeed, ySpeed});
     turret.move({xSpeed, ySpeed});
@@ -238,28 +234,27 @@ void Tank::rotateTurretBasedOnMouse(sf::Vector2i mousePos) {
 void Tank::shoot() {
     // const int angle { static_cast<int>(std::floor(shape.getRotation().asDegrees())) }; // need to rotate this by 180 degrees
     // std::cout << "angle of turret: " << turret.getRotation().asDegrees() << '\n';
-    if (bullets.size() >= maxBullets) return;
-    std::cout << "shoot called\n";
+    if (currentBullets >= maxBullets) return;
     const float angleRadians = turret.getRotation().asRadians();
     float xSideLength = -std::cos(angleRadians) * 50;
     float ySideLength = -std::sin(angleRadians) * 50;
 
-    Bullet bullet(turret.getPosition().x+xSideLength, turret.getPosition().y+ySideLength, 3, turret.getRotation());
+    Bullet bullet(turret.getPosition().x+xSideLength, turret.getPosition().y+ySideLength, 3, turret.getRotation(), this);
     bullets.push_back(bullet);
+    ++currentBullets;
 }
 
 void Tank::plantBomb() {
     if (!isBombPlaced) {
-        std::cout << "Plant bomb is called meaning that you can plant another bomb\n";
         m_bomb = std::make_shared<Bomb>(body.getPosition().x, body.getPosition().y);
         isBombPlaced = true;
     }
 }
 
 void Tank::plantBombLevelFour() {
-    if (m_bombVector.size() <= 3)
+    int randNum = Random::get(1, 500);
+    if (m_bombVector.size() < 4 && randNum == 1)
     {
-        std::cout << "plantBombLevelFour is being called!\n";
         m_bombVector.push_back(std::make_shared<Bomb>(body.getPosition().x, body.getPosition().y));
     }
 }
@@ -274,7 +269,7 @@ void Tank::rotateTurretAtPlayer(const Tank& player) {
     turret.setRotation(sf::degrees(angle + 180));
 
 
-    // if (Random::get(1, 300) == 1) shoot();
+    if (Random::get(1,1) == 1) shoot();
 }
 
 void Tank::moveTowardsPlayer(const Tank& player) {
@@ -282,7 +277,6 @@ void Tank::moveTowardsPlayer(const Tank& player) {
     float dy{ player.body.getPosition().y - body.getPosition().y };
 
     float angle = std::atan2(dy, dx) * 180.0f / M_PI; 
-    std::cout << "angle: " << angle << '\n';
     
     // fix bug where he starts tweakin
 

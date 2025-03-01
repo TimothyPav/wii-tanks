@@ -34,7 +34,7 @@ int main()
     std::vector<std::shared_ptr<Bomb>> bombs{};
     // Tank t (square, 5, currentLevel);
     // tanks.push_back(std::make_unique<Tank>(t));
-    auto t_ptr = std::make_unique<Tank>(square, 2, currentLevel);
+    auto t_ptr = std::make_unique<Tank>(square, 2.5, currentLevel);
     Tank& t = *t_ptr;  // Store reference
     tanks.push_back(std::move(t_ptr));  // Move ownership
                                         //
@@ -134,7 +134,7 @@ int main()
             // std::cout << "Bullets in set: " << t.getBulletSet().size() << '\n';
             isMousePressed = true;
             if (t.getIsAlive()) {
-                if (t.getMaxBullets() > t.getBulletSet().size()) {
+                if (t.getMaxBullets() > t.currentBullets) {
                     t.shoot();
                 }
             }
@@ -159,9 +159,9 @@ int main()
         
         t.rotateTurretBasedOnMouse(sf::Mouse::getPosition(window));
 
+        // fix tank shooting himself somehow!
         for (auto& currentTank : tanks) 
         {
-            if (!currentTank->getIsAlive()) continue; // skip drawing tank that is dead
             window.draw(currentTank->getTankBody());
             window.draw(currentTank->getHeadBody());
             window.draw(currentTank->getTurretBody());
@@ -206,6 +206,12 @@ int main()
             {
                 currentTank->moveTank(currentTank->getDir().first, currentTank->getDir().second);
                 currentTank->plantBombLevelFour();
+
+                for (const auto& bomb_ptr : currentTank->m_bombVector)
+                {
+                    bombs.push_back(bomb_ptr);
+                }
+
                 if (seconds % 2 == 0 && !currentTank->state1)
                 {
                     currentTank->moveTowardsPlayer(t);
@@ -232,21 +238,31 @@ int main()
         }
         // clean up bullets vector
         for (auto bullet = bullets.begin(); bullet != bullets.end(); ) {
-            for (auto bulletj = bullets.begin(); bulletj != bullets.end(); ) {
-                if (bullet != bulletj && doOverlap(bullet->getBody(), bulletj->getBody()))
-                {
-                    bullet->setZeroBounces();
-                    bulletj->setZeroBounces();
-                }
-                ++bulletj;
-            }
+            // for (auto bulletj = bullets.begin(); bulletj != bullets.end(); ) {
+                // if (bullet != bulletj && doOverlap(bullet->getBody(), bulletj->getBody()))
+                // {
+                    // bullet->setZeroBounces();
+                    // bulletj->setZeroBounces();
+                // }
+                // ++bulletj;
+            // }
             if (bullet->getBounces() <= 0) {
+                --(bullet->decrementOwner()->currentBullets);
                 bullet = bullets.erase(bullet);
             } else {
                 bullet->move(window, currentLevel, bombs, tanks);
                 window.draw(bullet->getBody());
                 ++bullet;
             }
+        }
+
+        // clean tanks vector
+        for (auto tank = tanks.begin(); tank != tanks.end(); )
+        {
+            if (!tank->get()->getIsAlive())
+                tanks.erase(tank);
+            else 
+                ++tank;
         }
 
         window.display();

@@ -27,11 +27,11 @@ void Bomb::explode(const std::vector<std::unique_ptr<Tank>>& tanks) {
         }
         if (currentTank->getIsLevelFourTank() && currentTank->m_bombVector.size() > 0)
         {
-            std::cout << "inside level four tank is being called\n";
             for (auto bomb = currentTank->m_bombVector.begin(); bomb != currentTank->m_bombVector.end(); )
             {
                 if (bomb->get() == this) {
                     bomb = currentTank->m_bombVector.erase(bomb);
+                    std::cout << "1 bomb was just deleted from level 4 tank\n";
                     break;
                 }
                 else {

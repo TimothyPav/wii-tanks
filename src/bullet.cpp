@@ -11,7 +11,7 @@
 
 extern std::vector<Bullet> bullets;
 
-Bullet::Bullet(float x, float y, int speed, sf::Angle angle) : speed(speed), angle(angle) {
+Bullet::Bullet(float x, float y, int speed, sf::Angle angle, Tank* owner) : speed(speed), angle(angle), owner(owner) {
     body.setOrigin({5, 5});
     body.setRotation(angle);
     body.setPosition({x, y});
@@ -101,7 +101,8 @@ WallSide Bullet::whichSide(Wall& wall) {
 }
 
 // handle level4vector bomb collisions
-bool Bullet::collision(sf::RenderWindow& window, std::vector<Wall>& level, std::vector<std::shared_ptr<Bomb>>& bombs, std::vector<std::unique_ptr<Tank>>& tanks) {
+bool Bullet::collision(sf::RenderWindow& window, std::vector<Wall>& level, std::vector<std::shared_ptr<Bomb>>& bombs, 
+                       std::vector<std::unique_ptr<Tank>>& tanks) {
     for (auto& wall : level) {
         if (doOverlap(wall.getWall(), body)) {
             // sf::Angle rotate = sf::degrees(180);
@@ -140,6 +141,7 @@ bool Bullet::collision(sf::RenderWindow& window, std::vector<Wall>& level, std::
        } 
     }
 
+
     for (const auto& tank : tanks) {
         if (tank->getIsAlive() && doOverlap(tank->getTankBody(), body)) {
             tank->kill();
@@ -150,9 +152,12 @@ bool Bullet::collision(sf::RenderWindow& window, std::vector<Wall>& level, std::
     return false;
 }
 
-void Bullet::move(sf::RenderWindow& window, std::vector<Wall>& level, std::vector<std::shared_ptr<Bomb>>& bombs, std::vector<std::unique_ptr<Tank>>& tanks) {
+void Bullet::move(sf::RenderWindow& window, std::vector<Wall>& level, std::vector<std::shared_ptr<Bomb>>& bombs, 
+                  std::vector<std::unique_ptr<Tank>>& tanks) {
     
-    if (bounces <= 0) return;
+    if (bounces <= 0) {
+        return;
+    }
     if (collision(window, level, bombs, tanks)) --bounces;
     const float convertedAngle = angle.asDegrees();
     const float angleRadians = angle.asRadians();
