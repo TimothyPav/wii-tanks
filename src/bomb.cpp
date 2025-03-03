@@ -10,19 +10,18 @@ void Bomb::explode(const std::vector<std::unique_ptr<Tank>>& tanks) {
     m_body.setOrigin({m_explosionRadius/1.3f, m_explosionRadius/1.3f});
     m_body.setRadius(m_explosionRadius);
 
-    std::cout << "Time elapsed in BOMB EXPLOSION: " << time.elapsed() << '\n';
 
     for (auto& currentTank : tanks) {
         if (currentTank == nullptr) continue;
         if (doOverlap(m_body, currentTank->getTankBody()))
         {
-            std::cout << "tank should be killed right now!\n";
+            // std::cout << "tank should be killed right now!\n";
             currentTank->kill();
         }
 
         if (&currentTank->getBomb()->m_body == &m_body)
         {
-            std::cout << "bomb should reset right now!\n";
+            // std::cout << "bomb should reset right now!\n";
             currentTank->resetBomb();
         }
         if (currentTank->getIsLevelFourTank() && currentTank->m_bombVector.size() > 0)
@@ -31,7 +30,7 @@ void Bomb::explode(const std::vector<std::unique_ptr<Tank>>& tanks) {
             {
                 if (bomb->get() == this) {
                     bomb = currentTank->m_bombVector.erase(bomb);
-                    std::cout << "1 bomb was just deleted from level 4 tank\n";
+                    // std::cout << "1 bomb was just deleted from level 4 tank\n";
                     break;
                 }
                 else {
@@ -41,5 +40,6 @@ void Bomb::explode(const std::vector<std::unique_ptr<Tank>>& tanks) {
         }
     }
     isActive = false;
+    // this->~Bomb();
 }
 

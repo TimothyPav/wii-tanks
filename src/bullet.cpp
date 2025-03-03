@@ -80,22 +80,6 @@ WallSide Bullet::whichSide(Wall& wall) {
             // std::cout << bodiesI.y - wallCoord << '\n';
         }
     }
-    switch (dir) {
-    case WallSide::right:
-        std::cout << "Right Side\n";
-        break;
-    case WallSide::left:
-        std::cout << "Left Side\n";
-        break;
-    case WallSide::bottom:
-        std::cout << "Bottom Side\n";
-        break;
-    case WallSide::top:
-        std::cout << "Top Side\n";
-        break;
-    default: break;
-    }
-    std::cout << '\n';
 
     return dir;
 }

@@ -16,6 +16,7 @@ std::vector<Wall> level_1();
 
 std::vector<std::unique_ptr<Tank>> tanks{};
 std::vector<Bullet> bullets{};
+std::vector<std::shared_ptr<Bomb>> bombs{};
 
 int main()
 {
@@ -31,7 +32,6 @@ int main()
 
     // Tank t(square, 5);
     std::vector<Wall> currentLevel = level_1();
-    std::vector<std::shared_ptr<Bomb>> bombs{};
     // Tank t (square, 5, currentLevel);
     // tanks.push_back(std::make_unique<Tank>(t));
     auto t_ptr = std::make_unique<Tank>(square, 2.5, currentLevel);
@@ -159,7 +159,6 @@ int main()
         
         t.rotateTurretBasedOnMouse(sf::Mouse::getPosition(window));
 
-        // fix tank shooting himself somehow!
         for (auto& currentTank : tanks) 
         {
             window.draw(currentTank->getTankBody());
@@ -207,10 +206,11 @@ int main()
                 currentTank->moveTank(currentTank->getDir().first, currentTank->getDir().second);
                 currentTank->plantBombLevelFour();
 
-                for (const auto& bomb_ptr : currentTank->m_bombVector)
-                {
-                    bombs.push_back(bomb_ptr);
-                }
+                // for (const auto& bomb_ptr : currentTank->m_bombVector)
+                // {
+                    // std::cout << "how many times is this push_back being called?\n";
+                    // bombs.push_back(bomb_ptr);
+                // }
 
                 if (seconds % 2 == 0 && !currentTank->state1)
                 {
@@ -222,13 +222,6 @@ int main()
                     currentTank->state1 = false;
                     currentTank->everySecond = seconds;
                 }
-
-                for (auto bomb = currentTank->m_bombVector.begin(); bomb != currentTank->m_bombVector.end(); )
-                {
-                    window.draw(bomb->get()->placeBomb());
-                    ++bomb;
-                }
-
             }
 
             if (currentTank->getIsBombPlaced() && currentTank->getBomb()->getTime() > 5)
@@ -263,6 +256,21 @@ int main()
                 tanks.erase(tank);
             else 
                 ++tank;
+        }
+
+        // clean up and handle bombs vector
+        for (auto bomb = bombs.begin(); bomb != bombs.end(); )
+        {
+            if (!bomb->get()->getIsActive())
+            {
+                bombs.erase(bomb);
+            }
+            else 
+            {
+                if (bomb->get()->getTime() > 5) bomb->get()->explode(tanks);
+                window.draw(bomb->get()->getBombBody());
+                ++bomb;
+            }
         }
 
         window.display();

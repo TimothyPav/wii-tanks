@@ -21,6 +21,7 @@
 
 extern std::vector<std::unique_ptr<Tank>> tanks;
 extern std::vector<Bullet> bullets;
+extern std::vector<std::shared_ptr<Bomb>> bombs;
 
 class Tank
 {
@@ -33,7 +34,7 @@ private:
     float x;
     float y;
     std::vector<Wall> level;
-    int maxBullets{ 5 };
+    int maxBullets{ 40 };
 
     bool isLevelTwoTank{ false }; // moves randomly every 1 second
     bool isLevelThreeTank{ false }; // moves towards player 1 direction per second
@@ -70,6 +71,8 @@ private:
 public:
     Tank(const sf::RectangleShape& body, const float& speed, const std::vector<Wall>& level);
     Tank(const std::vector<Wall>& level, const float speed, const sf::Vector2f& position);
+
+    ~Tank();
 
     std::vector<sf::RectangleShape> getBody();
     sf::RectangleShape getTankBody();
