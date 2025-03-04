@@ -34,11 +34,12 @@ private:
     float x;
     float y;
     std::vector<Wall> level;
-    int maxBullets{ 40 };
+    int maxBullets{ 5 };
 
     bool isLevelTwoTank{ false }; // moves randomly every 1 second
     bool isLevelThreeTank{ false }; // moves towards player 1 direction per second
     bool isLevelFourTank{ false }; // 1 bullet and can place 3 bombs moves randomly and has speed 2
+    bool isLevelFiveTank{ false }; // follow player, quick, 1 bomb, 5 bullets
 
 
     std::pair<Direction, Direction> dir{ getDirection(Random::get(0,7)) };
@@ -106,25 +107,37 @@ public:
     std::pair<Direction, Direction> getDir(){ return dir; }
     void changeDir(){ dir = getDirection(Random::get(0,7)); }
 
-    void setLevelTwoTank(){ isLevelTwoTank = true; }
+    void setLevelTwoTank(){ 
+        isLevelTwoTank = true; 
+        maxBullets = 3;
+    }
     bool getIsLevelTwoTank(){ return isLevelTwoTank; }
 
-    void setLevelThreeTank(){ isLevelThreeTank = true; }
+    void setLevelThreeTank(){ 
+        isLevelThreeTank = true; 
+        maxBullets = 3;
+    }
     bool getIsLevelThreeTank(){ return isLevelThreeTank; }
 
     void setLevelFourTank() {
         isLevelFourTank = true;
-        maxBullets = 0;
+        maxBullets = 1;
     }
     bool getIsLevelFourTank(){ return isLevelFourTank; }
     std::vector<std::shared_ptr<Bomb>> m_bombVector{};
+
+    void setLevelFiveTank() {
+        isLevelFiveTank = true;
+        maxBullets = 5;
+    }
+    bool getIsLevelFiveTank(){ return isLevelFiveTank; }
 
     // ai tank motions/member functions
     void rotateTurretAtPlayer(const Tank& player);
 
     void moveTowardsPlayer(const Tank& player);
 
-    void plantBombLevelFour(); 
+    void plantBombEnemy(int maxBombs); 
 
     void getTankCoords() const;
     void test() const;

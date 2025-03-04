@@ -16,12 +16,10 @@ public:
        m_body.setPosition({x, y});
        m_body.setRadius(m_radius);
        m_body.setFillColor(sf::Color::Yellow);
-       std::cout << "Bomb constructor called!\n";
     }
 
     ~Bomb()
     {
-        std::cout << "Bomb deconstructor called\n";
     }
 
     void explode(const std::vector<std::unique_ptr<Tank>>& tanks);

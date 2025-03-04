@@ -40,6 +40,5 @@ void Bomb::explode(const std::vector<std::unique_ptr<Tank>>& tanks) {
         }
     }
     isActive = false;
-    // this->~Bomb();
 }
 

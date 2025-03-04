@@ -6,14 +6,24 @@
 std::vector<Wall> level_1()
 {
     std::vector<Wall> level;
-    // Wall w1{ 0, 0, sf::Color::Magenta }; 
-    // level.push_back(w1);
-    Wall w2{ 1, 0, sf::Color::Magenta }; 
-    level.push_back(w2);
-    Wall w3{ 2, 0, sf::Color::Magenta }; 
-    level.push_back(w3);
-    Wall w4{ 8, 8, sf::Color::Magenta }; 
-    level.push_back(w4);
+    for (int i{8}; i <= 12; ++i) {
+        for (int j{4}; j <= 7; ++j) {
+            level.push_back(Wall {i, j, sf::Color::Magenta});
+        }
+    }
+
+    for (int i{8}; i <= 12; ++i) {
+        for (int j{11}; j <= 14; ++j) {
+            level.push_back(Wall {i, j, sf::Color::Magenta});
+        }
+    }
+
+
+    for (int i{19}; i <= 28; ++i) {
+        for (int j{4}; j <= 7; ++j) {
+            level.push_back(Wall {i, j, sf::Color::Magenta});
+        }
+    }
 
     return level;
 }

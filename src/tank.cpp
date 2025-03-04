@@ -43,12 +43,10 @@ Tank::Tank(const std::vector<Wall>& level, const float speed, const sf::Vector2f
 
 Tank::~Tank()
 {
-    std::cout << "Tank deconstructor called!\n";
     if (isLevelFourTank)
     {
         for (auto bomb = m_bombVector.begin(); bomb != m_bombVector.end(); )
         {
-            std::cout << "hello from erase bomb deconstructor\n";
             bomb = m_bombVector.erase(bomb);
         }
     }
@@ -263,9 +261,9 @@ void Tank::plantBomb() {
     }
 }
 
-void Tank::plantBombLevelFour() {
+void Tank::plantBombEnemy(int maxBombs) {
     int randNum = Random::get(1, 500);
-    if (m_bombVector.size() < 4 && randNum == 1)
+    if (m_bombVector.size() < maxBombs && randNum == 1)
     {
         std::shared_ptr<Bomb> b{ std::make_shared<Bomb>(body.getPosition().x, body.getPosition().y) };
         m_bombVector.push_back(b);
@@ -283,7 +281,7 @@ void Tank::rotateTurretAtPlayer(const Tank& player) {
     turret.setRotation(sf::degrees(angle + 180));
 
 
-    // if (Random::get(1,1) == 1) shoot();
+    if (Random::get(1,500) == 1) shoot();
 }
 
 void Tank::moveTowardsPlayer(const Tank& player) {

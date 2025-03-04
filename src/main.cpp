@@ -17,6 +17,7 @@ std::vector<Wall> level_1();
 std::vector<std::unique_ptr<Tank>> tanks{};
 std::vector<Bullet> bullets{};
 std::vector<std::shared_ptr<Bomb>> bombs{};
+std::vector<Wall> currLevel;
 
 int main()
 {
@@ -34,27 +35,32 @@ int main()
     std::vector<Wall> currentLevel = level_1();
     // Tank t (square, 5, currentLevel);
     // tanks.push_back(std::make_unique<Tank>(t));
-    auto t_ptr = std::make_unique<Tank>(square, 2.5, currentLevel);
+    auto t_ptr = std::make_unique<Tank>(square, 2, currentLevel);
     Tank& t = *t_ptr;  // Store reference
     tanks.push_back(std::move(t_ptr));  // Move ownership
                                         //
-    // auto enemy_ptr = std::make_unique<Tank>(currentLevel, 0, sf::Vector2f{1200, 300});
-    // tanks.push_back(std::move(enemy_ptr));
+    auto enemy_ptr = std::make_unique<Tank>(currentLevel, 0, sf::Vector2f{1500, 780});
+    tanks.push_back(std::move(enemy_ptr));
 
     // auto enemy_ptr2 = std::make_unique<Tank>(currentLevel, 0, sf::Vector2f{1200, 600});
     // tanks.push_back(std::move(enemy_ptr2));
 
-    auto enemy_ptr3 = std::make_unique<Tank>(currentLevel, 1, sf::Vector2f{600, 600});
-    enemy_ptr3->setLevelTwoTank();
-    tanks.push_back(std::move(enemy_ptr3));
+    // auto enemy_ptr3 = std::make_unique<Tank>(currentLevel, 1, sf::Vector2f{600, 600});
+    // enemy_ptr3->setLevelTwoTank();
+    // tanks.push_back(std::move(enemy_ptr3));
 
     // auto enemy_ptr4 = std::make_unique<Tank>(currentLevel, 1, sf::Vector2f{700, 400});
     // enemy_ptr4->setLevelThreeTank();
     // tanks.push_back(std::move(enemy_ptr4));
 
-    auto enmey_ptr5 = std::make_unique<Tank>(currentLevel, 2, sf::Vector2f{300, 800});
-    enmey_ptr5->setLevelFourTank();
-    tanks.push_back(std::move(enmey_ptr5));
+    // auto enmey_ptr5 = std::make_unique<Tank>(currentLevel, 2.5, sf::Vector2f{300, 800});
+    // enmey_ptr5->setLevelFourTank();
+    // tanks.push_back(std::move(enmey_ptr5));
+
+    // level 5 tank
+    // auto enemy_ptr6{ std::make_unique<Tank>(currentLevel, 2, sf::Vector2f{ 500, 300 }) };
+    // enemy_ptr6->setLevelFiveTank();
+    // tanks.push_back(std::move(enemy_ptr6));
 
     bool isMousePressed { false };
     bool isSpacePressed { false };
@@ -204,14 +210,30 @@ int main()
             if(currentTank->getIsLevelFourTank()) // plant bombs tank
             {
                 currentTank->moveTank(currentTank->getDir().first, currentTank->getDir().second);
-                currentTank->plantBombLevelFour();
+                currentTank->plantBombEnemy(4); // 4 is max bombs for level four tank (yellow)
 
-                // for (const auto& bomb_ptr : currentTank->m_bombVector)
-                // {
-                    // std::cout << "how many times is this push_back being called?\n";
-                    // bombs.push_back(bomb_ptr);
-                // }
+                if (seconds % 2 == 0 && !currentTank->state1)
+                {
+                    if (Random::get(1, 2) == 1)
+                        currentTank->moveTowardsPlayer(t);
+                    else
+                    {
+                        currentTank->changeDir();
+                        currentTank->moveTank(currentTank->getDir().first, currentTank->getDir().second);
+                    }
+                    currentTank->state1 = true;
+                }
+                if (currentTank->everySecond != seconds)
+                {
+                    currentTank->state1 = false;
+                    currentTank->everySecond = seconds;
+                }
+            }
 
+            if(currentTank->getIsLevelFiveTank())
+            {
+                currentTank->moveTank(currentTank->getDir().first, currentTank->getDir().second);
+                currentTank->plantBombEnemy(1); // 1 is max bombs for level five tank (black)
                 if (seconds % 2 == 0 && !currentTank->state1)
                 {
                     currentTank->moveTowardsPlayer(t);
@@ -231,14 +253,14 @@ int main()
         }
         // clean up bullets vector
         for (auto bullet = bullets.begin(); bullet != bullets.end(); ) {
-            // for (auto bulletj = bullets.begin(); bulletj != bullets.end(); ) {
-                // if (bullet != bulletj && doOverlap(bullet->getBody(), bulletj->getBody()))
-                // {
-                    // bullet->setZeroBounces();
-                    // bulletj->setZeroBounces();
-                // }
-                // ++bulletj;
-            // }
+            for (auto bulletj = bullets.begin(); bulletj != bullets.end(); ) {
+                if (bullet != bulletj && doOverlap(bullet->getBody(), bulletj->getBody()))
+                {
+                    bullet->setZeroBounces();
+                    bulletj->setZeroBounces();
+                }
+                ++bulletj;
+            }
             if (bullet->getBounces() <= 0) {
                 --(bullet->decrementOwner()->currentBullets);
                 bullet = bullets.erase(bullet);
