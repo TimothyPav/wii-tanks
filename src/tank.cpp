@@ -142,8 +142,8 @@ bool Tank::checkBoundaries(Direction dir, Direction dir2) {
     }
 
 
-    for (int i{0}; i < level.size(); ++i) {
-        sf::RectangleShape wallObject = level[i].getWall();
+    for (int i{0}; i < currLevel.size(); ++i) {
+        sf::RectangleShape wallObject = currLevel[i].getWall();
         if (doOverlap(tankTopLeftCoord, tankBottomRightCoord, wallObject, speed)){
             return false;
         }
@@ -281,7 +281,7 @@ void Tank::rotateTurretAtPlayer(const Tank& player) {
     turret.setRotation(sf::degrees(angle + 180));
 
 
-    if (Random::get(1,500) == 1) shoot();
+    // if (Random::get(1,500) == 1) shoot();
 }
 
 void Tank::moveTowardsPlayer(const Tank& player) {

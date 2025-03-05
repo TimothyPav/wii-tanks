@@ -22,6 +22,7 @@
 extern std::vector<std::unique_ptr<Tank>> tanks;
 extern std::vector<Bullet> bullets;
 extern std::vector<std::shared_ptr<Bomb>> bombs;
+extern std::vector<Wall> currLevel;
 
 class Tank
 {

@@ -7,6 +7,7 @@
 #include "tank.h"
 #include "utils.h"
 #include "wall.h"
+#include "levelManager.h"
 
 
 // TODO: Obstacles/walls object to put on the map!
@@ -32,15 +33,12 @@ int main()
     sf::Color color = sf::Color::Green;
 
     // Tank t(square, 5);
-    std::vector<Wall> currentLevel = level_1();
+    // std::vector<Wall> currentLevel = level_1();
     // Tank t (square, 5, currentLevel);
     // tanks.push_back(std::make_unique<Tank>(t));
-    auto t_ptr = std::make_unique<Tank>(square, 2, currentLevel);
-    Tank& t = *t_ptr;  // Store reference
-    tanks.push_back(std::move(t_ptr));  // Move ownership
                                         //
-    auto enemy_ptr = std::make_unique<Tank>(currentLevel, 0, sf::Vector2f{1500, 780});
-    tanks.push_back(std::move(enemy_ptr));
+    // auto enemy_ptr = std::make_unique<Tank>(currentLevel, 0, sf::Vector2f{1500, 780});
+    // tanks.push_back(std::move(enemy_ptr));
 
     // auto enemy_ptr2 = std::make_unique<Tank>(currentLevel, 0, sf::Vector2f{1200, 600});
     // tanks.push_back(std::move(enemy_ptr2));
@@ -69,8 +67,22 @@ int main()
     auto start_time = std::chrono::high_resolution_clock::now();
 
     long tempSeconds{0};
+    auto t_ptr = std::make_unique<Tank>(square, 2, currLevel);
+    Tank& t = *t_ptr;  // Store reference
+
+    LevelManager levelManager{t};
+    int level{0};
+    levelManager[level](t);
+    tanks.push_back(std::move(t_ptr));  // Move ownership
+
     while (window.isOpen())
     {
+        if (t.getIsAlive() && tanks.size() == 1)
+        {
+            ++level;
+            levelManager[level](t);
+            std::cout << "Updated level\n";
+        }
         auto current_time = std::chrono::high_resolution_clock::now();
         long seconds { std::chrono::duration_cast<std::chrono::seconds>(current_time - start_time).count() };
         while (const std::optional event = window.pollEvent())
@@ -156,8 +168,8 @@ int main()
         window.clear();
         // do things in here?
 
-        for (int i{0}; i < currentLevel.size(); ++i)
-            window.draw(currentLevel[i].getWall());
+        for (int i{0}; i < currLevel.size(); ++i)
+            window.draw(currLevel[i].getWall());
 
         if (t.getBomb() != nullptr) {
             window.draw(t.getBomb()->placeBomb());
@@ -253,19 +265,19 @@ int main()
         }
         // clean up bullets vector
         for (auto bullet = bullets.begin(); bullet != bullets.end(); ) {
-            for (auto bulletj = bullets.begin(); bulletj != bullets.end(); ) {
-                if (bullet != bulletj && doOverlap(bullet->getBody(), bulletj->getBody()))
-                {
-                    bullet->setZeroBounces();
-                    bulletj->setZeroBounces();
-                }
-                ++bulletj;
-            }
+            // for (auto bulletj = bullets.begin(); bulletj != bullets.end(); ) {
+                // if (bullet != bulletj && doOverlap(bullet->getBody(), bulletj->getBody()))
+                // {
+                    // bullet->setZeroBounces();
+                    // bulletj->setZeroBounces();
+                // }
+                // ++bulletj;
+            // }
             if (bullet->getBounces() <= 0) {
                 --(bullet->decrementOwner()->currentBullets);
                 bullet = bullets.erase(bullet);
             } else {
-                bullet->move(window, currentLevel, bombs, tanks);
+                bullet->move(window, currLevel, bombs, tanks);
                 window.draw(bullet->getBody());
                 ++bullet;
             }
