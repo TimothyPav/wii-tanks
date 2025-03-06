@@ -88,7 +88,7 @@ WallSide Bullet::whichSide(Wall& wall) {
 bool Bullet::collision(sf::RenderWindow& window, std::vector<Wall>& level, std::vector<std::shared_ptr<Bomb>>& bombs, 
                        std::vector<std::unique_ptr<Tank>>& tanks) {
     for (auto& wall : level) {
-        if (doOverlap(wall.getWall(), body)) {
+        if (!wall.isHole() && doOverlap(wall.getWall(), body)) {
             // sf::Angle rotate = sf::degrees(180);
             WallSide side = whichSide(wall);
             switch (side) {

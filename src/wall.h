@@ -17,6 +17,7 @@ private:
     const sf::Color color;
     const int X;
     const int Y;
+    bool m_hole = false;
     sf::Vector2f trueCoords = sf::Vector2f(X*width, Y*width);
 
     void setDefaults() {
@@ -26,13 +27,25 @@ private:
     }
 
 public:
-    Wall(int X, int Y, sf::Color color) : X(X), Y(Y), color(color) {
+    Wall(int X, int Y, sf::Color color, bool hole=false) 
+        : X(X)
+        , Y(Y)
+        , color(color)
+        , m_hole(hole)
+    {
         setDefaults();
+        if (m_hole == true) wall.setFillColor(sf::Color::Green);
     };     
 
     sf::RectangleShape getWall() {
         return wall;
     }
+    
+    bool isHole() const 
+    {
+        return m_hole;
+    }
+
 };
 
 #endif

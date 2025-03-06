@@ -16,13 +16,11 @@ extern std::vector<Wall> currLevel;
 
 inline void level1(Tank& player)
 {
-    // call some resets right here
-
-    // for (int i{8}; i <= 12; ++i) {
-        // for (int j{4}; j <= 7; ++j) {
-            // currLevel.push_back(Wall {i, j, sf::Color::Magenta});
-        // }
-    // }
+    for (int i{8}; i <= 12; ++i) {
+        for (int j{4}; j <= 7; ++j) {
+            currLevel.push_back(Wall {i, j, sf::Color::Magenta});
+        }
+    }
     for (int i{8}; i <= 12; ++i) {
         for (int j{11}; j <= 14; ++j) {
             currLevel.push_back(Wall {i, j, sf::Color::Magenta});
@@ -40,33 +38,99 @@ inline void level1(Tank& player)
 
 inline void level2(Tank& player)
 {
-    std::cout << "level two is now being loaded\n";
-    // call some resets right here
     for (int i{5}; i <= 27; ++i) {
-        for (int j{4}; j <= 7; ++j) {
+        for (int j{3}; j <= 6; ++j) {
             currLevel.push_back(Wall {i, j, sf::Color::Magenta});
         }
     }
 
     for (int i{5}; i <= 27; ++i) {
-        for (int j{11}; j <= 14; ++j) {
+        for (int j{10}; j <= 13; ++j) {
             currLevel.push_back(Wall {i, j, sf::Color::Magenta});
         }
     }
-    // for (auto& shape : player.getBody())
-    // {
-        // shape.setPosition({2*60, 8*60});
-    // }
-    //
 
+    player.setPos({60, 480+25});
 
-    // gotta change player POS
-    std::cout << "player pos before: (" << player.getTankBody().getPosition().x << ", " << player.getTankBody().getPosition().y << ")\n";
-    player.getTankBody().setPosition({0, 0});
-    std::cout << "player pos after: (" << player.getTankBody().getPosition().x << ", " << player.getTankBody().getPosition().y << ")\n";
+    auto enemy_ptr1 = std::make_unique<Tank>(currLevel, 0, sf::Vector2f{1740, 530});
+    auto enemy_ptr2 = std::make_unique<Tank>(currLevel, 2, sf::Vector2f{1740, 940});
+    enemy_ptr2->setLevelTwoTank();
+    tanks.push_back(std::move(enemy_ptr1));
+    tanks.push_back(std::move(enemy_ptr2));
+}
 
-    auto enemy_ptr = std::make_unique<Tank>(currLevel, 0, sf::Vector2f{1500, 780});
-    tanks.push_back(std::move(enemy_ptr));
+inline void level3(Tank& player)
+{
+    for (int i{5}; i <= 17; ++i) {
+        for (int j{3}; j <= 4; ++j) {
+            currLevel.push_back(Wall {i, j, sf::Color::Magenta});
+        }
+    }
+    for (int i{18}; i <= 19; ++i) {
+        for (int j{3}; j <= 9; ++j) {
+            currLevel.push_back(Wall {i, j, sf::Color::Magenta});
+        }
+    }
+    for (int i{16}; i <= 17; ++i) {
+        for (int j{8}; j <= 14; ++j) {
+            currLevel.push_back(Wall {i, j, sf::Color::Magenta});
+        }
+    }
+    for (int i{18}; i <= 27; ++i) {
+        for (int j{13}; j <= 14; ++j) {
+            currLevel.push_back(Wall {i, j, sf::Color::Magenta});
+        }
+    }
+
+    player.setPos({300, 480});
+    // 120, 165
+    // 1611, 1041 
+
+    auto enemy_ptr1 = std::make_unique<Tank>(currLevel, 0, sf::Vector2f{1500, 200});
+    auto enemy_ptr2 = std::make_unique<Tank>(currLevel, 2, sf::Vector2f{120, 125});
+    enemy_ptr2->setLevelTwoTank();
+    auto enemy_ptr3 = std::make_unique<Tank>(currLevel, 2, sf::Vector2f{1600, 950});
+    enemy_ptr3->setLevelTwoTank();
+    tanks.push_back(std::move(enemy_ptr1));
+    tanks.push_back(std::move(enemy_ptr2));
+    tanks.push_back(std::move(enemy_ptr3));
+}
+
+inline void level0 (Tank& player)
+{
+    for (int i{0}; i <= 5; ++i) {
+        for (int j{4}; j <= 4; ++j) {
+            currLevel.push_back(Wall {i, j, sf::Color::Magenta, true});
+        }
+    }
+    for (int i{15}; i <= 31; ++i) {
+        for (int j{4}; j <= 4; ++j) {
+            currLevel.push_back(Wall {i, j, sf::Color::Magenta, true});
+        }
+    }
+    for (int i{0}; i <= 15; ++i) {
+        for (int j{12}; j <= 12; ++j) {
+            currLevel.push_back(Wall {i, j, sf::Color::Magenta, true});
+        }
+    }
+    for (int i{25}; i <= 31; ++i) {
+        for (int j{12}; j <= 12; ++j) {
+            currLevel.push_back(Wall {i, j, sf::Color::Magenta, true});
+        }
+    }
+    for (int i{10}; i <= 10; ++i) {
+        for (int j{0}; j <= 7; ++j) {
+            currLevel.push_back(Wall {i, j, sf::Color::Magenta, true});
+        }
+    }
+    for (int i{20}; i <= 20; ++i) {
+        for (int j{10}; j <= 17; ++j) {
+            currLevel.push_back(Wall {i, j, sf::Color::Magenta, true});
+        }
+    }
+    player.setPos({300, 480});
+    auto enemy_ptr1 = std::make_unique<Tank>(currLevel, 0, sf::Vector2f{1500, 200});
+    tanks.push_back(std::move(enemy_ptr1));
 }
 
 typedef void (*setupLevel)(Tank& player);
@@ -80,7 +144,8 @@ public:
         : m_player(player) 
     {
         // fill level manager up?
-        levels[0] = level1;
+        levels[0] = level0;
+        // levels[0] = level1;
         levels[1] = level2;
     }
 
@@ -99,7 +164,6 @@ public:
             else
             {
                 ++tank;
-                std::cout << "found player tank!\n";
             };
         }
 

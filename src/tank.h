@@ -98,6 +98,13 @@ public:
         m_bomb = nullptr;
     }
 
+    void setPos(sf::Vector2f pos)
+    {
+       body.setPosition(pos); 
+       turret.setPosition(pos); 
+       head.setPosition(pos); 
+    }
+
     int currentBullets{ 0 };
 
     bool getIsBombPlaced() const { return isBombPlaced; }

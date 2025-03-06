@@ -62,7 +62,6 @@ int main()
 
     bool isMousePressed { false };
     bool isSpacePressed { false };
-    std::cout << "size of tanks vector: " << tanks.size() << '\n';
     double elapsed_seconds{};
     auto start_time = std::chrono::high_resolution_clock::now();
 
@@ -70,10 +69,10 @@ int main()
     auto t_ptr = std::make_unique<Tank>(square, 2, currLevel);
     Tank& t = *t_ptr;  // Store reference
 
+    tanks.push_back(std::move(t_ptr));  // Move ownership
     LevelManager levelManager{t};
     int level{0};
     levelManager[level](t);
-    tanks.push_back(std::move(t_ptr));  // Move ownership
 
     while (window.isOpen())
     {
@@ -81,7 +80,6 @@ int main()
         {
             ++level;
             levelManager[level](t);
-            std::cout << "Updated level\n";
         }
         auto current_time = std::chrono::high_resolution_clock::now();
         long seconds { std::chrono::duration_cast<std::chrono::seconds>(current_time - start_time).count() };
@@ -156,6 +154,7 @@ int main()
                     t.shoot();
                 }
             }
+            std::cout << "(" << sf::Mouse::getPosition().x << ", " << sf::Mouse::getPosition().y << ")\n";
         }
         if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space) && !isSpacePressed)
         {
