@@ -68,11 +68,13 @@ int main()
     long tempSeconds{0};
     auto t_ptr = std::make_unique<Tank>(square, 2, currLevel);
     Tank& t = *t_ptr;  // Store reference
+    t.setPlayer();
 
     tanks.push_back(std::move(t_ptr));  // Move ownership
     LevelManager levelManager{t};
     int level{0};
     levelManager[level](t);
+    int lives{3};
 
     while (window.isOpen())
     {
@@ -102,11 +104,20 @@ int main()
 
         if (!t.getIsAlive())
         {
+            if (lives > 1)
+            {
+                --lives;
+                t.revive();
+                levelManager[level](t);
+            }
+            else 
+            {
+                window.clear();
+                window.display();
+                continue;
+            }
             // LOSE SCREEN
             //
-            window.clear();
-            window.display();
-            continue;
         }
 
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Up) && sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Left))
@@ -154,7 +165,7 @@ int main()
                     t.shoot();
                 }
             }
-            std::cout << "(" << sf::Mouse::getPosition().x << ", " << sf::Mouse::getPosition().y << ")\n";
+            std::cout << "(" << sf::Mouse::getPosition().x-45 << ", " << sf::Mouse::getPosition().y-45 << ")\n";
         }
         if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space) && !isSpacePressed)
         {
@@ -264,14 +275,14 @@ int main()
         }
         // clean up bullets vector
         for (auto bullet = bullets.begin(); bullet != bullets.end(); ) {
-            // for (auto bulletj = bullets.begin(); bulletj != bullets.end(); ) {
-                // if (bullet != bulletj && doOverlap(bullet->getBody(), bulletj->getBody()))
-                // {
-                    // bullet->setZeroBounces();
-                    // bulletj->setZeroBounces();
-                // }
-                // ++bulletj;
-            // }
+            for (auto bulletj = bullets.begin(); bulletj != bullets.end(); ) {
+                if (bullet != bulletj && doOverlap(bullet->getBody(), bulletj->getBody()))
+                {
+                    bullet->setZeroBounces();
+                    bulletj->setZeroBounces();
+                }
+                ++bulletj;
+            }
             if (bullet->getBounces() <= 0) {
                 --(bullet->decrementOwner()->currentBullets);
                 bullet = bullets.erase(bullet);
@@ -285,7 +296,7 @@ int main()
         // clean tanks vector
         for (auto tank = tanks.begin(); tank != tanks.end(); )
         {
-            if (!tank->get()->getIsAlive())
+            if ((tank->get() != &t) && !tank->get()->getIsAlive())
                 tanks.erase(tank);
             else 
                 ++tank;

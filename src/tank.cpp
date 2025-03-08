@@ -88,7 +88,10 @@ void Tank::moveTank(Direction dir, Direction dir2) {
         
     // std::cout << std::boolalpha << "checkBoundaries: " << checkBoundaries(dir, dir2) << '\n';
 
-    if (!checkBoundaries(dir, dir2)) return;
+    if (!checkBoundaries(dir, dir2)) {
+        changeDir();
+        return;
+    }
     if (!checkRotation(dir, dir2)) return; // function does something outside its return value
 
     if (dir == Direction::Up && dir2 == Direction::Left) {

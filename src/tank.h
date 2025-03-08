@@ -49,6 +49,7 @@ private:
     bool isBombPlaced{ false };
 
     bool isAlive{ true };
+    bool isPlayer{ false };
 
     void setDefaults() {
         body.setOrigin(sf::Vector2f(25, 25));
@@ -110,7 +111,9 @@ public:
     bool getIsBombPlaced() const { return isBombPlaced; }
     
     void kill() { isAlive = false; }
+    void revive() { isAlive = true; }
     bool getIsAlive() { return isAlive; }
+    void setPlayer() { isPlayer = true; }
 
     std::pair<Direction, Direction> getDir(){ return dir; }
     void changeDir(){ dir = getDirection(Random::get(0,7)); }
@@ -118,18 +121,21 @@ public:
     void setLevelTwoTank(){ 
         isLevelTwoTank = true; 
         maxBullets = 3;
+        speed = 2;
     }
     bool getIsLevelTwoTank(){ return isLevelTwoTank; }
 
     void setLevelThreeTank(){ 
         isLevelThreeTank = true; 
         maxBullets = 3;
+        speed = 2.5;
     }
     bool getIsLevelThreeTank(){ return isLevelThreeTank; }
 
     void setLevelFourTank() {
         isLevelFourTank = true;
         maxBullets = 1;
+        speed = 3;
     }
     bool getIsLevelFourTank(){ return isLevelFourTank; }
     std::vector<std::shared_ptr<Bomb>> m_bombVector{};
@@ -137,6 +143,7 @@ public:
     void setLevelFiveTank() {
         isLevelFiveTank = true;
         maxBullets = 5;
+        speed = 3;
     }
     bool getIsLevelFiveTank(){ return isLevelFiveTank; }
 
