@@ -165,7 +165,7 @@ int main()
                     t.shoot();
                 }
             }
-            std::cout << "(" << sf::Mouse::getPosition().x-45 << ", " << sf::Mouse::getPosition().y-45 << ")\n";
+            // std::cout << "(" << sf::Mouse::getPosition().x-45 << ", " << sf::Mouse::getPosition().y-45 << ")\n";
         }
         if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space) && !isSpacePressed)
         {

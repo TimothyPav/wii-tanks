@@ -25,6 +25,30 @@ bool doOverlap(sf::Vector2f tankTopLeft, sf::Vector2f tankBottomRight, sf::Recta
     return true;
 }
 
+bool doOverlap(sf::Vector2f tankTopLeft, sf::Vector2f tankBottomRight, sf::CircleShape circle, int speed)
+{
+    // Get circle position (which is the center in SFML CircleShape)
+    sf::Vector2f circleCenter = circle.getPosition() + sf::Vector2f(circle.getRadius(), circle.getRadius());
+    
+    // Get circle radius
+    float radius = circle.getRadius();
+    
+    // Find the closest point on the rectangle to the circle
+    float closestX = std::max(tankTopLeft.x, std::min(circleCenter.x, tankBottomRight.x));
+    float closestY = std::max(tankTopLeft.y, std::min(circleCenter.y, tankBottomRight.y));
+    
+    // Calculate the distance between the closest point and the circle center
+    float distanceX = circleCenter.x - closestX;
+    float distanceY = circleCenter.y - closestY;
+    
+    // If the distance is less than the radius, the circle and rectangle overlap
+    float distanceSquared = (distanceX * distanceX) + (distanceY * distanceY);
+    
+    // Account for the speed parameter by effectively increasing the circle's radius
+    // This creates a buffer zone around the circle
+    return distanceSquared <= radius  * radius;
+}
+
 bool doOverlap(const sf::RectangleShape& s1, const sf::RectangleShape& s2) {
     sf::FloatRect rect1 = s1.getGlobalBounds();
     sf::FloatRect rect2 = s2.getGlobalBounds();

@@ -37,7 +37,7 @@ public:
         if (m_hole == true) wall.setFillColor(sf::Color::Green);
     };     
 
-    sf::RectangleShape getWall() {
+    sf::RectangleShape getWall() const {
         return wall;
     }
     

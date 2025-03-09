@@ -51,6 +51,7 @@ Tank::~Tank()
         }
     }
 }
+int getOptimalRotationAngle(Direction dir, Direction dir2, int currentRotation); // decleration
 
 std::vector<sf::RectangleShape> Tank::getBody() {
     return tankShapes;
@@ -89,9 +90,12 @@ void Tank::moveTank(Direction dir, Direction dir2) {
     // std::cout << std::boolalpha << "checkBoundaries: " << checkBoundaries(dir, dir2) << '\n';
 
     if (!checkBoundaries(dir, dir2)) {
-        changeDir();
+        if (!isPlayer)
+            changeDir();
         return;
     }
+    
+
     if (!checkRotation(dir, dir2)) return; // function does something outside its return value
 
     if (dir == Direction::Up && dir2 == Direction::Left) {
@@ -124,21 +128,27 @@ void Tank::moveTank(Direction dir, Direction dir2) {
 bool Tank::checkBoundaries(Direction dir, Direction dir2) {
     // tankTopLeftCoord is calculated as the POTENTIAL coordinate to check for bounds
     sf::Vector2f tankTopLeftCoord = sf::Vector2f(getX()-25, getY()-25);
+    sf::Vector2f tankBombTopLeftCoord = sf::Vector2f(getX()-25, getY()-25);
     if (dir == Direction::Up || dir2 == Direction::Up){
         tankTopLeftCoord.y -= speed;
+        tankBombTopLeftCoord.y -= (speed * (144 - getOptimalRotationAngle(dir, dir2, body.getRotation().asDegrees())));
     }
     if (dir == Direction::Down || dir2 == Direction::Down){
         tankTopLeftCoord.y += speed;
+        tankBombTopLeftCoord.y += (speed * (144 - getOptimalRotationAngle(dir, dir2, body.getRotation().asDegrees())));
     }
     if (dir == Direction::Left || dir2 == Direction::Left){
         tankTopLeftCoord.x -= speed;
+        tankBombTopLeftCoord.x -= (speed * (144 - getOptimalRotationAngle(dir, dir2, body.getRotation().asDegrees())));
     }
     if (dir == Direction::Right || dir2 == Direction::Right){
         tankTopLeftCoord.x += speed;
+        tankBombTopLeftCoord.x += (speed * (144 - getOptimalRotationAngle(dir, dir2, body.getRotation().asDegrees())));
     }
 
     // offsets of 60 are there because they work i don't understand how it's magic. i can't figure out the math on this!
     sf::Vector2f tankBottomRightCoord = sf::Vector2f(tankTopLeftCoord.x+body.getSize().x, tankTopLeftCoord.y+body.getSize().y);
+    sf::Vector2f tankBombBottomRightCoord = sf::Vector2f(tankBombTopLeftCoord.x+body.getSize().x, tankBombTopLeftCoord.y+body.getSize().y);
     sf::FloatRect windowBounds(sf::Vector2f(0.f, 0.f), sf::Vector2f(1920.0f-body.getSize().x-(speed*2), 1080.0f-body.getSize().y-(speed*2)));
     if (!(windowBounds.contains(tankTopLeftCoord) && windowBounds.contains(tankBottomRightCoord))) {
         return false;
@@ -147,6 +157,7 @@ bool Tank::checkBoundaries(Direction dir, Direction dir2) {
 
     for (int i{0}; i < currLevel.size(); ++i) {
         sf::RectangleShape wallObject = currLevel[i].getWall();
+        // tankTopLeftCoord.x += (speed * 143);
         if (doOverlap(tankTopLeftCoord, tankBottomRightCoord, wallObject, speed)){
             return false;
         }
@@ -154,7 +165,11 @@ bool Tank::checkBoundaries(Direction dir, Direction dir2) {
 
     tankTopLeftCoord.x += 25;
     tankTopLeftCoord.y += 25;
+    tankBombTopLeftCoord.x += 25;
+    tankBombTopLeftCoord.y += 25;
 
+    tankBottomRightCoord.x += 25;
+    tankBottomRightCoord.y += 25;
     tankBottomRightCoord.x += 25;
     tankBottomRightCoord.y += 25;
     // make this work better
@@ -167,6 +182,23 @@ bool Tank::checkBoundaries(Direction dir, Direction dir2) {
         }
     }
 
+    // work on this a little longer.
+    if (!isPlayer)
+    {
+        for (const auto& bomb: bombs)
+        {
+            sf::CircleShape bombShape{ bomb->getBombBody() };
+            bombShape.setRadius(100);
+            if (doOverlap(tankBombTopLeftCoord, tankBombBottomRightCoord, bombShape, speed))
+            {
+                std::cout << "tankBomb pred: " << ((tankBombTopLeftCoord.x + tankBottomRightCoord.x) / 2) << ", " 
+                                               << ((tankBombTopLeftCoord.y + tankBottomRightCoord.y) / 2) << '\n';
+                std::cout << "Actual bomb: " << bombShape.getPosition().x << ", " << bombShape.getPosition().y << '\n';
+                changeDir();
+            }
+        }
+    }
+
     return true;
 }
 
@@ -175,6 +207,7 @@ int getOptimalRotationHelper(int desiredRotation, int currentRotation) {
     else return -1;
 }
 
+
 int getOptimalRotation(Direction dir, Direction dir2, int currentRotation) {
     if ((dir == Direction::Up && dir2 == Direction::Left) || (dir == Direction::Down && dir2 == Direction::Right)) {
         // condition ? expression1 : expression2
@@ -182,6 +215,7 @@ int getOptimalRotation(Direction dir, Direction dir2, int currentRotation) {
     }
     else if ((dir == Direction::Up && dir2 == Direction::Right) || (dir == Direction::Down && dir2 == Direction::Left)) {
         // condition ? expression1 : expression2
+        
         return (abs(currentRotation - 45) <= abs(currentRotation - 225)) ? getOptimalRotationHelper(45, currentRotation) : getOptimalRotationHelper(225, currentRotation);
     }
     else if (dir2 == Direction::NODIRECTION && (dir == Direction::Left || dir == Direction::Right)) {
@@ -191,6 +225,31 @@ int getOptimalRotation(Direction dir, Direction dir2, int currentRotation) {
         return (abs(currentRotation - 90) <= abs(currentRotation - 270)) ? getOptimalRotationHelper(90, currentRotation) : getOptimalRotationHelper(270, currentRotation);
     }
     return 1;
+}
+
+int getOptimalRotationAngle(Direction dir, Direction dir2, int currentRotation)
+{
+    if ((dir == Direction::Up && dir2 == Direction::Left) || (dir == Direction::Down && dir2 == Direction::Right)) {
+        // Return the smaller of the two differences
+        return (abs(currentRotation - 135) <= abs(currentRotation - 315)) ? 
+               (currentRotation - 135) : (currentRotation - 315);
+    }
+    else if ((dir == Direction::Up && dir2 == Direction::Right) || (dir == Direction::Down && dir2 == Direction::Left)) {
+        // Return the smaller of the two differences
+        return (abs(currentRotation - 45) <= abs(currentRotation - 225)) ? 
+               (currentRotation - 45) : (currentRotation - 225);
+    }
+    else if (dir2 == Direction::NODIRECTION && (dir == Direction::Left || dir == Direction::Right)) {
+        // Return the smaller of the two differences
+        return (abs(currentRotation - 0) <= abs(currentRotation - 180)) ? 
+               (currentRotation - 0) : (currentRotation - 180);
+    }
+    else if (dir2 == Direction::NODIRECTION && (dir == Direction::Up || dir == Direction::Down)) {
+        // Return the smaller of the two differences
+        return (abs(currentRotation - 90) <= abs(currentRotation - 270)) ? 
+               (currentRotation - 90) : (currentRotation - 270);
+    }
+    return 0; // Default: no rotation needed if no condition is met
 }
 
 bool Tank::checkRotation(Direction dir, Direction dir2) {
@@ -275,16 +334,38 @@ void Tank::plantBombEnemy(int maxBombs) {
 }
 
 void Tank::rotateTurretAtPlayer(const Tank& player) {
-    float dx{ player.body.getPosition().x - body.getPosition().x };
-    float dy{ player.body.getPosition().y - body.getPosition().y };
+    float dx{ player.turret.getPosition().x - turret.getPosition().x };
+    float dy{ player.turret.getPosition().y - turret.getPosition().y };
 
     float angle = std::atan2(dy, dx) * 180.0f / M_PI; 
 
     head.setRotation(sf::degrees(angle + 180));
     turret.setRotation(sf::degrees(angle + 180));
 
+    const float dirX{ player.turret.getPosition().x - this->turret.getPosition().x };
+    const float dirY{ player.turret.getPosition().y - this->turret.getPosition().y };
+    const float distance{ (dirX * dirX) + (dirY * dirY) };
+    const float normalizedX{ dirX / distance };
+    const float normalizedY{ dirY / distance };
+    const int checks{ 30 };
+    const int stepSize{ static_cast<int>(distance / checks) };
 
-    // if (Random::get(1,500) == 1) shoot();
+    for (int i{0}; i <= checks; ++i)
+    {
+        const float pointX{ turret.getPosition().x + normalizedX * stepSize * i };
+        const float pointY{ turret.getPosition().y + normalizedY * stepSize * i };
+
+        const sf::Vector2f vec{ pointX, pointY };
+        for (const auto& wall : currLevel)
+        {
+            if (contains(vec, wall.getWall())) // DO NOT SHOOT IF BULLET WILL COLLIDE WITH WALL
+            {
+                return;
+            }
+        }
+    }
+
+    // if (Random::get(1,400) == 1) shoot();
 }
 
 void Tank::moveTowardsPlayer(const Tank& player) {

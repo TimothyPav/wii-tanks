@@ -42,7 +42,8 @@ inline void level1(Tank& player)
     }
     player.setPos({100, 100});
 
-    auto enemy_ptr = std::make_unique<Tank>(currLevel, 0, sf::Vector2f{1500, 780});
+    // auto enemy_ptr = std::make_unique<Tank>(currLevel, 0, sf::Vector2f{1500, 780});
+    auto enemy_ptr = std::make_unique<Tank>(currLevel, 0, sf::Vector2f{850, 650});
     tanks.push_back(std::move(enemy_ptr));
 }
 
@@ -354,7 +355,7 @@ inline void level9 (Tank& player)
     auto enemy_ptr2 = std::make_unique<Tank>(currLevel, 2.5, sf::Vector2f{27*60, 15*60});
     enemy_ptr2->setLevelFourTank();
     auto enemy_ptr3 = std::make_unique<Tank>(currLevel, 2.5, sf::Vector2f{8*60, 2*60});
-    enemy_ptr3->setLevelTwoTank();
+    enemy_ptr3->setLevelFourTank();
     auto enemy_ptr4 = std::make_unique<Tank>(currLevel, 2.5, sf::Vector2f{20*60, 5*60});
     enemy_ptr4->setLevelTwoTank();
     auto enemy_ptr5 = std::make_unique<Tank>(currLevel, 2.5, sf::Vector2f{28*60, 3*60});
@@ -395,7 +396,7 @@ inline void level0 (Tank& player)
 typedef void (*setupLevel)(Tank& player);
 class LevelManager
 {
-    std::array<setupLevel, 7> levels{};
+    std::array<setupLevel, 9> levels{};
     Tank& m_player;
 
 public:
@@ -403,14 +404,16 @@ public:
         : m_player(player) 
     {
         // fill level manager up?
-        levels[0] = level0;
-        // levels[0] = level1;
+        // levels[0] = level0;
+        levels[0] = level1;
         levels[1] = level2;
         levels[2] = level3;
         levels[3] = level4;
         levels[4] = level5;
         levels[5] = level6;
-        levels[6] = level7;
+        levels[0] = level7;
+        levels[7] = level8;
+        levels[0] = level9;
     }
 
     setupLevel operator[] (int level) const
