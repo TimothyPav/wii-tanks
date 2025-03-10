@@ -11,7 +11,7 @@
 
 extern std::vector<Bullet> bullets;
 
-Bullet::Bullet(float x, float y, int speed, sf::Angle angle, Tank* owner) : speed(speed), angle(angle), owner(owner) {
+Bullet::Bullet(float x, float y, float speed, sf::Angle angle, Tank* owner) : speed(speed), angle(angle), owner(owner) {
     body.setOrigin({5, 5});
     body.setRotation(angle);
     body.setPosition({x, y});
@@ -88,7 +88,7 @@ WallSide Bullet::whichSide(Wall& wall) {
 bool Bullet::collision(sf::RenderWindow& window, std::vector<Wall>& level, std::vector<std::shared_ptr<Bomb>>& bombs, 
                        std::vector<std::unique_ptr<Tank>>& tanks) {
     for (auto& wall : level) {
-        if (!wall.isHole() && doOverlap(wall.getWall(), body)) {
+        if (!wall.isHole() && doOverlap2(wall.getWall(), body)) {
             // sf::Angle rotate = sf::degrees(180);
             WallSide side = whichSide(wall);
             switch (side) {
@@ -127,8 +127,8 @@ bool Bullet::collision(sf::RenderWindow& window, std::vector<Wall>& level, std::
 
 
     for (const auto& tank : tanks) {
-        if (tank->getIsAlive() && doOverlap(tank->getTankBody(), body)) {
-            tank->kill();
+        if (tank->getIsAlive() && doOverlap2(tank->getTankBody(), body)) {
+            // tank->kill();
             bounces = 0;
         }
     }

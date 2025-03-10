@@ -367,7 +367,7 @@ inline void level9 (Tank& player)
     tanks.push_back(std::move(enemy_ptr5));
 }
 
-inline void level0 (Tank& player)
+inline void level10 (Tank& player)
 {
     for (int i{14}; i <= 15; ++i) {
         for (int j{14}; j <= 14; ++j) {
@@ -396,7 +396,7 @@ inline void level0 (Tank& player)
 typedef void (*setupLevel)(Tank& player);
 class LevelManager
 {
-    std::array<setupLevel, 9> levels{};
+    std::array<setupLevel, 10> levels{};
     Tank& m_player;
 
 public:
@@ -411,9 +411,10 @@ public:
         levels[3] = level4;
         levels[4] = level5;
         levels[5] = level6;
-        levels[0] = level7;
+        levels[6] = level7;
         levels[7] = level8;
-        levels[0] = level9;
+        levels[8] = level9;
+        levels[9] = level10;
     }
 
     setupLevel operator[] (int level) const

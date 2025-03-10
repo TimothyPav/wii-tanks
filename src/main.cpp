@@ -66,7 +66,7 @@ int main()
     auto start_time = std::chrono::high_resolution_clock::now();
 
     long tempSeconds{0};
-    auto t_ptr = std::make_unique<Tank>(square, 2, currLevel);
+    auto t_ptr = std::make_unique<Tank>(square, 1.5, currLevel);
     Tank& t = *t_ptr;  // Store reference
     t.setPlayer();
 

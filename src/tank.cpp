@@ -191,9 +191,9 @@ bool Tank::checkBoundaries(Direction dir, Direction dir2) {
             bombShape.setRadius(100);
             if (doOverlap(tankBombTopLeftCoord, tankBombBottomRightCoord, bombShape, speed))
             {
-                std::cout << "tankBomb pred: " << ((tankBombTopLeftCoord.x + tankBottomRightCoord.x) / 2) << ", " 
-                                               << ((tankBombTopLeftCoord.y + tankBottomRightCoord.y) / 2) << '\n';
-                std::cout << "Actual bomb: " << bombShape.getPosition().x << ", " << bombShape.getPosition().y << '\n';
+                // std::cout << "tankBomb pred: " << ((tankBombTopLeftCoord.x + tankBottomRightCoord.x) / 2) << ", " 
+                                               // << ((tankBombTopLeftCoord.y + tankBottomRightCoord.y) / 2) << '\n';
+                // std::cout << "Actual bomb: " << bombShape.getPosition().x << ", " << bombShape.getPosition().y << '\n';
                 changeDir();
             }
         }
@@ -311,7 +311,7 @@ void Tank::shoot() {
     float xSideLength = -std::cos(angleRadians) * 50;
     float ySideLength = -std::sin(angleRadians) * 50;
 
-    Bullet bullet(turret.getPosition().x+xSideLength, turret.getPosition().y+ySideLength, 3, turret.getRotation(), this);
+    Bullet bullet(turret.getPosition().x+xSideLength, turret.getPosition().y+ySideLength, 2.25, turret.getRotation(), this);
     bullets.push_back(bullet);
     ++currentBullets;
 }
@@ -358,14 +358,14 @@ void Tank::rotateTurretAtPlayer(const Tank& player) {
         const sf::Vector2f vec{ pointX, pointY };
         for (const auto& wall : currLevel)
         {
-            if (contains(vec, wall.getWall())) // DO NOT SHOOT IF BULLET WILL COLLIDE WITH WALL
+            if (!wall.isHole() && contains(vec, wall.getWall())) // DO NOT SHOOT IF BULLET WILL COLLIDE WITH WALL
             {
                 return;
             }
         }
     }
 
-    // if (Random::get(1,400) == 1) shoot();
+    // if (Random::get(1,300) == 1) shoot();
 }
 
 void Tank::moveTowardsPlayer(const Tank& player) {

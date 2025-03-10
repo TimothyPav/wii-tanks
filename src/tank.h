@@ -35,7 +35,7 @@ private:
     float x;
     float y;
     std::vector<Wall> level;
-    int maxBullets{ 5 };
+    int maxBullets{ 50 };
 
     bool isLevelTwoTank{ false }; // moves randomly every 1 second
     bool isLevelThreeTank{ false }; // moves towards player 1 direction per second
@@ -121,21 +121,24 @@ public:
     void setLevelTwoTank(){ 
         isLevelTwoTank = true; 
         maxBullets = 3;
-        speed = 2;
+        speed = 1.5;
+        body.setFillColor(sf::Color::Red);
     }
     bool getIsLevelTwoTank(){ return isLevelTwoTank; }
 
     void setLevelThreeTank(){ 
         isLevelThreeTank = true; 
         maxBullets = 3;
-        speed = 2.5;
+        speed = 1.875;
+        body.setFillColor(sf::Color::Magenta);
     }
     bool getIsLevelThreeTank(){ return isLevelThreeTank; }
 
     void setLevelFourTank() {
         isLevelFourTank = true;
         maxBullets = 1;
-        speed = 3;
+        speed = 2.25;
+        body.setFillColor(sf::Color::Yellow);
     }
     bool getIsLevelFourTank(){ return isLevelFourTank; }
     std::vector<std::shared_ptr<Bomb>> m_bombVector{};
@@ -143,7 +146,8 @@ public:
     void setLevelFiveTank() {
         isLevelFiveTank = true;
         maxBullets = 5;
-        speed = 3;
+        speed = 2.25;
+        body.setFillColor(sf::Color::White);
     }
     bool getIsLevelFiveTank(){ return isLevelFiveTank; }
 

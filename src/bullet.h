@@ -23,14 +23,14 @@ class Bullet
 {
 private:
     sf::RectangleShape body;
-    int speed;
+    float speed;
     sf::Angle angle;
     int bounces = 3;
     Tank* owner;
 
 
 public:
-    Bullet(float x, float y, int speed, sf::Angle angle, Tank* owner);
+    Bullet(float x, float y, float speed, sf::Angle angle, Tank* owner);
     
     sf::RectangleShape getBody();
     bool collision(sf::RenderWindow& window, std::vector<Wall>& level, 
