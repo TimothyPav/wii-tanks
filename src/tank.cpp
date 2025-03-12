@@ -365,7 +365,7 @@ void Tank::rotateTurretAtPlayer(const Tank& player) {
         }
     }
 
-    if (Random::get(1,300) == 1) shoot();
+    if (Random::get(1,odds) == 1) shoot();
 }
 
 void Tank::moveTowardsPlayer(const Tank& player) {

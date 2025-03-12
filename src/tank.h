@@ -36,6 +36,7 @@ private:
     float y;
     std::vector<Wall> level;
     int maxBullets{ 5 };
+    int odds{ 300 };
 
     bool isLevelTwoTank{ false }; // moves randomly every 1 second
     bool isLevelThreeTank{ false }; // moves towards player 1 direction per second
@@ -131,6 +132,7 @@ public:
         maxBullets = 3;
         speed = 1.875;
         body.setFillColor(sf::Color::Magenta);
+        odds = 100;
     }
     bool getIsLevelThreeTank(){ return isLevelThreeTank; }
 
@@ -148,6 +150,7 @@ public:
         maxBullets = 5;
         speed = 2.25;
         body.setFillColor(sf::Color::White);
+        odds = 100;
     }
     bool getIsLevelFiveTank(){ return isLevelFiveTank; }
 
