@@ -3,6 +3,7 @@
 #include <cmath>
 
 #include "utils.h"
+#include "bullet.h"
 
 bool doOverlap(sf::Vector2f tankTopLeft, sf::Vector2f tankBottomRight, sf::RectangleShape s2, int speed)
 {
@@ -188,5 +189,18 @@ std::pair<Direction, Direction> getDirection(int choice)
     case 6: return std::pair { Direction::Left, Direction::NODIRECTION };
     case 7: return std::pair { Direction::Right, Direction::NODIRECTION };
     default: return std::pair { Direction::Up, Direction::Left };
+    }
+}
+
+void printSide(WallSide side)
+{
+    switch(side)
+    {
+    case WallSide::left: std::cout << "left\n"; break;
+    case WallSide::right: std::cout << "right\n"; break;
+    case WallSide::top: std::cout << "top\n"; break;
+    case WallSide::bottom: std::cout << "bottom\n"; break;
+    case WallSide::NODIRECTION: std::cout << "NODIRESCTION\n"; break;
+    default: std::cout << "???\n"; break;
     }
 }

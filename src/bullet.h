@@ -27,6 +27,7 @@ private:
     sf::Angle angle;
     int bounces = 3;
     Tank* owner;
+    sf::Vector2f previousPosition{0, 0};
 
 
 public:

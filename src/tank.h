@@ -35,7 +35,7 @@ private:
     float x;
     float y;
     std::vector<Wall> level;
-    int maxBullets{ 50 };
+    int maxBullets{ 5 };
 
     bool isLevelTwoTank{ false }; // moves randomly every 1 second
     bool isLevelThreeTank{ false }; // moves towards player 1 direction per second

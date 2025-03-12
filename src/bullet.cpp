@@ -35,56 +35,40 @@ sf::RectangleShape Bullet::getBody() {
 }
 
 WallSide Bullet::whichSide(Wall& wall) {
-    // top-left, top-right, bottom-left, bottom-right
-    std::array<sf::Vector2f, 4> bodies {};
+    sf::FloatRect bulletBounds = body.getGlobalBounds();
+    sf::FloatRect wallBounds = wall.getWall().getGlobalBounds();
     
-    bodies[0] = sf::Vector2f ({body.getPosition().x, body.getPosition().y});
-    bodies[1] = sf::Vector2f ({body.getPosition().x+body.getSize().x, body.getPosition().y});
-    bodies[2] = sf::Vector2f ({body.getPosition().x, body.getPosition().y+body.getSize().y});
-    bodies[3] = sf::Vector2f ({body.getPosition().x+body.getSize().x, body.getPosition().y+body.getSize().y});
-
-    std::array<float, 4> wallCoords {};
-
-    sf::RectangleShape recWall = wall.getWall();
-    wallCoords[0] = float { recWall.getPosition().x };
-    wallCoords[1] = float { recWall.getPosition().x+recWall.getSize().x };
-    wallCoords[2] = float { recWall.getPosition().y };
-    wallCoords[3] = float { recWall.getPosition().y+recWall.getSize().y };
-
-    double positiveInfinity = std::numeric_limits<double>::infinity();
-    double min{ positiveInfinity };
-    double calc { 0 };
-    WallSide dir { WallSide::NODIRECTION };
-
-    for (int i{0}; i < bodies.size(); ++i) {
-        for (int j{0}; j < wallCoords.size(); ++j) {
-            sf::Vector2f bodiesI { bodies[i] };
-            float wallCoord { wallCoords[j] };
-
-            if (j < 2) {
-                // if (j == 0) std::cout << "Left wall X: ";
-                // if (j == 1) std::cout << "Right wall X: ";
-                // std::cout << bodiesI.x - wallCoord << '\n';
-                calc = static_cast<double>(bodiesI.x - wallCoord);
-            } else {
-                // if (j == 2) std::cout << "Top wall Y: ";
-                // if (j == 3) std::cout << "Bottom wall Y: ";
-                // std::cout << bodiesI.y - wallCoord << '\n';
-                calc = static_cast<double>(bodiesI.y - wallCoord);
-            }
-            calc = std::abs(calc);
-            if (calc < min) {
-                min = calc;
-                dir = static_cast<WallSide>(j+1);
-            }
-            // std::cout << bodiesI.y - wallCoord << '\n';
+    sf::Vector2f bulletCenter = bulletBounds.getCenter();
+    sf::Vector2f wallCenter = wallBounds.getCenter();
+    
+    // Get velocity vector from previous position
+    sf::Vector2f velocity = body.getPosition() - previousPosition;
+    
+    // Direction from wall to bullet
+    sf::Vector2f direction = bulletCenter - wallCenter;
+    
+    // Calculate penetration depths
+    float penetrationX = (bulletBounds.size.x + wallBounds.size.x) / 2 - std::abs(direction.x);
+    float penetrationY = (bulletBounds.size.y + wallBounds.size.y) / 2 - std::abs(direction.y);
+    
+    // For corners, consider the movement direction
+    if (fabs(penetrationX - penetrationY) < 5.0f) {
+        // It's a corner collision - use velocity to determine side
+        if (fabs(velocity.x) > fabs(velocity.y)) {
+            return (velocity.x > 0) ? WallSide::left : WallSide::right;
+        } else {
+            return (velocity.y > 0) ? WallSide::top : WallSide::bottom;
         }
     }
-
-    return dir;
+    
+    // For clear side collisions
+    if (penetrationX < penetrationY) {
+        return (direction.x > 0) ? WallSide::right : WallSide::left;
+    } else {
+        return (direction.y > 0) ? WallSide::bottom : WallSide::top;
+    }
 }
 
-// handle level4vector bomb collisions
 bool Bullet::collision(sf::RenderWindow& window, std::vector<Wall>& level, std::vector<std::shared_ptr<Bomb>>& bombs, 
                        std::vector<std::unique_ptr<Tank>>& tanks) {
     for (auto& wall : level) {
@@ -128,7 +112,7 @@ bool Bullet::collision(sf::RenderWindow& window, std::vector<Wall>& level, std::
 
     for (const auto& tank : tanks) {
         if (tank->getIsAlive() && doOverlap2(tank->getTankBody(), body)) {
-            // tank->kill();
+            tank->kill();
             bounces = 0;
         }
     }
@@ -151,6 +135,7 @@ void Bullet::move(sf::RenderWindow& window, std::vector<Wall>& level, std::vecto
     float ySideLength = -std::sin(angleRadians) * speed;
     
     // calculate which quadrant the bullet should be in
+    previousPosition = body.getPosition();
     if (convertedAngle >= 0 && convertedAngle <= 90) body.move({xSideLength, ySideLength});
     else if (convertedAngle > 90 && convertedAngle <= 180) body.move({xSideLength, ySideLength});
     else if (convertedAngle > 180 && convertedAngle <= 270) body.move({xSideLength, ySideLength});

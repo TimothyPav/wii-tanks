@@ -24,6 +24,8 @@ private:
         wall.setSize(sf::Vector2f(width, height));
         wall.setFillColor(color);
         wall.setPosition(trueCoords);
+        wall.setOutlineThickness(2);
+        wall.setOutlineColor(sf::Color::Yellow);
     }
 
 public:
