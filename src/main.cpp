@@ -32,6 +32,15 @@ int main()
 
     sf::Color color = sf::Color::Green;
 
+    sf::Texture pic;
+    pic.loadFromFile("../assets/background.jpg");
+    sf::Sprite s(pic);
+
+    sf::Texture wallArtTexture;
+    wallArtTexture.loadFromFile("../assets/block1.png");
+    sf::Sprite wallArt(wallArtTexture);
+
+
     // Tank t(square, 5);
     // std::vector<Wall> currentLevel = level_1();
     // Tank t (square, 5, currentLevel);
@@ -177,9 +186,26 @@ int main()
 
         window.clear();
         // do things in here?
+        window.draw(s);
 
-        for (int i{0}; i < currLevel.size(); ++i)
-            window.draw(currLevel[i].getWall());
+        for (int i{0}; i < currLevel.size(); ++i) {
+    // Get the current wall rectangle
+    sf::RectangleShape wall = currLevel[i].getWall();
+    
+    // Set the sprite position and rotation to match the wall
+    wallArt.setPosition(wall.getPosition());
+    wallArt.setRotation(wall.getRotation());
+    
+    // If needed, scale the sprite to match wall dimensions
+    // (you mentioned they have the same dimensions, so this might not be needed)
+    // wallArt.setScale(
+    //     wall.getSize().x / wallArt.getTexture()->getSize().x,
+    //     wall.getSize().y / wallArt.getTexture()->getSize().y
+    // );
+    
+    // Draw the sprite instead of the rectangle
+    window.draw(wallArt);
+}
 
         if (t.getBomb() != nullptr) {
             window.draw(t.getBomb()->placeBomb());
