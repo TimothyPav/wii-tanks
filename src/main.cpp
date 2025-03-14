@@ -1,8 +1,11 @@
 #include <SFML/Graphics.hpp>
+#include <SFML/Graphics/Rect.hpp>
 #include <SFML/Window/Keyboard.hpp>
 #include <iostream>
 #include <SFML/Window/Mouse.hpp>
 #include <ctime>
+#include <array>
+#include <vector>
 
 #include "tank.h"
 #include "utils.h"
@@ -40,6 +43,15 @@ int main()
     wallArtTexture.loadFromFile("../assets/block1.png");
     sf::Sprite wallArt(wallArtTexture);
 
+    sf::Texture tankBodiesTexture;
+    tankBodiesTexture.loadFromFile("../assets/tankbodies.png");
+    std::vector<sf::Sprite> tankSprites;
+    for (int i{0}; i < 6; ++i)
+    {
+        sf::Sprite tankSprite(tankBodiesTexture);
+        tankSprite.setTextureRect(sf::IntRect({0, i*50}, {50, 50}));
+        tankSprites.push_back(tankSprite);
+    }
 
     // Tank t(square, 5);
     // std::vector<Wall> currentLevel = level_1();
@@ -194,16 +206,6 @@ int main()
     
     // Set the sprite position and rotation to match the wall
     wallArt.setPosition(wall.getPosition());
-    wallArt.setRotation(wall.getRotation());
-    
-    // If needed, scale the sprite to match wall dimensions
-    // (you mentioned they have the same dimensions, so this might not be needed)
-    // wallArt.setScale(
-    //     wall.getSize().x / wallArt.getTexture()->getSize().x,
-    //     wall.getSize().y / wallArt.getTexture()->getSize().y
-    // );
-    
-    // Draw the sprite instead of the rectangle
     window.draw(wallArt);
 }
 
@@ -215,7 +217,11 @@ int main()
 
         for (auto& currentTank : tanks) 
         {
-            window.draw(currentTank->getTankBody());
+            tankSprites[0].setPosition(currentTank->getTankBody().getPosition());
+            tankSprites[0].setOrigin({25, 25});
+            tankSprites[0].setRotation(-currentTank->getTankBody().getRotation());
+            window.draw(tankSprites[0]);
+            // window.draw(currentTank->getTankBody());
             window.draw(currentTank->getHeadBody());
             window.draw(currentTank->getTurretBody());
 
