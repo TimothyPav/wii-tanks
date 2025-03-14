@@ -115,6 +115,7 @@ public:
     void revive() { isAlive = true; }
     bool getIsAlive() { return isAlive; }
     void setPlayer() { isPlayer = true; }
+    bool getIsPlayer() { return isPlayer; }
 
     std::pair<Direction, Direction> getDir(){ return dir; }
     void changeDir(){ dir = getDirection(Random::get(0,7)); }

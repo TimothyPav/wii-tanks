@@ -44,13 +44,27 @@ int main()
     sf::Sprite wallArt(wallArtTexture);
 
     sf::Texture tankBodiesTexture;
-    tankBodiesTexture.loadFromFile("../assets/tankbodies.png");
-    std::vector<sf::Sprite> tankSprites;
+    tankBodiesTexture.loadFromFile("../assets/tankSprites.png");
+    std::vector<sf::Sprite> tankSprites_bodies;
     for (int i{0}; i < 6; ++i)
     {
         sf::Sprite tankSprite(tankBodiesTexture);
-        tankSprite.setTextureRect(sf::IntRect({0, i*50}, {50, 50}));
-        tankSprites.push_back(tankSprite);
+        tankSprite.setTextureRect(sf::IntRect({i*50, 0}, {50, 50}));
+        tankSprites_bodies.push_back(tankSprite);
+    }
+    std::vector<sf::Sprite> tankSprites_heads;
+    for (int i{0}; i < 6; ++i)
+    {
+        sf::Sprite tankSprite(tankBodiesTexture);
+        tankSprite.setTextureRect(sf::IntRect({i*30, 50}, {30, 30}));
+        tankSprites_heads.push_back(tankSprite);
+    }
+    std::vector<sf::Sprite> tankSprites_turrets;
+    for (int i{0}; i < 6; ++i)
+    {
+        sf::Sprite tankSprite(tankBodiesTexture);
+        tankSprite.setTextureRect(sf::IntRect({i*50, 80}, {50, 10}));
+        tankSprites_turrets.push_back(tankSprite);
     }
 
     // Tank t(square, 5);
@@ -217,13 +231,12 @@ int main()
 
         for (auto& currentTank : tanks) 
         {
-            tankSprites[0].setPosition(currentTank->getTankBody().getPosition());
-            tankSprites[0].setOrigin({25, 25});
-            tankSprites[0].setRotation(-currentTank->getTankBody().getRotation());
-            window.draw(tankSprites[0]);
+            window.draw(getBodySprite(tankSprites_bodies, currentTank.get()));
             // window.draw(currentTank->getTankBody());
-            window.draw(currentTank->getHeadBody());
-            window.draw(currentTank->getTurretBody());
+            // window.draw(currentTank->getHeadBody());
+            window.draw(getHeadSprite(tankSprites_heads, currentTank.get()));
+            window.draw(getTurretSprite(tankSprites_heads, currentTank.get()));
+            // window.draw(currentTank->getTurretBody());
 
             if (currentTank.get() != &t)
             {

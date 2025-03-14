@@ -17,6 +17,10 @@ std::pair<Direction, Direction> getDirection(int choice);
 
 bool doOverlap2(const sf::RectangleShape& s1, const sf::RectangleShape& s2);
 
+sf::Sprite getBodySprite(std::vector<sf::Sprite>& sprites, Tank* tank);
+sf::Sprite getHeadSprite(std::vector<sf::Sprite>& sprites, Tank* tank);
+sf::Sprite getTurretSprite(std::vector<sf::Sprite>& sprites, Tank* tank);
+
 void printSide(WallSide side);
 
 #endif

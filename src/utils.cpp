@@ -4,6 +4,7 @@
 
 #include "utils.h"
 #include "bullet.h"
+#include "tank.h"
 
 bool doOverlap(sf::Vector2f tankTopLeft, sf::Vector2f tankBottomRight, sf::RectangleShape s2, int speed)
 {
@@ -190,6 +191,51 @@ std::pair<Direction, Direction> getDirection(int choice)
     case 7: return std::pair { Direction::Right, Direction::NODIRECTION };
     default: return std::pair { Direction::Up, Direction::Left };
     }
+}
+
+int getSpriteIndexHelper(Tank* tank)
+{
+    int spriteIndex;
+    if (tank->getIsPlayer()) spriteIndex = 0;
+    else if (tank->getIsLevelTwoTank()) spriteIndex = 2;
+    else if (tank->getIsLevelThreeTank()) spriteIndex = 3;
+    else if (tank->getIsLevelFourTank()) spriteIndex = 4;
+    else if (tank->getIsLevelFiveTank()) spriteIndex = 5;
+    else spriteIndex = 1;
+    
+    return spriteIndex;
+}
+
+sf::Sprite getBodySprite(std::vector<sf::Sprite>& sprites, Tank* tank)
+{
+    int spriteIndex{ getSpriteIndexHelper(tank) };
+
+    sprites[spriteIndex].setPosition(tank->getTankBody().getPosition());
+    sprites[spriteIndex].setOrigin({25, 25});
+    sprites[spriteIndex].setRotation(-tank->getTankBody().getRotation());
+    return sprites[spriteIndex];
+}
+
+sf::Sprite getHeadSprite(std::vector<sf::Sprite>& sprites, Tank* tank)
+{
+    int spriteIndex{ getSpriteIndexHelper(tank) };
+
+    sprites[spriteIndex].setPosition(tank->getHeadBody().getPosition());
+    sprites[spriteIndex].setOrigin(tank->getHeadBody().getOrigin());
+    sprites[spriteIndex].setRotation(tank->getHeadBody().getRotation());
+    return sprites[spriteIndex];
+
+}
+
+sf::Sprite getTurretSprite(std::vector<sf::Sprite>& sprites, Tank* tank)
+{
+    int spriteIndex{ getSpriteIndexHelper(tank) };
+
+    sprites[spriteIndex].setPosition(tank->getTurretBody().getPosition());
+    sprites[spriteIndex].setOrigin(tank->getTurretBody().getOrigin());
+    sprites[spriteIndex].setRotation(tank->getTurretBody().getRotation());
+    return sprites[spriteIndex];
+
 }
 
 void printSide(WallSide side)
