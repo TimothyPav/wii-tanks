@@ -224,7 +224,6 @@ sf::Sprite getHeadSprite(std::vector<sf::Sprite>& sprites, Tank* tank)
     sprites[spriteIndex].setOrigin(tank->getHeadBody().getOrigin());
     sprites[spriteIndex].setRotation(tank->getHeadBody().getRotation());
     return sprites[spriteIndex];
-
 }
 
 sf::Sprite getTurretSprite(std::vector<sf::Sprite>& sprites, Tank* tank)
@@ -235,7 +234,6 @@ sf::Sprite getTurretSprite(std::vector<sf::Sprite>& sprites, Tank* tank)
     sprites[spriteIndex].setOrigin(tank->getTurretBody().getOrigin());
     sprites[spriteIndex].setRotation(tank->getTurretBody().getRotation());
     return sprites[spriteIndex];
-
 }
 
 void printSide(WallSide side)

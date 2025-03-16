@@ -23,6 +23,9 @@ std::vector<Bullet> bullets{};
 std::vector<std::shared_ptr<Bomb>> bombs{};
 std::vector<Wall> currLevel;
 
+using spriteVector = std::vector<sf::Sprite>;
+void displayLevel(sf::RenderWindow& window, sf::Sprite& s, sf::Sprite& wallArt, spriteVector& bodies, spriteVector& heads, spriteVector& turrets);
+
 int main()
 {
     auto window = sf::RenderWindow(sf::VideoMode({1920, 1080}), "wii tanks");
@@ -56,7 +59,7 @@ int main()
     for (int i{0}; i < 6; ++i)
     {
         sf::Sprite tankSprite(tankBodiesTexture);
-        tankSprite.setTextureRect(sf::IntRect({i*30, 50}, {30, 30}));
+        tankSprite.setTextureRect(sf::IntRect({i*50, 50}, {30, 30}));
         tankSprites_heads.push_back(tankSprite);
     }
     std::vector<sf::Sprite> tankSprites_turrets;
@@ -67,40 +70,10 @@ int main()
         tankSprites_turrets.push_back(tankSprite);
     }
 
-    // Tank t(square, 5);
-    // std::vector<Wall> currentLevel = level_1();
-    // Tank t (square, 5, currentLevel);
-    // tanks.push_back(std::make_unique<Tank>(t));
-                                        //
-    // auto enemy_ptr = std::make_unique<Tank>(currentLevel, 0, sf::Vector2f{1500, 780});
-    // tanks.push_back(std::move(enemy_ptr));
-
-    // auto enemy_ptr2 = std::make_unique<Tank>(currentLevel, 0, sf::Vector2f{1200, 600});
-    // tanks.push_back(std::move(enemy_ptr2));
-
-    // auto enemy_ptr3 = std::make_unique<Tank>(currentLevel, 1, sf::Vector2f{600, 600});
-    // enemy_ptr3->setLevelTwoTank();
-    // tanks.push_back(std::move(enemy_ptr3));
-
-    // auto enemy_ptr4 = std::make_unique<Tank>(currentLevel, 1, sf::Vector2f{700, 400});
-    // enemy_ptr4->setLevelThreeTank();
-    // tanks.push_back(std::move(enemy_ptr4));
-
-    // auto enmey_ptr5 = std::make_unique<Tank>(currentLevel, 2.5, sf::Vector2f{300, 800});
-    // enmey_ptr5->setLevelFourTank();
-    // tanks.push_back(std::move(enmey_ptr5));
-
-    // level 5 tank
-    // auto enemy_ptr6{ std::make_unique<Tank>(currentLevel, 2, sf::Vector2f{ 500, 300 }) };
-    // enemy_ptr6->setLevelFiveTank();
-    // tanks.push_back(std::move(enemy_ptr6));
-
     bool isMousePressed { false };
     bool isSpacePressed { false };
-    double elapsed_seconds{};
     auto start_time = std::chrono::high_resolution_clock::now();
 
-    long tempSeconds{0};
     auto t_ptr = std::make_unique<Tank>(square, 1.5, currLevel);
     Tank& t = *t_ptr;  // Store reference
     t.setPlayer();
@@ -113,13 +86,17 @@ int main()
 
     while (window.isOpen())
     {
+        auto current_time = std::chrono::high_resolution_clock::now();
+        long seconds { std::chrono::duration_cast<std::chrono::seconds>(current_time - start_time).count() };
         if (t.getIsAlive() && tanks.size() == 1)
         {
             ++level;
             levelManager[level](t);
+            t.resetRotation();
+            displayLevel(window, s, wallArt, tankSprites_bodies, tankSprites_heads, tankSprites_turrets);
+
         }
-        auto current_time = std::chrono::high_resolution_clock::now();
-        long seconds { std::chrono::duration_cast<std::chrono::seconds>(current_time - start_time).count() };
+
         while (const std::optional event = window.pollEvent())
         {
             if (event->is<sf::Event::Closed>())
@@ -144,6 +121,7 @@ int main()
                 --lives;
                 t.revive();
                 levelManager[level](t);
+                displayLevel(window, s, wallArt, tankSprites_bodies, tankSprites_heads, tankSprites_turrets);
             }
             else 
             {
@@ -215,13 +193,13 @@ int main()
         window.draw(s);
 
         for (int i{0}; i < currLevel.size(); ++i) {
-    // Get the current wall rectangle
-    sf::RectangleShape wall = currLevel[i].getWall();
+            // Get the current wall rectangle
+            sf::RectangleShape wall = currLevel[i].getWall();
     
-    // Set the sprite position and rotation to match the wall
-    wallArt.setPosition(wall.getPosition());
-    window.draw(wallArt);
-}
+            // Set the sprite position and rotation to match the wall
+            wallArt.setPosition(wall.getPosition());
+            window.draw(wallArt);
+        }
 
         if (t.getBomb() != nullptr) {
             window.draw(t.getBomb()->placeBomb());
@@ -232,11 +210,8 @@ int main()
         for (auto& currentTank : tanks) 
         {
             window.draw(getBodySprite(tankSprites_bodies, currentTank.get()));
-            // window.draw(currentTank->getTankBody());
-            // window.draw(currentTank->getHeadBody());
             window.draw(getHeadSprite(tankSprites_heads, currentTank.get()));
-            window.draw(getTurretSprite(tankSprites_heads, currentTank.get()));
-            // window.draw(currentTank->getTurretBody());
+            window.draw(getTurretSprite(tankSprites_turrets, currentTank.get()));
 
             if (currentTank.get() != &t)
             {
@@ -363,5 +338,36 @@ int main()
         }
 
         window.display();
+    }
+}
+
+void displayLevel(sf::RenderWindow& window, sf::Sprite& s, sf::Sprite& wallArt, spriteVector& bodies, spriteVector& heads, spriteVector& turrets)
+{
+    window.clear();
+    window.draw(s);
+    for (int i{0}; i < currLevel.size(); ++i) {
+        // Get the current wall rectangle
+        sf::RectangleShape wall = currLevel[i].getWall();
+    
+        // Set the sprite position and rotation to match the wall
+        wallArt.setPosition(wall.getPosition());
+        window.draw(wallArt);
+    }
+
+    for (auto& currentTank : tanks) 
+    {
+        window.draw(getBodySprite(bodies, currentTank.get()));
+        window.draw(getHeadSprite(heads, currentTank.get()));
+        window.draw(getTurretSprite(turrets, currentTank.get()));
+    }
+
+    window.display();
+    auto begin = std::chrono::high_resolution_clock::now();
+    auto end = std::chrono::high_resolution_clock::now();
+    long waitTime { std::chrono::duration_cast<std::chrono::seconds>(end - begin).count() };
+    while (waitTime < 3)
+    {
+        auto end = std::chrono::high_resolution_clock::now();
+        waitTime = std::chrono::duration_cast<std::chrono::seconds>(end - begin).count();
     }
 }

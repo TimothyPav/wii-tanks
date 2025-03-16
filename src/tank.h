@@ -107,6 +107,12 @@ public:
        head.setPosition(pos); 
     }
 
+    void resetRotation() {
+        body.setRotation(sf::degrees(0));
+        head.setRotation(sf::degrees(180));
+        turret.setRotation(sf::degrees(180)); 
+    }
+
     int currentBullets{ 0 };
 
     bool getIsBombPlaced() const { return isBombPlaced; }
