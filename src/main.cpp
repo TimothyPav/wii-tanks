@@ -252,17 +252,11 @@ int main()
             if(currentTank->getIsLevelFourTank()) // plant bombs tank
             {
                 currentTank->moveTank(currentTank->getDir().first, currentTank->getDir().second);
-                currentTank->plantBombEnemy(4); // 4 is max bombs for level four tank (yellow)
+                currentTank->plantBombEnemy(4, t); // 4 is max bombs for level four tank (yellow)
 
                 if (seconds % 2 == 0 && !currentTank->state1)
                 {
-                    if (Random::get(1, 2) == 1)
-                        currentTank->moveTowardsPlayer(t);
-                    else
-                    {
-                        currentTank->changeDir();
-                        currentTank->moveTank(currentTank->getDir().first, currentTank->getDir().second);
-                    }
+                    currentTank->moveTowardsPlayer(t);
                     currentTank->state1 = true;
                 }
                 if (currentTank->everySecond != seconds)
@@ -275,7 +269,8 @@ int main()
             if(currentTank->getIsLevelFiveTank())
             {
                 currentTank->moveTank(currentTank->getDir().first, currentTank->getDir().second);
-                currentTank->plantBombEnemy(1); // 1 is max bombs for level five tank (black)
+                currentTank->plantBombEnemy(1, t); // 1 is max bombs for level five tank (black)
+
                 if (seconds % 2 == 0 && !currentTank->state1)
                 {
                     currentTank->moveTowardsPlayer(t);

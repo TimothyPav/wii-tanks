@@ -176,6 +176,19 @@ bool contains(const sf::Vector2f point, const sf::RectangleShape rectangle) {
     return false;
 }
 
+bool contains(const sf::Vector2f point, const sf::CircleShape circle) {
+    sf::Vector2f center = circle.getPosition() + sf::Vector2f(circle.getRadius(), circle.getRadius());
+    float radius = circle.getRadius();
+    
+    // Calculate the squared distance from the point to the circle's center
+    float dx = point.x - center.x;
+    float dy = point.y - center.y;
+    float distanceSquared = dx * dx + dy * dy;
+    
+    // Check if the point is within the circle's radius
+    return distanceSquared < radius * radius;
+}
+
 std::pair<Direction, Direction> getDirection(int choice)
 {
     switch(choice)

@@ -55,16 +55,13 @@ private:
     void setDefaults() {
         body.setOrigin(sf::Vector2f(25, 25));
         body.setSize(sf::Vector2f(50, 50));
-        body.setFillColor(sf::Color::Red);
         body.setPosition(sf::Vector2f(100, 100));
 
         head.setSize(sf::Vector2f(30, 30));
         head.setPosition(sf::Vector2f(body.getPosition().x + 25, body.getPosition().y + 25)); // magic number 25 just works for centering the head
-        head.setFillColor(sf::Color::Cyan);
 
         turret.setSize(sf::Vector2f(50, 10));
         turret.setPosition(sf::Vector2f({body.getPosition().x+body.getSize().x/2.0f, body.getPosition().y+body.getSize().y/2.0f}));
-        turret.setFillColor(sf::Color::Cyan);
 
         body.move(sf::Vector2f(25, 25));
 
@@ -130,7 +127,6 @@ public:
         isLevelTwoTank = true; 
         maxBullets = 3;
         speed = 1.5;
-        body.setFillColor(sf::Color::Red);
     }
     bool getIsLevelTwoTank(){ return isLevelTwoTank; }
 
@@ -138,7 +134,6 @@ public:
         isLevelThreeTank = true; 
         maxBullets = 3;
         speed = 1.875;
-        body.setFillColor(sf::Color::Magenta);
         odds = 100;
     }
     bool getIsLevelThreeTank(){ return isLevelThreeTank; }
@@ -147,7 +142,6 @@ public:
         isLevelFourTank = true;
         maxBullets = 1;
         speed = 2.25;
-        body.setFillColor(sf::Color::Yellow);
     }
     bool getIsLevelFourTank(){ return isLevelFourTank; }
     std::vector<std::shared_ptr<Bomb>> m_bombVector{};
@@ -156,8 +150,7 @@ public:
         isLevelFiveTank = true;
         maxBullets = 5;
         speed = 2.25;
-        body.setFillColor(sf::Color::White);
-        odds = 100;
+        odds = 80;
     }
     bool getIsLevelFiveTank(){ return isLevelFiveTank; }
 
@@ -166,7 +159,7 @@ public:
 
     void moveTowardsPlayer(const Tank& player);
 
-    void plantBombEnemy(int maxBombs); 
+    void plantBombEnemy(int maxBombs, Tank& player); 
 
     void getTankCoords() const;
     void test() const;

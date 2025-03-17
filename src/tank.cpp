@@ -21,18 +21,15 @@ Tank::Tank(const std::vector<Wall>& level, const float speed, const sf::Vector2f
 {
     body.setOrigin(sf::Vector2f(25, 25));
     body.setSize(sf::Vector2f(50, 50));
-    body.setFillColor(sf::Color::Green);
     body.setPosition(position);
 
     head.setSize(sf::Vector2f(30, 30));
     head.setPosition(sf::Vector2f(body.getPosition().x + 25, body.getPosition().y + 25)); // magic number 25 just works for centering the head
-    head.setFillColor(sf::Color::White);
     sf::Vector2f headSize = head.getSize();
     head.setOrigin(sf::Vector2f({headSize.x / 2.0f, headSize.y / 2.0f}));
 
     turret.setSize(sf::Vector2f(50, 10));
     turret.setPosition(sf::Vector2f({body.getPosition().x+body.getSize().x/2.0f, body.getPosition().y+body.getSize().y/2.0f}));
-    turret.setFillColor(sf::Color::White);
     sf::Vector2f size = turret.getSize();
     turret.setOrigin(sf::Vector2f({size.x, size.y / 2.0f}));
 
@@ -323,8 +320,13 @@ void Tank::plantBomb() {
     }
 }
 
-void Tank::plantBombEnemy(int maxBombs) {
-    int randNum = Random::get(1, 500);
+void Tank::plantBombEnemy(int maxBombs, Tank& player) {
+    sf::CircleShape potentialBomb{ sf::CircleShape(200) };
+    potentialBomb.setPosition({body.getPosition().x - potentialBomb.getRadius(),
+                               body.getPosition().y - potentialBomb.getRadius()});
+    if (!contains(player.getTankBody().getPosition(), potentialBomb)) return;
+
+    int randNum = Random::get(1, 150);
     if (m_bombVector.size() < maxBombs && randNum == 1)
     {
         std::shared_ptr<Bomb> b{ std::make_shared<Bomb>(body.getPosition().x, body.getPosition().y) };
@@ -365,7 +367,7 @@ void Tank::rotateTurretAtPlayer(const Tank& player) {
         }
     }
 
-    if (Random::get(1,odds) == 1) shoot();
+    // if (Random::get(1,odds) == 1) shoot();
 }
 
 void Tank::moveTowardsPlayer(const Tank& player) {
