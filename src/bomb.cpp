@@ -3,13 +3,18 @@
 #include "bomb.h"
 #include "tank.h"
 #include "utils.h"
+#include "Animation.h"
 
 // m_body will belong to one of the Tank class objects from std::vector<Tank*>&
 void Bomb::explode(const std::vector<std::unique_ptr<Tank>>& tanks) {
-    if (!isActive) return;
+    // if (!isActive) return;
+
     m_body.setOrigin({m_explosionRadius/1.3f, m_explosionRadius/1.3f});
     m_body.setRadius(m_explosionRadius);
 
+    m_body.setTexture(&explosionTexture);
+    animation = Animation(&explosionTexture, sf::Vector2u(6, 1), .05);
+    
 
     for (auto& currentTank : tanks) {
         if (currentTank == nullptr) continue;
@@ -40,5 +45,15 @@ void Bomb::explode(const std::vector<std::unique_ptr<Tank>>& tanks) {
         }
     }
     isActive = false;
+    animate(0);
 }
 
+void Bomb::animate(float deltaTime)
+{
+    if (isActive) return;
+
+    if (!animation.playAnimation(0, deltaTime))
+        animationFinished = true;
+    m_body.setTextureRect(animation.m_uvRect);
+
+}

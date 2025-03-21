@@ -327,12 +327,12 @@ void Tank::plantBombEnemy(int maxBombs, Tank& player) {
     if (!contains(player.getTankBody().getPosition(), potentialBomb)) return;
 
     int randNum = Random::get(1, 150);
-    if (m_bombVector.size() < maxBombs && randNum == 1)
-    {
-        std::shared_ptr<Bomb> b{ std::make_shared<Bomb>(body.getPosition().x, body.getPosition().y) };
-        m_bombVector.push_back(b);
-        bombs.push_back(b);
-    }
+    // if (m_bombVector.size() < maxBombs && randNum == 1)
+    // {
+        // std::shared_ptr<Bomb> b{ std::make_shared<Bomb>(body.getPosition().x, body.getPosition().y) };
+        // m_bombVector.push_back(b);
+        // bombs.push_back(b);
+    // }
 }
 
 void Tank::rotateTurretAtPlayer(const Tank& player) {

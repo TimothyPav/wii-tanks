@@ -11,12 +11,11 @@
 #include "utils.h"
 #include "wall.h"
 #include "levelManager.h"
+#include "Animation.h"
 
 
 // TODO: Obstacles/walls object to put on the map!
 // All the blocks will be 24x24
-
-std::vector<Wall> level_1();
 
 std::vector<std::unique_ptr<Tank>> tanks{};
 std::vector<Bullet> bullets{};
@@ -38,16 +37,26 @@ int main()
 
     sf::Color color = sf::Color::Green;
 
+    sf::RectangleShape testBomb({200, 200});
+    testBomb.setSize({100, 100});
+    sf::Texture explosionTexture;
+    auto p = explosionTexture.loadFromFile("../assets/explosion.png");
+    testBomb.setTexture(&explosionTexture);
+
+    Animation animation(&explosionTexture, sf::Vector2u(6, 1), 0.1f);
+    float deltaTime{0};
+    sf::Clock clock;
+
     sf::Texture pic;
-    pic.loadFromFile("../assets/background.jpg");
+    p = pic.loadFromFile("../assets/background.jpg");
     sf::Sprite s(pic);
 
     sf::Texture wallArtTexture;
-    wallArtTexture.loadFromFile("../assets/block1.png");
+    p = wallArtTexture.loadFromFile("../assets/block1.png");
     sf::Sprite wallArt(wallArtTexture);
 
     sf::Texture tankBodiesTexture;
-    tankBodiesTexture.loadFromFile("../assets/tankSprites.png");
+    p = tankBodiesTexture.loadFromFile("../assets/tankSprites.png");
     std::vector<sf::Sprite> tankSprites_bodies;
     for (int i{0}; i < 6; ++i)
     {
@@ -84,6 +93,7 @@ int main()
     levelManager[level](t);
     int lives{3};
 
+
     while (window.isOpen())
     {
         auto current_time = std::chrono::high_resolution_clock::now();
@@ -94,7 +104,6 @@ int main()
             levelManager[level](t);
             t.resetRotation();
             displayLevel(window, s, wallArt, tankSprites_bodies, tankSprites_heads, tankSprites_turrets);
-
         }
 
         while (const std::optional event = window.pollEvent())
@@ -318,19 +327,26 @@ int main()
         }
 
         // clean up and handle bombs vector
+        deltaTime = clock.restart().asSeconds();
         for (auto bomb = bombs.begin(); bomb != bombs.end(); )
         {
-            if (!bomb->get()->getIsActive())
+            if (!bomb->get()->getIsActive() && bomb->get()->isAnimationFinished())
             {
                 bombs.erase(bomb);
             }
             else 
             {
                 if (bomb->get()->getTime() > 5) bomb->get()->explode(tanks);
+                bomb->get()->animate(deltaTime);
+                // bomb->get()->getAnimation().loopUpdate(0, deltaTime);
                 window.draw(bomb->get()->getBombBody());
                 ++bomb;
             }
         }
+        animation.loopUpdate(0, deltaTime);
+        testBomb.setTextureRect(animation.m_uvRect);
+
+        window.draw(testBomb);
 
         window.display();
     }
