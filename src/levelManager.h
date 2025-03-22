@@ -411,7 +411,7 @@ public:
         levels[3] = level4;
         levels[4] = level5;
         levels[5] = level6;
-        levels[0] = level7;
+        levels[6] = level7;
         levels[7] = level8;
         levels[8] = level9;
         levels[9] = level10;

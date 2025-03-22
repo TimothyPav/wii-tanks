@@ -47,9 +47,14 @@ int main()
     float deltaTime{0};
     sf::Clock clock;
 
+    sf::Texture startScreenTexture;
+    p = startScreenTexture.loadFromFile("../assets/title_screen.png");
+    sf::Sprite startScreen(startScreenTexture);
+
     sf::Texture pic;
     p = pic.loadFromFile("../assets/background.jpg");
     sf::Sprite s(pic);
+
 
     sf::Texture wallArtTexture;
     p = wallArtTexture.loadFromFile("../assets/block1.png");
@@ -93,9 +98,11 @@ int main()
     levelManager[level](t);
     int lives{3};
 
+    bool gameStart{ false };
 
     while (window.isOpen())
     {
+
         auto current_time = std::chrono::high_resolution_clock::now();
         long seconds { std::chrono::duration_cast<std::chrono::seconds>(current_time - start_time).count() };
         if (t.getIsAlive() && tanks.size() == 1)
@@ -122,11 +129,24 @@ int main()
             }
         }
 
+        if (!gameStart)
+        {
+            window.draw(startScreen);
+            window.display();
+            window.clear();
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space))
+            {
+                gameStart = true;
+                isSpacePressed = true;
+            }
+            continue;
+        }
 
         if (!t.getIsAlive())
         {
             if (lives > 1)
             {
+                std::cout << "dies...\n";
                 --lives;
                 t.revive();
                 levelManager[level](t);
@@ -142,37 +162,37 @@ int main()
             //
         }
 
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Up) && sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Left))
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W) && sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A))
         {
             // std::cout << "Both UP and LEFT are pressed";
             t.moveTank(Direction::Up, Direction::Left);
         }
-        else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Up) && sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Right))
+        else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W) && sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D))
         {
             t.moveTank(Direction::Up, Direction::Right);
         }
-        else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Down) && sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Right))
+        else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S) && sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D))
         {
             t.moveTank(Direction::Down, Direction::Right);
         }
-        else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Down) && sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Left))
+        else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S) && sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A))
         {
             t.moveTank(Direction::Down, Direction::Left);
         }
-        else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Up))
+        else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W))
         {
             // std::cout << "Only UP is pressed";
             t.moveTank(Direction::Up);
         }
-        else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Down))
+        else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S))
         {
             t.moveTank(Direction::Down);
         }
-        else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Left))
+        else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A))
         {
             t.moveTank(Direction::Left);
         }
-        else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Right))
+        else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D))
         {
             t.moveTank(Direction::Right);
         }
@@ -189,7 +209,7 @@ int main()
             }
             // std::cout << "(" << sf::Mouse::getPosition().x-45 << ", " << sf::Mouse::getPosition().y-45 << ")\n";
         }
-        if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space) && !isSpacePressed)
+        if(gameStart && sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space) && !isSpacePressed)
         {
             if (!t.getIsAlive()) continue;
             isSpacePressed = true;
@@ -350,11 +370,7 @@ int main()
                 ++tank;
             }
         }
-
-        animation.loopUpdate(0, deltaTime);
-        testBomb.setTextureRect(animation.m_uvRect);
-
-        window.draw(testBomb);
+        window.draw(t.getTankBody());
 
         window.display();
     }
@@ -362,6 +378,7 @@ int main()
 
 void displayLevel(sf::RenderWindow& window, sf::Sprite& s, sf::Sprite& wallArt, spriteVector& bodies, spriteVector& heads, spriteVector& turrets)
 {
+    std::cout << "displayLevel...\n";
     window.clear();
     window.draw(s);
     for (int i{0}; i < currLevel.size(); ++i) {

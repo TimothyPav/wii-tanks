@@ -68,7 +68,6 @@ private:
         turret.setSize(sf::Vector2f(50, 10));
         turret.setPosition(sf::Vector2f({body.getPosition().x+body.getSize().x/2.0f, body.getPosition().y+body.getSize().y/2.0f}));
 
-        body.move(sf::Vector2f(25, 25));
 
         tankShapes.push_back(body);
         tankShapes.push_back(turret);

@@ -313,7 +313,7 @@ void Tank::shoot() {
     float xSideLength = -std::cos(angleRadians) * 50;
     float ySideLength = -std::sin(angleRadians) * 50;
 
-    Bullet bullet(turret.getPosition().x+xSideLength, turret.getPosition().y+ySideLength, 2.25, turret.getRotation(), this);
+    Bullet bullet(turret.getPosition().x+xSideLength*1.1, turret.getPosition().y+ySideLength*1.1, 2.25, turret.getRotation(), this);
     bullets.push_back(bullet);
     ++currentBullets;
 }
@@ -332,12 +332,12 @@ void Tank::plantBombEnemy(int maxBombs, Tank& player) {
     if (!contains(player.getTankBody().getPosition(), potentialBomb)) return;
 
     int randNum = Random::get(1, 150);
-    // if (m_bombVector.size() < maxBombs && randNum == 1)
-    // {
-        // std::shared_ptr<Bomb> b{ std::make_shared<Bomb>(body.getPosition().x, body.getPosition().y) };
-        // m_bombVector.push_back(b);
-        // bombs.push_back(b);
-    // }
+    if (m_bombVector.size() < maxBombs && randNum == 1)
+    {
+        std::shared_ptr<Bomb> b{ std::make_shared<Bomb>(body.getPosition().x, body.getPosition().y) };
+        m_bombVector.push_back(b);
+        bombs.push_back(b);
+    }
 }
 
 void Tank::rotateTurretAtPlayer(const Tank& player) {
@@ -372,7 +372,7 @@ void Tank::rotateTurretAtPlayer(const Tank& player) {
         }
     }
 
-    // if (Random::get(1,odds) == 1) shoot();
+    if (Random::get(1,odds) == 1) shoot();
 }
 
 void Tank::moveTowardsPlayer(const Tank& player) {
