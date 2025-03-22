@@ -13,6 +13,8 @@ Tank::Tank(const sf::RectangleShape& body, const float& speed, const std::vector
       level(level)
 {
     setDefaults();
+    bool p = explosionTexture.loadFromFile("../assets/tank_explosion.png");
+    if (!p) std::cout << "SOMETHING HORRIBLE HAS HAPPENED LOADING IN EXPLOSION TEXTURE\n";
 }
 
 Tank::Tank(const std::vector<Wall>& level, const float speed, const sf::Vector2f& position)
@@ -36,6 +38,9 @@ Tank::Tank(const std::vector<Wall>& level, const float speed, const sf::Vector2f
     body.move(sf::Vector2f(25, 25));
     tankShapes.push_back(body);
     tankShapes.push_back(turret);
+
+    bool p = explosionTexture.loadFromFile("../assets/tank_explosion.png");
+    if (!p) std::cout << "SOMETHING HORRIBLE HAS HAPPENED LOADING IN EXPLOSION TEXTURE\n";
 }
 
 Tank::~Tank()
@@ -389,6 +394,16 @@ void Tank::moveTowardsPlayer(const Tank& player) {
 
 }
 
+void Tank::animate(float deltaTime)
+{
+    if (isAlive) return;
+
+    if (!animation.playAnimation(0, deltaTime))
+        animationFinished = true;
+
+    body.setTextureRect(animation.m_uvRect);
+}
+
 void Tank::getTankCoords() const {
     std::cout << "Tank body coords: (" << body.getPosition().x << ", " << body.getPosition().y << '\n';
 }
@@ -396,3 +411,5 @@ void Tank::getTankCoords() const {
 void Tank::test() const {
     std::cout << "hello from tank\n";
 }
+
+

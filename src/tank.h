@@ -11,6 +11,7 @@
 #include "bullet.h"
 #include "bomb.h"
 #include "Random.h"
+#include "Animation.h"
 
 /*
  * position
@@ -51,6 +52,10 @@ private:
 
     bool isAlive{ true };
     bool isPlayer{ false };
+
+    sf::Texture explosionTexture;
+    Animation animation = Animation(&explosionTexture, sf::Vector2u(6, 1), .1);
+    bool animationFinished{ false };
 
     void setDefaults() {
         body.setOrigin(sf::Vector2f(25, 25));
@@ -114,11 +119,20 @@ public:
 
     bool getIsBombPlaced() const { return isBombPlaced; }
     
-    void kill() { isAlive = false; }
+    void kill() { 
+        isAlive = false; 
+        body.setSize({96, 96});
+        body.setTexture(&explosionTexture);
+        animation = Animation(&explosionTexture, sf::Vector2u(6, 1), .05);
+        // animate(0);
+    }
     void revive() { isAlive = true; }
     bool getIsAlive() { return isAlive; }
     void setPlayer() { isPlayer = true; }
     bool getIsPlayer() { return isPlayer; }
+
+    void animate(float deltaTime);
+    bool isAnimationFinished(){ return animationFinished; }
 
     std::pair<Direction, Direction> getDir(){ return dir; }
     void changeDir(){ dir = getDirection(Random::get(0,7)); }

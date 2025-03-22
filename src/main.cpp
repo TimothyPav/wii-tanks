@@ -37,7 +37,7 @@ int main()
 
     sf::Color color = sf::Color::Green;
 
-    sf::RectangleShape testBomb({200, 200});
+    sf::RectangleShape testBomb({89, 89});
     testBomb.setSize({100, 100});
     sf::Texture explosionTexture;
     auto p = explosionTexture.loadFromFile("../assets/explosion.png");
@@ -216,8 +216,26 @@ int main()
         
         t.rotateTurretBasedOnMouse(sf::Mouse::getPosition(window));
 
+        // clean up and handle bombs vector
+        deltaTime = clock.restart().asSeconds();
+        for (auto bomb = bombs.begin(); bomb != bombs.end(); )
+        {
+            if (!bomb->get()->getIsActive() && bomb->get()->isAnimationFinished())
+            {
+                bombs.erase(bomb);
+            }
+            else 
+            {
+                if (bomb->get()->getTime() > 5) bomb->get()->explode(tanks);
+                bomb->get()->animate(deltaTime);
+                window.draw(bomb->get()->getBombBody());
+                ++bomb;
+            }
+        }
+
         for (auto& currentTank : tanks) 
         {
+            if (!currentTank->getIsAlive()) continue;
             window.draw(getBodySprite(tankSprites_bodies, currentTank.get()));
             window.draw(getHeadSprite(tankSprites_heads, currentTank.get()));
             window.draw(getTurretSprite(tankSprites_turrets, currentTank.get()));
@@ -320,29 +338,19 @@ int main()
         // clean tanks vector
         for (auto tank = tanks.begin(); tank != tanks.end(); )
         {
-            if ((tank->get() != &t) && !tank->get()->getIsAlive())
+            if ((tank->get() != &t) && !tank->get()->getIsAlive() && tank->get()->isAnimationFinished())
                 tanks.erase(tank);
-            else 
+            else if ((tank->get() != &t) && !tank->get()->getIsAlive() && !tank->get()->isAnimationFinished())
+            {
+                tank->get()->animate(deltaTime);
+                window.draw(tank->get()->getTankBody());
                 ++tank;
+            }
+            else {
+                ++tank;
+            }
         }
 
-        // clean up and handle bombs vector
-        deltaTime = clock.restart().asSeconds();
-        for (auto bomb = bombs.begin(); bomb != bombs.end(); )
-        {
-            if (!bomb->get()->getIsActive() && bomb->get()->isAnimationFinished())
-            {
-                bombs.erase(bomb);
-            }
-            else 
-            {
-                if (bomb->get()->getTime() > 5) bomb->get()->explode(tanks);
-                bomb->get()->animate(deltaTime);
-                // bomb->get()->getAnimation().loopUpdate(0, deltaTime);
-                window.draw(bomb->get()->getBombBody());
-                ++bomb;
-            }
-        }
         animation.loopUpdate(0, deltaTime);
         testBomb.setTextureRect(animation.m_uvRect);
 

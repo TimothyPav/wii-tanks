@@ -20,7 +20,6 @@ public:
 
        bool p = explosionTexture.loadFromFile("../assets/explosion.png");
        if (!p) std::cout << "SOMETHING HORRIBLE HAS HAPPENED LOADING IN EXPLOSION TEXTURE\n";
-       Animation animation = Animation(&explosionTexture, sf::Vector2u(6, 1), .1);
     }
 
     ~Bomb()
@@ -50,7 +49,7 @@ private:
     bool isActive{ true };
 
     sf::Texture explosionTexture;
-    Animation animation = Animation(&explosionTexture, sf::Vector2u(6, 1), .1);
+    Animation animation = Animation(&explosionTexture, sf::Vector2u(6, 1), .05);
     bool animationFinished = false;
 };
 
