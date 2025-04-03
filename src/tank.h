@@ -2,6 +2,7 @@
 #define TANK_H
 
 #include <SFML/Graphics.hpp>
+#include <SFML/Graphics/Color.hpp>
 #include <memory>
 #include <array>
 #include <vector>
@@ -120,15 +121,24 @@ public:
     
     void kill() { 
         isAlive = false; 
-        body.setSize({96, 96});
+        // TODO: make explosion larger
+
+        // body.setSize({96, 96});
         body.setTexture(&explosionTexture);
         animation = Animation(&explosionTexture, sf::Vector2u(6, 1), .05);
         // animate(0);
+        // body.setSize({50, 50});
     }
     void revive() { isAlive = true; }
     bool getIsAlive() { return isAlive; }
     void setPlayer() { isPlayer = true; }
     bool getIsPlayer() { return isPlayer; }
+
+    void giveBodyOutline()
+    {
+        body.setOutlineColor(sf::Color::Red);
+        body.setOutlineThickness(3);
+    }
 
     void animate(float deltaTime);
     bool isAnimationFinished(){ return animationFinished; }
