@@ -435,6 +435,8 @@ public:
             };
         }
 
+        m_player.resetPlayerBodySize();
+
         bombs.clear();
         currLevel.clear();
         // bullets.clear();

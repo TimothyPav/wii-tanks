@@ -3,6 +3,7 @@
 
 #include <SFML/Graphics.hpp>
 #include <SFML/Graphics/Color.hpp>
+#include <SFML/System/Vector2.hpp>
 #include <memory>
 #include <array>
 #include <vector>
@@ -123,11 +124,15 @@ public:
         isAlive = false; 
         // TODO: make explosion larger
 
-        // body.setSize({96, 96});
+        sf::Vector2f oldCenter{ body.getPosition() + body.getSize() / 2.0f };
+        body.setSize({144, 144});
+
+        sf::Vector2f newPosition{ oldCenter - body.getSize() / 2.0f };
+        body.setPosition(newPosition);
+
         body.setTexture(&explosionTexture);
         animation = Animation(&explosionTexture, sf::Vector2u(6, 1), .05);
         // animate(0);
-        // body.setSize({50, 50});
     }
     void revive() { isAlive = true; }
     bool getIsAlive() { return isAlive; }
@@ -138,6 +143,13 @@ public:
     {
         body.setOutlineColor(sf::Color::Red);
         body.setOutlineThickness(3);
+    }
+
+    void resetPlayerBodySize()
+    {
+        if (!isPlayer) return;
+
+        body.setSize({50, 50});
     }
 
     void animate(float deltaTime);

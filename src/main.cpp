@@ -9,13 +9,11 @@
 #include <vector>
 
 #include "Animation.h"
+#include "Random.h"
 #include "levelManager.h"
 #include "tank.h"
 #include "utils.h"
 #include "wall.h"
-
-// TODO: Obstacles/walls object to put on the map!
-// All the blocks will be 24x24
 
 std::vector<std::unique_ptr<Tank>> tanks{};
 std::vector<Bullet> bullets{};
@@ -23,7 +21,7 @@ std::vector<std::shared_ptr<Bomb>> bombs{};
 std::vector<Wall> currLevel;
 
 using spriteVector = std::vector<sf::Sprite>;
-void displayLevel(sf::RenderWindow &window, sf::Sprite &s, sf::Sprite &wallArt,
+void displayLevel(sf::RenderWindow &window, sf::Sprite &s, spriteVector &wallArt,
                   spriteVector &bodies, spriteVector &heads,
                   spriteVector &turrets);
 
@@ -53,12 +51,19 @@ int main() {
     sf::Sprite startScreen(startScreenTexture);
 
     sf::Texture pic;
-    p = pic.loadFromFile("../assets/background.jpg");
+    p = pic.loadFromFile("../assets/background.png");
     sf::Sprite s(pic);
 
+
     sf::Texture wallArtTexture;
-    p = wallArtTexture.loadFromFile("../assets/block1.png");
-    sf::Sprite wallArt(wallArtTexture);
+    p = wallArtTexture.loadFromFile("../assets/blocks.png");
+    spriteVector wallTextures;
+    for (int i{0}; i < 8; ++i)
+    {
+        sf::Sprite wallSprite(wallArtTexture);
+        wallSprite.setTextureRect(sf::IntRect({i * 60, 0}, {60, 60}));
+        wallTextures.push_back(wallSprite);
+    }
 
     sf::Texture tankBodiesTexture;
     p = tankBodiesTexture.loadFromFile("../assets/tankSprites.png");
@@ -109,19 +114,17 @@ int main() {
             ++level;
             levelManager[level](t);
             t.resetRotation();
-            displayLevel(window, s, wallArt, tankSprites_bodies,
+            displayLevel(window, s, wallTextures, tankSprites_bodies,
                          tankSprites_heads, tankSprites_turrets);
         }
 
         if (!t.getIsAlive()) {
             if (lives > 1) {
-                std::cout << "dies...\n";
-                std::cout << "address of t: " << &t << '\n';
                 --lives;
                 t.revive();
                 levelManager[level](t);
                 t.resetRotation();
-                displayLevel(window, s, wallArt, tankSprites_bodies,
+                displayLevel(window, s, wallTextures, tankSprites_bodies,
                              tankSprites_heads, tankSprites_turrets);
             } else {
                 window.clear();
@@ -210,10 +213,11 @@ int main() {
         for (int i{0}; i < currLevel.size(); ++i) {
             // Get the current wall rectangle
             sf::RectangleShape wall = currLevel[i].getWall();
+            int currWallIndex{ currLevel[i].textureIndex() };
 
             // Set the sprite position and rotation to match the wall
-            wallArt.setPosition(wall.getPosition());
-            window.draw(wallArt);
+            wallTextures[currWallIndex].setPosition(wall.getPosition());
+            window.draw(wallTextures[currWallIndex]);
         }
 
         if (t.getBomb() != nullptr) {
@@ -352,23 +356,15 @@ int main() {
                 ++tank;
             }
         }
-        // for (auto tank = tanks.begin(); tank != tanks.end();) {
-        //     if ((tank->get() != &t) && !tank->get()->getIsAlive())
-        //         tanks.erase(tank);
-        //     else {
-        //         ++tank;
-        //     }
-        // }
         // window.draw(t.getTankBody());
 
         window.display();
     }
 }
 
-void displayLevel(sf::RenderWindow &window, sf::Sprite &s, sf::Sprite &wallArt,
+void displayLevel(sf::RenderWindow &window, sf::Sprite &s, spriteVector &wallArt,
                   spriteVector &bodies, spriteVector &heads,
                   spriteVector &turrets) {
-    std::cout << "displayLevel...\n";
     window.clear();
     window.draw(s);
     for (int i{0}; i < currLevel.size(); ++i) {
@@ -376,8 +372,8 @@ void displayLevel(sf::RenderWindow &window, sf::Sprite &s, sf::Sprite &wallArt,
         sf::RectangleShape wall = currLevel[i].getWall();
 
         // Set the sprite position and rotation to match the wall
-        wallArt.setPosition(wall.getPosition());
-        window.draw(wallArt);
+        wallArt[0].setPosition(wall.getPosition());
+        // window.draw(wallArt[0]);
     }
 
     for (auto &currentTank : tanks) {

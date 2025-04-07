@@ -4,6 +4,7 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 
+#include "Random.h"
 
 using pixels = int;
 
@@ -20,12 +21,16 @@ private:
     bool m_hole = false;
     sf::Vector2f trueCoords = sf::Vector2f(X*width, Y*width);
 
+    int wallTextureIndex{};
+
     void setDefaults() {
         wall.setSize(sf::Vector2f(width, height));
         wall.setFillColor(color);
         wall.setPosition(trueCoords);
         wall.setOutlineThickness(2);
         wall.setOutlineColor(sf::Color::Yellow);
+
+        wallTextureIndex = Random::get(0, 7); 
     }
 
 public:
@@ -46,6 +51,11 @@ public:
     bool isHole() const 
     {
         return m_hole;
+    }
+
+    int textureIndex() const 
+    {
+        return wallTextureIndex;
     }
 
 };
