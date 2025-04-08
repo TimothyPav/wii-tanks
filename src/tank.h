@@ -34,12 +34,15 @@ private:
     sf::RectangleShape turret;
     sf::RectangleShape head;
     std::vector<sf::RectangleShape> tankShapes;
+    std::vector<sf::RectangleShape> treads;
     float speed;
     float x;
     float y;
     std::vector<Wall> level;
     int maxBullets{ 5 };
     int odds{ 300 };
+
+    int distance{};
 
     bool isLevelTwoTank{ false }; // moves randomly every 1 second
     bool isLevelThreeTank{ false }; // moves towards player 1 direction per second
@@ -91,6 +94,10 @@ public:
 
     float getX();
     float getY();
+
+    int getDistance(){ return distance; }
+    std::vector<sf::RectangleShape> getTreads() { return treads; }
+
     void updateMoveValues(float xSpeed, float ySpeed);
     void moveTank(Direction dir, Direction dir2 = Direction::NODIRECTION);
     bool checkBoundaries(Direction dir, Direction dir2 = Direction::NODIRECTION);
@@ -122,10 +129,9 @@ public:
     
     void kill() { 
         isAlive = false; 
-        // TODO: make explosion larger
 
         sf::Vector2f oldCenter{ body.getPosition() + body.getSize() / 2.0f };
-        body.setSize({144, 144});
+        body.setSize({96, 96});
 
         sf::Vector2f newPosition{ oldCenter - body.getSize() / 2.0f };
         body.setPosition(newPosition);
@@ -133,6 +139,7 @@ public:
         body.setTexture(&explosionTexture);
         animation = Animation(&explosionTexture, sf::Vector2u(6, 1), .05);
         // animate(0);
+        treads.clear();
     }
     void revive() { isAlive = true; }
     bool getIsAlive() { return isAlive; }

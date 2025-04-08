@@ -1,3 +1,4 @@
+#include <cstdlib>
 #include <iostream>
 #include <SFML/Graphics.hpp>
 #include <cmath>
@@ -79,10 +80,48 @@ float Tank::getY() {
     return body.getPosition().y;
 }
 
+sf::Vector2f getRelativePosition(const sf::Transformable& object, float forwardAmount, float rightAmount) {
+    float angle = object.getRotation().asRadians();
+    
+    // Calculate forward vector (in the direction of rotation)
+    float forwardX = forwardAmount * std::cos(angle);
+    float forwardY = forwardAmount * std::sin(angle);
+    
+    // Calculate right vector (90 degrees clockwise from forward)
+    float rightX = rightAmount * std::cos(angle + M_PI/2);
+    float rightY = rightAmount * std::sin(angle + M_PI/2);
+    
+    // Current position plus the calculated offsets
+    return sf::Vector2f(
+        object.getPosition().x + forwardX + rightX,
+        object.getPosition().y + forwardY + rightY
+    );
+}
+
 void Tank::updateMoveValues(float xSpeed, float ySpeed) {
     body.move({xSpeed, ySpeed});
     turret.move({xSpeed, ySpeed});
     head.move({xSpeed, ySpeed});
+
+    if (xSpeed != 0 && ySpeed != 0)
+    {
+        distance += std::floor(sqrt((xSpeed * xSpeed) + (ySpeed * ySpeed)));
+    }
+    else 
+        distance += std::abs((xSpeed + ySpeed));
+    // std::cout << distance << '\n';
+    if (distance > 50)
+    {
+        sf::RectangleShape leftTread({body.getPosition()});
+        leftTread.setRotation(body.getRotation());
+        leftTread.setPosition(getRelativePosition(body, -5.0f, -15.0f)); // 5 units back, 15 units left
+        leftTread.setSize({15, 15});
+        leftTread.setFillColor(sf::Color::Black);
+        treads.push_back(leftTread);
+        std::cout << "rotation of body: " << body.getRotation().asDegrees() << '\n';
+        
+        distance = 0;
+    }
 }
 
 void Tank::moveTank(Direction dir, Direction dir2) {

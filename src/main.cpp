@@ -65,6 +65,10 @@ int main() {
         wallTextures.push_back(wallSprite);
     }
 
+    sf::Texture holeTexture;
+    p = holeTexture.loadFromFile("../assets/hole.png");
+    sf::Sprite holeSprite(holeTexture);
+
     sf::Texture tankBodiesTexture;
     p = tankBodiesTexture.loadFromFile("../assets/tankSprites.png");
     std::vector<sf::Sprite> tankSprites_bodies;
@@ -102,7 +106,6 @@ int main() {
     int lives{3};
 
     bool gameStart{false};
-    std::cout << "address of t: " << &t << '\n';
 
     while (window.isOpen()) {
 
@@ -210,14 +213,23 @@ int main() {
         // do things in here?
         window.draw(s);
 
-        for (int i{0}; i < currLevel.size(); ++i) {
+        for (const auto& wall : currLevel) {
             // Get the current wall rectangle
-            sf::RectangleShape wall = currLevel[i].getWall();
-            int currWallIndex{ currLevel[i].textureIndex() };
+            sf::RectangleShape wallShape = wall.getWall();
 
-            // Set the sprite position and rotation to match the wall
-            wallTextures[currWallIndex].setPosition(wall.getPosition());
-            window.draw(wallTextures[currWallIndex]);
+            if (wall.isHole())
+            {
+                holeSprite.setPosition(wallShape.getPosition());
+                window.draw(holeSprite);
+            }
+            else
+            {
+                int currWallIndex{ wall.textureIndex() };
+
+                // Set the sprite position and rotation to match the wall
+                wallTextures[currWallIndex].setPosition(wallShape.getPosition());
+                window.draw(wallTextures[currWallIndex]);
+            }
         }
 
         if (t.getBomb() != nullptr) {
@@ -244,6 +256,11 @@ int main() {
         for (auto &currentTank : tanks) {
             if (!currentTank->getIsAlive())
                 continue;
+            for (const auto& tread : currentTank->getTreads())
+            {
+                window.draw(tread);
+            }
+
             window.draw(getBodySprite(tankSprites_bodies, currentTank.get()));
             window.draw(getHeadSprite(tankSprites_heads, currentTank.get()));
             window.draw(getTurretSprite(tankSprites_turrets, currentTank.get()));
@@ -346,7 +363,9 @@ int main() {
         for (auto tank = tanks.begin(); tank != tanks.end();) {
             if ((tank->get() != &t) && !tank->get()->getIsAlive() &&
                 tank->get()->isAnimationFinished())
+            {
                 tanks.erase(tank);
+            }
             else if ((tank->get() != &t) && !tank->get()->getIsAlive() &&
                      !tank->get()->isAnimationFinished()) {
                 tank->get()->animate(deltaTime);
