@@ -1,5 +1,6 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Graphics/Rect.hpp>
+#include <SFML/Graphics/RectangleShape.hpp>
 #include <SFML/Window/Keyboard.hpp>
 #include <SFML/Window/Mouse.hpp>
 #include <array>
@@ -19,6 +20,7 @@ std::vector<std::unique_ptr<Tank>> tanks{};
 std::vector<Bullet> bullets{};
 std::vector<std::shared_ptr<Bomb>> bombs{};
 std::vector<Wall> currLevel;
+std::vector<sf::RectangleShape> treads{};
 
 using spriteVector = std::vector<sf::Sprite>;
 void displayLevel(sf::RenderWindow &window, sf::Sprite &s, spriteVector &wallArt,
@@ -68,6 +70,10 @@ int main() {
     sf::Texture holeTexture;
     p = holeTexture.loadFromFile("../assets/hole.png");
     sf::Sprite holeSprite(holeTexture);
+
+    sf::Texture treadTexture;
+    p = treadTexture.loadFromFile("../assets/tread.png");
+    sf::Sprite treadSprite(treadTexture);
 
     sf::Texture tankBodiesTexture;
     p = tankBodiesTexture.loadFromFile("../assets/tankSprites.png");
@@ -253,17 +259,21 @@ int main() {
             }
         }
 
+        for (auto& tread : treads)
+        {
+            tread.setTexture(&treadTexture);
+            window.draw(tread);
+        }
+
         for (auto &currentTank : tanks) {
             if (!currentTank->getIsAlive())
                 continue;
-            for (const auto& tread : currentTank->getTreads())
-            {
-                window.draw(tread);
-            }
 
+            currentTank->giveBodyOutline();
             window.draw(getBodySprite(tankSprites_bodies, currentTank.get()));
             window.draw(getHeadSprite(tankSprites_heads, currentTank.get()));
             window.draw(getTurretSprite(tankSprites_turrets, currentTank.get()));
+            window.draw(currentTank->getTankBody());
             // window.draw(currentTank->getTankBody());
             // window.draw(currentTank->getTurretBody());
             // window.draw(currentTank->getHeadBody());

@@ -80,24 +80,6 @@ float Tank::getY() {
     return body.getPosition().y;
 }
 
-sf::Vector2f getRelativePosition(const sf::Transformable& object, float forwardAmount, float rightAmount) {
-    float angle = object.getRotation().asRadians();
-    
-    // Calculate forward vector (in the direction of rotation)
-    float forwardX = forwardAmount * std::cos(angle);
-    float forwardY = forwardAmount * std::sin(angle);
-    
-    // Calculate right vector (90 degrees clockwise from forward)
-    float rightX = rightAmount * std::cos(angle + M_PI/2);
-    float rightY = rightAmount * std::sin(angle + M_PI/2);
-    
-    // Current position plus the calculated offsets
-    return sf::Vector2f(
-        object.getPosition().x + forwardX + rightX,
-        object.getPosition().y + forwardY + rightY
-    );
-}
-
 void Tank::updateMoveValues(float xSpeed, float ySpeed) {
     body.move({xSpeed, ySpeed});
     turret.move({xSpeed, ySpeed});
@@ -110,15 +92,41 @@ void Tank::updateMoveValues(float xSpeed, float ySpeed) {
     else 
         distance += std::abs((xSpeed + ySpeed));
     // std::cout << distance << '\n';
-    if (distance > 50)
+    if (distance > 20)
     {
         sf::RectangleShape leftTread({body.getPosition()});
+        sf::RectangleShape rightTread({body.getPosition()});
+        leftTread.setOrigin({7.5, 7.5});
         leftTread.setRotation(body.getRotation());
-        leftTread.setPosition(getRelativePosition(body, -5.0f, -15.0f)); // 5 units back, 15 units left
-        leftTread.setSize({15, 15});
         leftTread.setFillColor(sf::Color::Black);
+        leftTread.setSize({15, 15});
+        rightTread.setOrigin({7.5, 7.5});
+        rightTread.setRotation(body.getRotation());
+        rightTread.setFillColor(sf::Color::Black);
+        rightTread.setSize({15, 15});
+
+        if ((xSpeed > 0 && ySpeed > 0) || xSpeed < 0 && ySpeed < 0) // top left & bottom right
+        {
+            leftTread.setPosition({ body.getPosition().x - 24, body.getPosition().y });
+            rightTread.setPosition({ body.getPosition().x, body.getPosition().y - 24 });
+        }
+        else if ((xSpeed > 0 && ySpeed < 0) || (xSpeed < 0 && ySpeed > 0)) // top right & bottom left
+        {
+            leftTread.setPosition({ body.getPosition().x, body.getPosition().y - 24 });
+            rightTread.setPosition({ body.getPosition().x + 24, body.getPosition().y });
+        }
+        else if (ySpeed == 0.0) // left & right
+        {
+            leftTread.setPosition( {body.getPosition().x, body.getPosition().y - 18 });
+            rightTread.setPosition( {body.getPosition().x, body.getPosition().y + 17 });
+        }
+        else // top & bottom
+        {
+            leftTread.setPosition( {body.getPosition().x - 17, body.getPosition().y });
+            rightTread.setPosition( {body.getPosition().x + 18, body.getPosition().y });
+        }
         treads.push_back(leftTread);
-        std::cout << "rotation of body: " << body.getRotation().asDegrees() << '\n';
+        treads.push_back(rightTread);
         
         distance = 0;
     }

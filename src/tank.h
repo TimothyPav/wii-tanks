@@ -26,6 +26,7 @@ extern std::vector<std::unique_ptr<Tank>> tanks;
 extern std::vector<Bullet> bullets;
 extern std::vector<std::shared_ptr<Bomb>> bombs;
 extern std::vector<Wall> currLevel;
+extern std::vector<sf::RectangleShape> treads;
 
 class Tank
 {
@@ -34,7 +35,6 @@ private:
     sf::RectangleShape turret;
     sf::RectangleShape head;
     std::vector<sf::RectangleShape> tankShapes;
-    std::vector<sf::RectangleShape> treads;
     float speed;
     float x;
     float y;
@@ -96,7 +96,6 @@ public:
     float getY();
 
     int getDistance(){ return distance; }
-    std::vector<sf::RectangleShape> getTreads() { return treads; }
 
     void updateMoveValues(float xSpeed, float ySpeed);
     void moveTank(Direction dir, Direction dir2 = Direction::NODIRECTION);
@@ -128,19 +127,28 @@ public:
     bool getIsBombPlaced() const { return isBombPlaced; }
     
     void kill() { 
-        isAlive = false; 
-
-        sf::Vector2f oldCenter{ body.getPosition() + body.getSize() / 2.0f };
+        isAlive = false;
+    
+        // Save the original center position in world coordinates
+        sf::Vector2f originalCenter = body.getPosition();
+    
+        // Set the origin to the center of the shape before resizing
+        sf::Vector2f originalSize = body.getSize();
+        body.setOrigin(originalSize / 2.0f);
+    
+        // Now set the new size
         body.setSize({96, 96});
-
-        sf::Vector2f newPosition{ oldCenter - body.getSize() / 2.0f };
-        body.setPosition(newPosition);
-
+    
+        // Update the origin to the center of the new size
+        body.setOrigin({96.0f / 2.0f, 96.0f / 2.0f});
+    
+        // Position remains the same because we're using the center as the origin
+        body.setPosition(originalCenter);
+    
         body.setTexture(&explosionTexture);
         animation = Animation(&explosionTexture, sf::Vector2u(6, 1), .05);
         // animate(0);
-        treads.clear();
-    }
+}
     void revive() { isAlive = true; }
     bool getIsAlive() { return isAlive; }
     void setPlayer() { isPlayer = true; }
@@ -148,6 +156,7 @@ public:
 
     void giveBodyOutline()
     {
+        body.setFillColor(sf::Color::Transparent);
         body.setOutlineColor(sf::Color::Red);
         body.setOutlineThickness(3);
     }
@@ -157,6 +166,7 @@ public:
         if (!isPlayer) return;
 
         body.setSize({50, 50});
+        body.setOrigin({25, 25});
     }
 
     void animate(float deltaTime);

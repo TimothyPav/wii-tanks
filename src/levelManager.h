@@ -428,7 +428,9 @@ public:
         for (auto tank = tanks.begin(); tank != tanks.end(); )
         {
             if (tank->get() != &m_player)
+            {
                 tank = tanks.erase(tank);
+            }
             else
             {
                 ++tank;
@@ -437,6 +439,8 @@ public:
 
         m_player.resetPlayerBodySize();
 
+
+        treads.clear();
         bombs.clear();
         currLevel.clear();
         // bullets.clear();
