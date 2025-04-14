@@ -10,7 +10,7 @@
 #include "wall.h"
 
 extern std::vector<std::unique_ptr<Tank>> tanks;
-extern std::vector<Bullet> bullets;
+extern std::vector<std::unique_ptr<Bullet>> bullets;
 extern std::vector<std::shared_ptr<Bomb>> bombs;
 extern std::vector<Wall> currLevel;
 
@@ -445,7 +445,7 @@ public:
         currLevel.clear();
         // bullets.clear();
         for (auto bullet = bullets.begin(); bullet != bullets.end(); ) {
-            --(bullet->decrementOwner()->currentBullets);
+            --(bullet->get()->decrementOwner()->currentBullets);
             bullet = bullets.erase(bullet);
         }
     }

@@ -23,7 +23,7 @@
  */
 
 extern std::vector<std::unique_ptr<Tank>> tanks;
-extern std::vector<Bullet> bullets;
+extern std::vector<std::unique_ptr<Bullet>> bullets;
 extern std::vector<std::shared_ptr<Bomb>> bombs;
 extern std::vector<Wall> currLevel;
 extern std::vector<sf::RectangleShape> treads;
@@ -146,9 +146,11 @@ public:
         body.setPosition(originalCenter);
     
         body.setTexture(&explosionTexture);
+        std::cout << "explosion texture set right now!\n";
         animation = Animation(&explosionTexture, sf::Vector2u(6, 1), .05);
         // animate(0);
-}
+    }
+
     void revive() { isAlive = true; }
     bool getIsAlive() { return isAlive; }
     void setPlayer() { isPlayer = true; }
@@ -156,7 +158,7 @@ public:
 
     void giveBodyOutline()
     {
-        body.setFillColor(sf::Color::Transparent);
+        // body.setFillColor(sf::Color::Transparent);
         body.setOutlineColor(sf::Color::Red);
         body.setOutlineThickness(3);
     }

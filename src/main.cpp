@@ -1,6 +1,7 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Graphics/Rect.hpp>
 #include <SFML/Graphics/RectangleShape.hpp>
+#include <SFML/Graphics/Texture.hpp>
 #include <SFML/Window/Keyboard.hpp>
 #include <SFML/Window/Mouse.hpp>
 #include <array>
@@ -17,7 +18,7 @@
 #include "wall.h"
 
 std::vector<std::unique_ptr<Tank>> tanks{};
-std::vector<Bullet> bullets{};
+std::vector<std::unique_ptr<Bullet>> bullets{};
 std::vector<std::shared_ptr<Bomb>> bombs{};
 std::vector<Wall> currLevel;
 std::vector<sf::RectangleShape> treads{};
@@ -56,6 +57,9 @@ int main() {
     p = pic.loadFromFile("../assets/background.png");
     sf::Sprite s(pic);
 
+    sf::Texture bulletTexture;
+    p = bulletTexture.loadFromFile("../assets/bullet.png");
+    sf::Sprite bulletSprite(bulletTexture);
 
     sf::Texture wallArtTexture;
     p = wallArtTexture.loadFromFile("../assets/blocks.png");
@@ -74,6 +78,10 @@ int main() {
     sf::Texture treadTexture;
     p = treadTexture.loadFromFile("../assets/tread.png");
     sf::Sprite treadSprite(treadTexture);
+
+    sf::Texture bombTexture;
+    p = bombTexture.loadFromFile("../assets/bomb.png");
+    sf::Sprite bombSprite(bombTexture);
 
     sf::Texture tankBodiesTexture;
     p = tankBodiesTexture.loadFromFile("../assets/tankSprites.png");
@@ -103,7 +111,6 @@ int main() {
     auto t_ptr = std::make_unique<Tank>(square, 1.5, currLevel);
     Tank &t = *t_ptr; // Store reference
     t.setPlayer();
-    t.giveBodyOutline();
 
     tanks.push_back(std::move(t_ptr)); // Move ownership
     LevelManager levelManager{t};
@@ -238,9 +245,9 @@ int main() {
             }
         }
 
-        if (t.getBomb() != nullptr) {
-            window.draw(t.getBomb()->placeBomb());
-        }
+        // if (t.getBomb() != nullptr) {
+        //     window.draw(t.getBomb()->placeBomb());
+        // }
 
         t.rotateTurretBasedOnMouse(sf::Mouse::getPosition(window));
 
@@ -248,14 +255,25 @@ int main() {
         deltaTime = clock.restart().asSeconds();
         for (auto bomb = bombs.begin(); bomb != bombs.end();) {
             if (!bomb->get()->getIsActive() &&
-                bomb->get()->isAnimationFinished()) {
+                bomb->get()->isAnimationFinished()) 
+            {
                 bombs.erase(bomb);
-            } else {
+            } 
+            else if (!bomb->get()->getIsActive() && !bomb->get()->isAnimationFinished()) 
+            {
                 if (bomb->get()->getTime() > 5)
                     bomb->get()->explode(tanks);
                 bomb->get()->animate(deltaTime);
                 window.draw(bomb->get()->getBombBody());
+                // bombSprite.setPosition(bomb->get()->getBombBody().getPosition());
+                // window.draw(bombSprite);
                 ++bomb;
+            }
+            else 
+            {
+                bombSprite.setPosition(bomb->get()->getBombBody().getPosition());
+                window.draw(bombSprite);
+                ++bomb; 
             }
         }
 
@@ -269,11 +287,10 @@ int main() {
             if (!currentTank->getIsAlive())
                 continue;
 
-            currentTank->giveBodyOutline();
+            // currentTank->giveBodyOutline();
             window.draw(getBodySprite(tankSprites_bodies, currentTank.get()));
             window.draw(getHeadSprite(tankSprites_heads, currentTank.get()));
             window.draw(getTurretSprite(tankSprites_turrets, currentTank.get()));
-            window.draw(currentTank->getTankBody());
             // window.draw(currentTank->getTankBody());
             // window.draw(currentTank->getTurretBody());
             // window.draw(currentTank->getHeadBody());
@@ -352,19 +369,27 @@ int main() {
         // clean up bullets vector
         for (auto bullet = bullets.begin(); bullet != bullets.end();) {
             for (auto bulletj = bullets.begin(); bulletj != bullets.end();) {
-                if (bullet != bulletj &&
-                    doOverlap(bullet->getBody(), bulletj->getBody())) {
-                    bullet->setZeroBounces();
-                    bulletj->setZeroBounces();
+                if (bullet != bulletj && bullet->get()->getBounces() > 0 && bulletj->get()->getBounces() > 0 && doOverlap(bullet->get()->getBody(), bulletj->get()->getBody())) {
+                    bullet->get()->setZeroBounces();
+                    bulletj->get()->setZeroBounces();
                 }
                 ++bulletj;
             }
-            if (bullet->getBounces() <= 0) {
-                --(bullet->decrementOwner()->currentBullets);
+            if (bullet->get()->getBounces() <= 0 && !bullet->get()->isAnimationFinished()) {
+                --(bullet->get()->decrementOwner()->currentBullets);
+                bullet->get()->animate(deltaTime);
+                window.draw(bullet->get()->getBody());
+                ++bullet;
+            }
+            else if (bullet->get()->getBounces() <= 0) {
+                // --(bullet->decrementOwner()->currentBullets);
                 bullet = bullets.erase(bullet);
             } else {
-                bullet->move(window, currLevel, bombs, tanks);
-                window.draw(bullet->getBody());
+                bullet->get()->move(window, currLevel, bombs, tanks);
+                bulletSprite.setOrigin({5, 5});
+                bulletSprite.setPosition(bullet->get()->getBody().getPosition());
+                bulletSprite.setRotation(bullet->get()->getBody().getRotation());
+                window.draw(bulletSprite);
                 ++bullet;
             }
         }

@@ -1,4 +1,6 @@
 #include <SFML/Graphics.hpp>
+#include <SFML/Graphics/Sprite.hpp>
+#include <SFML/System/Angle.hpp>
 #include <iostream>
 #include <cmath>
 #include <limits>
@@ -9,18 +11,19 @@
 #include "utils.h"
 #include "tank.h"
 
-extern std::vector<Bullet> bullets;
+extern std::vector<std::unique_ptr<Bullet>> bullets;
 
 Bullet::Bullet(float x, float y, float speed, sf::Angle angle, Tank* owner) : speed(speed), angle(angle), owner(owner) {
     body.setOrigin({5, 5});
     body.setRotation(angle);
     body.setPosition({x, y});
-    body.setSize({10, 10});
+    body.setSize({20, 10});
     body.setFillColor(sf::Color::White);
 
     const float convertedAngle = angle.asDegrees();
     const float angleRadians = angle.asRadians();
 
+    bool p = explosionTexture.loadFromFile("../assets/bubble.png");
     // (adjacent side): x = c * cos(θ)
     // (opposite side): y = c * sin(θ)
 
@@ -32,6 +35,13 @@ Bullet::Bullet(float x, float y, float speed, sf::Angle angle, Tank* owner) : sp
 
 sf::RectangleShape Bullet::getBody() {
     return body;
+}
+
+void Bullet::animate(float deltaTime)
+{
+    if (!animation.playAnimation(0, deltaTime))
+        animationFinished = true;
+    body.setTextureRect(animation.m_uvRect);
 }
 
 WallSide Bullet::whichSide(Wall& wall) {
@@ -78,27 +88,34 @@ bool Bullet::collision(sf::RenderWindow& window, std::vector<Wall>& level, std::
             switch (side) {
             case WallSide::right:
                 angle = sf::degrees(180) - angle;
+                body.move({10, 0});
                 break;
             case WallSide::left:
                 angle = sf::degrees(180) - angle;
+                body.move({-10, 0});
                 break;
             case WallSide::bottom:
                 angle = -angle;
+                body.move({0, 10});
                 break;
             case WallSide::top:
                 angle = -angle;
+                body.move({0, -10});
                 break;
             default: break;
             }
+            body.setRotation(angle);
             return true;
         }
     }
     if (body.getPosition().x <= 5 || body.getPosition().x >= 1850) {
         angle = sf::degrees(180) - angle;
+        body.setRotation(angle);
         return true;
     }
     if (body.getPosition().y <= 5 || body.getPosition().y >= 1010) {
         angle = -angle;
+        body.setRotation(angle);
         return true;
     }
 
@@ -123,9 +140,6 @@ bool Bullet::collision(sf::RenderWindow& window, std::vector<Wall>& level, std::
 void Bullet::move(sf::RenderWindow& window, std::vector<Wall>& level, std::vector<std::shared_ptr<Bomb>>& bombs, 
                   std::vector<std::unique_ptr<Tank>>& tanks) {
     
-    if (bounces <= 0) {
-        return;
-    }
     if (collision(window, level, bombs, tanks)) --bounces;
     const float convertedAngle = angle.asDegrees();
     const float angleRadians = angle.asRadians();
@@ -141,7 +155,10 @@ void Bullet::move(sf::RenderWindow& window, std::vector<Wall>& level, std::vecto
     else if (convertedAngle > 180 && convertedAngle <= 270) body.move({xSideLength, ySideLength});
     else body.move({xSideLength, ySideLength});
 
-
+    if (bounces <= 0) {
+        setZeroBounces();
+        return;
+    }
     // std::cout << "X side length: " << xSideLength << '\n';
     // std::cout << "Y side length: " << ySideLength << '\n';
 }
