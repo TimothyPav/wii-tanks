@@ -75,6 +75,10 @@ int main() {
     p = treadTexture.loadFromFile("../assets/tread.png");
     sf::Sprite treadSprite(treadTexture);
 
+    sf::Texture bulletTexture;
+    p = bulletTexture.loadFromFile("../assets/bullet.png");
+    sf::Sprite bulletSprite(bulletTexture);
+
     sf::Texture tankBodiesTexture;
     p = tankBodiesTexture.loadFromFile("../assets/tankSprites.png");
     std::vector<sf::Sprite> tankSprites_bodies;
@@ -96,6 +100,16 @@ int main() {
         tankSprites_turrets.push_back(tankSprite);
     }
 
+    sf::Texture bulletExplosionTexture;
+    p = bulletExplosionTexture.loadFromFile("../assets/bubble.png");
+    spriteVector bulletExplosions;
+    for (int i{0}; i < 4; ++i) {
+        sf::Sprite bulletExplosionSprite(bulletExplosionTexture);
+        bulletExplosionSprite.setTextureRect(sf::IntRect({i * 260, 0}, {265, 260}));
+        bulletExplosions.push_back(bulletExplosionSprite);
+    }
+    Animation bulletExplosionAnimation(&bulletExplosionTexture, sf::Vector2u(4, 1), 0.5f);
+
     bool isMousePressed{false};
     bool isSpacePressed{false};
     auto start_time = std::chrono::high_resolution_clock::now();
@@ -103,7 +117,7 @@ int main() {
     auto t_ptr = std::make_unique<Tank>(square, 1.5, currLevel);
     Tank &t = *t_ptr; // Store reference
     t.setPlayer();
-    t.giveBodyOutline();
+    // t.giveBodyOutline();
 
     tanks.push_back(std::move(t_ptr)); // Move ownership
     LevelManager levelManager{t};
@@ -269,11 +283,11 @@ int main() {
             if (!currentTank->getIsAlive())
                 continue;
 
-            currentTank->giveBodyOutline();
+            // currentTank->giveBodyOutline();
             window.draw(getBodySprite(tankSprites_bodies, currentTank.get()));
             window.draw(getHeadSprite(tankSprites_heads, currentTank.get()));
             window.draw(getTurretSprite(tankSprites_turrets, currentTank.get()));
-            window.draw(currentTank->getTankBody());
+            // window.draw(currentTank->getTankBody());
             // window.draw(currentTank->getTankBody());
             // window.draw(currentTank->getTurretBody());
             // window.draw(currentTank->getHeadBody());
@@ -364,7 +378,11 @@ int main() {
                 bullet = bullets.erase(bullet);
             } else {
                 bullet->move(window, currLevel, bombs, tanks);
-                window.draw(bullet->getBody());
+                bulletSprite.setOrigin(bullet->getBody().getOrigin());
+                bulletSprite.setPosition(bullet->getBody().getPosition());
+                bulletSprite.setRotation(bullet->getBody().getRotation());
+                // window.draw(bullet->getBody());
+                window.draw(bulletSprite);
                 ++bullet;
             }
         }
@@ -385,7 +403,13 @@ int main() {
                 ++tank;
             }
         }
+
         // window.draw(t.getTankBody());
+        // bulletExplosionAnimation.loopUpdate(0, deltaTime);
+        // sf::RectangleShape bulletTest({265, 260});
+        // bulletTest.setTexture(&bulletExplosionTexture);
+        // bulletTest.setTextureRect(bulletExplosionAnimation.m_uvRect);
+        // window.draw(bulletTest);
 
         window.display();
     }

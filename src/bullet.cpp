@@ -15,7 +15,7 @@ Bullet::Bullet(float x, float y, float speed, sf::Angle angle, Tank* owner) : sp
     body.setOrigin({5, 5});
     body.setRotation(angle);
     body.setPosition({x, y});
-    body.setSize({10, 10});
+    body.setSize({20, 10});
     body.setFillColor(sf::Color::White);
 
     const float convertedAngle = angle.asDegrees();
@@ -78,27 +78,34 @@ bool Bullet::collision(sf::RenderWindow& window, std::vector<Wall>& level, std::
             switch (side) {
             case WallSide::right:
                 angle = sf::degrees(180) - angle;
+                body.move({10, 0});
                 break;
             case WallSide::left:
                 angle = sf::degrees(180) - angle;
+                body.move({-10, 0});
                 break;
             case WallSide::bottom:
                 angle = -angle;
+                body.move({0, 10});
                 break;
             case WallSide::top:
                 angle = -angle;
+                body.move({0, -10});
                 break;
             default: break;
             }
+            body.setRotation(angle);
             return true;
         }
     }
     if (body.getPosition().x <= 5 || body.getPosition().x >= 1850) {
         angle = sf::degrees(180) - angle;
+        body.setRotation(angle);
         return true;
     }
     if (body.getPosition().y <= 5 || body.getPosition().y >= 1010) {
         angle = -angle;
+        body.setRotation(angle);
         return true;
     }
 
