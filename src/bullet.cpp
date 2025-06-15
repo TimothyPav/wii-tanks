@@ -1,4 +1,6 @@
 #include <SFML/Graphics.hpp>
+#include <SFML/Graphics/Sprite.hpp>
+#include <SFML/System/Angle.hpp>
 #include <iostream>
 #include <cmath>
 #include <limits>
@@ -9,7 +11,7 @@
 #include "utils.h"
 #include "tank.h"
 
-extern std::vector<Bullet> bullets;
+extern std::vector<std::unique_ptr<Bullet>> bullets;
 
 Bullet::Bullet(float x, float y, float speed, sf::Angle angle, Tank* owner) : speed(speed), angle(angle), owner(owner) {
     body.setOrigin({5, 5});
@@ -21,6 +23,7 @@ Bullet::Bullet(float x, float y, float speed, sf::Angle angle, Tank* owner) : sp
     const float convertedAngle = angle.asDegrees();
     const float angleRadians = angle.asRadians();
 
+    bool p = explosionTexture.loadFromFile("../assets/bubble.png");
     // (adjacent side): x = c * cos(θ)
     // (opposite side): y = c * sin(θ)
 
@@ -32,6 +35,13 @@ Bullet::Bullet(float x, float y, float speed, sf::Angle angle, Tank* owner) : sp
 
 sf::RectangleShape Bullet::getBody() {
     return body;
+}
+
+void Bullet::animate(float deltaTime)
+{
+    if (!animation.playAnimation(0, deltaTime))
+        animationFinished = true;
+    body.setTextureRect(animation.m_uvRect);
 }
 
 WallSide Bullet::whichSide(Wall& wall) {
@@ -130,9 +140,6 @@ bool Bullet::collision(sf::RenderWindow& window, std::vector<Wall>& level, std::
 void Bullet::move(sf::RenderWindow& window, std::vector<Wall>& level, std::vector<std::shared_ptr<Bomb>>& bombs, 
                   std::vector<std::unique_ptr<Tank>>& tanks) {
     
-    if (bounces <= 0) {
-        return;
-    }
     if (collision(window, level, bombs, tanks)) --bounces;
     const float convertedAngle = angle.asDegrees();
     const float angleRadians = angle.asRadians();
@@ -148,7 +155,10 @@ void Bullet::move(sf::RenderWindow& window, std::vector<Wall>& level, std::vecto
     else if (convertedAngle > 180 && convertedAngle <= 270) body.move({xSideLength, ySideLength});
     else body.move({xSideLength, ySideLength});
 
-
+    if (bounces <= 0) {
+        setZeroBounces();
+        return;
+    }
     // std::cout << "X side length: " << xSideLength << '\n';
     // std::cout << "Y side length: " << ySideLength << '\n';
 }
