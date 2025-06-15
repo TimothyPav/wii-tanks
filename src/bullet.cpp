@@ -11,9 +11,13 @@
 #include "utils.h"
 #include "tank.h"
 
+sf::Texture Bullet::explosionTexture;
+
 extern std::vector<std::unique_ptr<Bullet>> bullets;
 
-Bullet::Bullet(float x, float y, float speed, sf::Angle angle, Tank* owner) : speed(speed), angle(angle), owner(owner) {
+Bullet::Bullet(float x, float y, float speed, sf::Angle angle, Tank* owner) 
+    : speed(speed), angle(angle), owner(owner), animation(&explosionTexture, sf::Vector2u(6, 1), .05) {
+    
     body.setOrigin({5, 5});
     body.setRotation(angle);
     body.setPosition({x, y});
@@ -23,13 +27,12 @@ Bullet::Bullet(float x, float y, float speed, sf::Angle angle, Tank* owner) : sp
     const float convertedAngle = angle.asDegrees();
     const float angleRadians = angle.asRadians();
 
-    bool p = explosionTexture.loadFromFile("../assets/bubble.png");
-    // (adjacent side): x = c * cos(θ)
-    // (opposite side): y = c * sin(θ)
-
-    // std::cout << "Angle inside bullet constructor: " << convertedAngle << "  modAngle: " << modAngle << '\n';
-    // std::cout << "X side length: " << xSideLength << '\n';
-    // std::cout << "Y side length: " << ySideLength << '\n';
+    // Initialize static texture only once
+    static bool textureLoaded = false;
+    if (!textureLoaded) {
+        explosionTexture.loadFromFile("../assets/bubble.png");
+        textureLoaded = true;
+    }
 }
 
 

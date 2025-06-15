@@ -43,6 +43,7 @@ int main() {
     auto window = sf::RenderWindow(sf::VideoMode({1920, 1080}), "wii tanks");
     window.setFramerateLimit(144);
     Timer totalTime;
+    std::string finalTime = "";
 
     sf::RectangleShape square;
     square.setSize(sf::Vector2f(50, 50));
@@ -64,6 +65,14 @@ int main() {
     sf::Texture startScreenTexture;
     p = startScreenTexture.loadFromFile("../assets/title_screen.png");
     sf::Sprite startScreen(startScreenTexture);
+
+    sf::Texture loseScreenTexture;
+    p = loseScreenTexture.loadFromFile("../assets/lose_screen.png");
+    sf::Sprite loseScreen(loseScreenTexture);
+
+    sf::Texture winScreenTexture;
+    p = winScreenTexture.loadFromFile("../assets/win_screen.png");
+    sf::Sprite winScreen(winScreenTexture);
 
     sf::Texture pic;
     p = pic.loadFromFile("../assets/background.png");
@@ -126,6 +135,17 @@ int main() {
     }
     Animation bulletExplosionAnimation(&bulletExplosionTexture, sf::Vector2u(4, 1), 0.5f);
 
+    sf::Font font;
+    if (!font.openFromFile("../assets/font.ttf")) {
+        std::cout << "Error loading font" << std::endl;
+    }
+
+    sf::Text timeText(font, "", 30);
+    timeText.setFont(font);
+    timeText.setCharacterSize(100);
+    timeText.setFillColor(sf::Color::Black);
+    timeText.setPosition({905, 450});
+
     bool isMousePressed{false};
     bool isSpacePressed{false};
     auto start_time = std::chrono::high_resolution_clock::now();
@@ -151,6 +171,28 @@ int main() {
                          .count()};
         if (t.getIsAlive() && tanks.size() == 1) {
             ++level;
+
+            if (level >= 10) // player has won the game!
+            {
+                if (finalTime.empty()) finalTime = totalTime.getFormattedTime();
+
+                window.draw(winScreen);
+                timeText.setString(finalTime);
+                window.draw(timeText);
+                window.display();
+                window.clear();
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space)) 
+                {
+                    totalTime.reset();
+                    t.revive();
+                    levelManager[0](t);
+                    t.resetRotation();
+                    displayLevel(window, s, wallTextures, tankSprites_bodies,
+                                 tankSprites_heads, tankSprites_turrets);
+                }
+                continue;
+            }
+
             levelManager[level](t);
             t.resetRotation();
             displayLevel(window, s, wallTextures, tankSprites_bodies,
@@ -166,8 +208,19 @@ int main() {
                 displayLevel(window, s, wallTextures, tankSprites_bodies,
                              tankSprites_heads, tankSprites_turrets);
             } else {
-                window.clear();
+                window.draw(loseScreen);
                 window.display();
+                window.clear();
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space)) {
+                    lives = 3;
+                    t.revive();
+                    gameStart = true;
+                    isSpacePressed = true;
+                    levelManager[0](t);
+                    t.resetRotation();
+                    displayLevel(window, s, wallTextures, tankSprites_bodies,
+                                 tankSprites_heads, tankSprites_turrets);
+                }
                 continue;
             }
             // LOSE SCREEN
@@ -390,53 +443,7 @@ int main() {
                 currentTank->getBomb()->explode(tanks);
             }
         }
-        // clean up bullets vector
-        for (auto bullet = bullets.begin(); bullet != bullets.end();) {
-            for (auto bulletj = bullets.begin(); bulletj != bullets.end();) {
-                if (bullet != bulletj && bullet->get()->getBounces() > 0 && bulletj->get()->getBounces() > 0 && doOverlap(bullet->get()->getBody(), bulletj->get()->getBody())) {
-                    bullet->get()->setZeroBounces();
-                    bulletj->get()->setZeroBounces();
-                }
-                ++bulletj;
-            }
-            if (bullet->get()->getBounces() <= 0 && !bullet->get()->isAnimationFinished()) {
-                --(bullet->get()->decrementOwner()->currentBullets);
-                bullet->get()->animate(deltaTime);
-                window.draw(bullet->get()->getBody());
-                ++bullet;
-            }
-            else if (bullet->get()->getBounces() <= 0) {
-                // --(bullet->decrementOwner()->currentBullets);
-                bullet = bullets.erase(bullet);
-            } else {
-                bullet->get()->move(window, currLevel, bombs, tanks);
-                bulletSprite.setOrigin({5, 5});
-                bulletSprite.setPosition(bullet->get()->getBody().getPosition());
-                bulletSprite.setRotation(bullet->get()->getBody().getRotation());
-                window.draw(bulletSprite);
-                ++bullet;
-            }
-        }
 
-        for (int i = explosionEffects.size() - 1; i >= 0; --i) {
-            explosionEffects[i].timer += deltaTime;
-            explosionEffects[i].anim.loopUpdate(0, deltaTime);
-
-            // Draw the explosion
-            sf::RectangleShape explosionRect(sf::Vector2f(50, 50));
-            explosionRect.setPosition(explosionEffects[i].pos);
-            explosionRect.setOrigin({25, 25});
-            explosionRect.setTexture(&bulletExplosionTexture);
-            explosionRect.setTextureRect(explosionEffects[i].anim.m_uvRect);
-            window.draw(explosionRect);
-            
-            // Remove explosion after 0.4 seconds
-            if (explosionEffects[i].timer > 0.4f) {
-                explosionEffects.erase(explosionEffects.begin() + i);
-            }
-        }
-
-        // clean tanks vector
         for (auto tank = tanks.begin(); tank != tanks.end();) {
             if ((tank->get() != &t) && !tank->get()->getIsAlive() &&
                 tank->get()->isAnimationFinished())
@@ -453,13 +460,32 @@ int main() {
             }
         }
 
-        // window.draw(t.getTankBody());
-        // bulletExplosionAnimation.loopUpdate(0, deltaTime);
-        // sf::RectangleShape bulletTest({265, 265});
-        // bulletTest.setPosition({100, 100});
-        // bulletTest.setTexture(&bulletExplosionTexture);
-        // bulletTest.setTextureRect(bulletExplosionAnimation.m_uvRect);
-        // window.draw(bulletTest);
+        // clean up bullets vector
+        for (auto bullet = bullets.begin(); bullet != bullets.end();) {
+            for (auto bulletj = bullets.begin(); bulletj != bullets.end();) {
+                if (bullet != bulletj && bullet->get()->getBounces() > 0 && bulletj->get()->getBounces() > 0 && doOverlap(bullet->get()->getBody(), bulletj->get()->getBody())) {
+                    bullet->get()->setZeroBounces();
+                    bulletj->get()->setZeroBounces();
+                }
+                ++bulletj;
+            }
+            if (bullet->get()->getBounces() <= 0 && !bullet->get()->isAnimationFinished()) {
+                bullet->get()->animate(deltaTime);
+                window.draw(bullet->get()->getBody());
+                ++bullet;
+            }
+            else if (bullet->get()->getBounces() <= 0) {
+                --(*(bullet->get()->decrementOwner())).currentBullets;
+                bullet = bullets.erase(bullet);
+            } else {
+                bullet->get()->move(window, currLevel, bombs, tanks);
+                bulletSprite.setOrigin({5, 5});
+                bulletSprite.setPosition(bullet->get()->getBody().getPosition());
+                bulletSprite.setRotation(bullet->get()->getBody().getRotation());
+                window.draw(bulletSprite);
+                ++bullet;
+            }
+        }
 
         window.display();
     }

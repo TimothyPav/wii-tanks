@@ -361,20 +361,19 @@ void Tank::shoot() {
     float ySideLength = -std::sin(angleRadians) * 50;
 
     auto newBullet = std::make_unique<Bullet>(
-        turret.getPosition().x + xSideLength * 1.1, 
-        turret.getPosition().y + ySideLength * 1.1, 
+        turret.getPosition().x + xSideLength * 1.3, 
+        turret.getPosition().y + ySideLength * 1.3, 
         2.25, 
         turret.getRotation(), 
         this
     );
-    std::cout << "shoot bullet angle: " << turret.getRotation().asDegrees() << '\n';
     bullets.push_back(std::move(newBullet));
     ++currentBullets;
 }
 
 void Tank::plantBomb() {
     if (!isBombPlaced) {
-        m_bomb = std::make_shared<Bomb>(body.getPosition().x, body.getPosition().y);
+        m_bomb = std::make_shared<Bomb>(body.getPosition().x-22, body.getPosition().y-22);
         isBombPlaced = true;
     }
 }
@@ -455,7 +454,6 @@ void Tank::animate(float deltaTime)
     if (!animation.playAnimation(0, deltaTime))
         animationFinished = true;
 
-    std::cout << "Setting tank texture rect...\n";
     body.setTextureRect(animation.m_uvRect);
 }
 

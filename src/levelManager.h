@@ -13,6 +13,7 @@ extern std::vector<std::unique_ptr<Tank>> tanks;
 extern std::vector<std::unique_ptr<Bullet>> bullets;
 extern std::vector<std::shared_ptr<Bomb>> bombs;
 extern std::vector<Wall> currLevel;
+extern std::vector<sf::RectangleShape> treads;
 
 inline void drawWalls(int x1, int x2, int y1, int y2, bool isHole=false)
 {

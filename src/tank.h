@@ -146,7 +146,6 @@ public:
         body.setPosition(originalCenter);
     
         body.setTexture(&explosionTexture);
-        std::cout << "explosion texture set right now!\n";
         animation = Animation(&explosionTexture, sf::Vector2u(6, 1), .05);
         // animate(0);
     }

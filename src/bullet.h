@@ -31,8 +31,8 @@ private:
     Tank* owner;
     sf::Vector2f previousPosition{0, 0};
 
-    sf::Texture explosionTexture;
-    Animation animation = Animation(&explosionTexture, sf::Vector2u(6, 1), .05);
+    static sf::Texture explosionTexture;
+    Animation animation;
     bool animationFinished = false;
 
 public:
