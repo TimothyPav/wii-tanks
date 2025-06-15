@@ -16,11 +16,22 @@
 #include "utils.h"
 #include "wall.h"
 
+struct ExplosionEffect {
+    sf::Vector2f pos;
+    float timer;
+    Animation anim;
+    
+    ExplosionEffect(sf::Vector2f position, sf::Texture* tex) 
+        : pos(position), timer(0.0f), anim(tex, sf::Vector2u(4, 1), 0.1f) {}
+};
+
 std::vector<std::unique_ptr<Tank>> tanks{};
 std::vector<Bullet> bullets{};
 std::vector<std::shared_ptr<Bomb>> bombs{};
 std::vector<Wall> currLevel;
 std::vector<sf::RectangleShape> treads{};
+
+std::vector<ExplosionEffect> explosionEffects;
 
 using spriteVector = std::vector<sf::Sprite>;
 void displayLevel(sf::RenderWindow &window, sf::Sprite &s, spriteVector &wallArt,
@@ -30,6 +41,7 @@ void displayLevel(sf::RenderWindow &window, sf::Sprite &s, spriteVector &wallArt
 int main() {
     auto window = sf::RenderWindow(sf::VideoMode({1920, 1080}), "wii tanks");
     window.setFramerateLimit(144);
+    Timer totalTime;
 
     sf::RectangleShape square;
     square.setSize(sf::Vector2f(50, 50));
@@ -375,6 +387,9 @@ int main() {
             }
             if (bullet->getBounces() <= 0) {
                 --(bullet->decrementOwner()->currentBullets);
+
+                explosionEffects.push_back(ExplosionEffect(bullet->getBody().getPosition(), &bulletExplosionTexture));
+
                 bullet = bullets.erase(bullet);
             } else {
                 bullet->move(window, currLevel, bombs, tanks);
@@ -384,6 +399,24 @@ int main() {
                 // window.draw(bullet->getBody());
                 window.draw(bulletSprite);
                 ++bullet;
+            }
+        }
+
+        for (int i = explosionEffects.size() - 1; i >= 0; --i) {
+            explosionEffects[i].timer += deltaTime;
+            explosionEffects[i].anim.loopUpdate(0, deltaTime);
+
+            // Draw the explosion
+            sf::RectangleShape explosionRect(sf::Vector2f(50, 50));
+            explosionRect.setPosition(explosionEffects[i].pos);
+            explosionRect.setOrigin({25, 25});
+            explosionRect.setTexture(&bulletExplosionTexture);
+            explosionRect.setTextureRect(explosionEffects[i].anim.m_uvRect);
+            window.draw(explosionRect);
+            
+            // Remove explosion after 0.4 seconds
+            if (explosionEffects[i].timer > 0.4f) {
+                explosionEffects.erase(explosionEffects.begin() + i);
             }
         }
 
@@ -406,7 +439,8 @@ int main() {
 
         // window.draw(t.getTankBody());
         // bulletExplosionAnimation.loopUpdate(0, deltaTime);
-        // sf::RectangleShape bulletTest({265, 260});
+        // sf::RectangleShape bulletTest({265, 265});
+        // bulletTest.setPosition({100, 100});
         // bulletTest.setTexture(&bulletExplosionTexture);
         // bulletTest.setTextureRect(bulletExplosionAnimation.m_uvRect);
         // window.draw(bulletTest);
