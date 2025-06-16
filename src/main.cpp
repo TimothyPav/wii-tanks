@@ -216,7 +216,8 @@ int main() {
                     t.revive();
                     gameStart = true;
                     isSpacePressed = true;
-                    levelManager[0](t);
+                    level = 0;
+                    levelManager[level](t);
                     t.resetRotation();
                     displayLevel(window, s, wallTextures, tankSprites_bodies,
                                  tankSprites_heads, tankSprites_turrets);
