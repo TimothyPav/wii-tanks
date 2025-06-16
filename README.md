@@ -130,12 +130,14 @@ make
 
 ---
 
-## 📸 **Screenshots**
-
 <div align="center">
 
-| Gameplay | Gameplay | Win Screen | Lose Screen |
-|-------------|---------|-----------|-----------|
-| ![Gameplay](screenshots/gameplay1.png) | ![Gameplay](screenshots/gameplay2.png) | ![Win](screenshots/end_screen.png) | ![Lose](assets/lose_screen.png) |
+| Gameplay | Gameplay |
+|----------|----------|
+| ![Gameplay](screenshots/gameplay1.png) | ![Gameplay](screenshots/gameplay2.png) |
+
+| Win Screen | Lose Screen |
+|------------|-------------|
+| ![Win](screenshots/end_screen.png) | ![Lose](assets/lose_screen.png) |
 
 </div>
